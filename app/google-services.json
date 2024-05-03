@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1013505300005",
+    "project_id": "nuralign-e7eec",
+    "storage_bucket": "nuralign-e7eec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013505300005:android:85a02032c49b05c43651cc",
+        "android_client_info": {
+          "package_name": "com.losrobotines.nuralign"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdsAs5PHm0jyAeMO3hMeqKYHHqhXkILbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
