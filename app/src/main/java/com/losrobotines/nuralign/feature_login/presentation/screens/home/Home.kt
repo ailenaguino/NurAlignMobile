@@ -2,7 +2,6 @@ package com.losrobotines.nuralign.feature_login.presentation.screens.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,14 +16,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreen
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class Home : ComponentActivity() {
@@ -39,11 +36,11 @@ class Home : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Text(text = "Hola ${viewModel.curretUser?.displayName}")
+                    Text(text = "Hola ${viewModel.currentUser?.displayName}")
                     Button(
                         onClick = {
                                   viewModel.logout()
-                            if (viewModel.curretUser==null){
+                            if (viewModel.currentUser==null){
                                 val intent = Intent(this, LoginScreen::class.java)
                                 startActivity(intent)
                                 finish()

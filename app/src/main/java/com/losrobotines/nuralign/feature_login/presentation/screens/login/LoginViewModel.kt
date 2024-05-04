@@ -18,7 +18,7 @@ class LoginViewModel @Inject constructor(private val repository: AuthRepository)
     private val _loginFlow = MutableStateFlow<LoginState<FirebaseUser>?>(null)
     val loginFlow: StateFlow<LoginState<FirebaseUser>?> = _loginFlow
 
-    val curretUser: FirebaseUser? get() = repository.currentUser
+    val currentUser: FirebaseUser? get() = repository.currentUser
 
     init {
         if (repository.currentUser!=null){

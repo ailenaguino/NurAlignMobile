@@ -2,7 +2,6 @@ package com.losrobotines.nuralign.feature_login.data
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.losrobotines.nuralign.feature_login.data.utils.await
 import com.losrobotines.nuralign.feature_login.domain.AuthRepository
 import com.losrobotines.nuralign.feature_login.presentation.screens.LoginState

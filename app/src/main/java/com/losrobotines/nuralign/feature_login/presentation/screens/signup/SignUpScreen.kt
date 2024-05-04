@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_login.presentation.screens.signup
 
+import android.annotation.SuppressLint
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.screens.LoginState
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
@@ -9,8 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.ViewGroup
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +35,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -46,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -70,17 +68,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
+import com.losrobotines.nuralign.feature_login.presentation.screens.home.Home
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-
 @AndroidEntryPoint
 class SignUpScreen : ComponentActivity() {
-
 
     private val viewModel by viewModels<SignUpViewModel>()
 
@@ -94,21 +90,21 @@ class SignUpScreen : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val contextAplication = LocalContext.current.applicationContext
-                    signUpScreen(contextAplication, viewModel)
+                    SignUpScreen(contextAplication, viewModel)
                 }
             }
         }
     }
 
 
+    @SuppressLint("NotConstructor")
     @RequiresApi(Build.VERSION_CODES.O)
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun signUpScreen(contextAplication: Context, viewModel: SignUpViewModel) {
+    fun SignUpScreen(contextAplication: Context, viewModel: SignUpViewModel) {
         var userEmail by remember { mutableStateOf("") }
         var userPassword by remember { mutableStateOf("") }
         var userName by remember { mutableStateOf("") }
-        var selectedSexo by remember { mutableStateOf("Seleccione su sexo") }
+        var selectedSex by remember { mutableStateOf("Seleccione su sexo") }
 
         val signupFlow = viewModel.signupFlow.collectAsState()
 
@@ -146,9 +142,9 @@ class SignUpScreen : ComponentActivity() {
                 label = { Text("Email"/*, color = mainColor*/) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor
+                    unfocusedBorderColor = mainColor,
                 )
             )
 
@@ -164,10 +160,10 @@ class SignUpScreen : ComponentActivity() {
                 label = { Text("Contraseña"/*, color = mainColor*/) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = mainColor,
                     focusedBorderColor = mainColor,
                     unfocusedBorderColor = mainColor,
-                    cursorColor = mainColor
                 )
             )
 
@@ -182,10 +178,10 @@ class SignUpScreen : ComponentActivity() {
                 shape = RoundedCornerShape(35.dp),
                 label = { Text("Nombre"/*, color = mainColor*/) },
                 singleLine = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = mainColor,
                     focusedBorderColor = mainColor,
                     unfocusedBorderColor = mainColor,
-                    cursorColor = mainColor
                 )
             )
 
@@ -195,14 +191,14 @@ class SignUpScreen : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            selectedSexo = SelectSexoDropMenu(selectedSexo)
+            selectedSex = selectSexDropMenu(selectedSex)
 
 
             Spacer(modifier = Modifier.height(55.dp))
 
             Button(
                 onClick = {
-                    viewModel.signup(userEmail, userPassword, userName, selectedSexo)
+                    viewModel.signup(userEmail, userPassword, userName, selectedSex)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -233,11 +229,11 @@ class SignUpScreen : ComponentActivity() {
                 )
             )
         }
-        signupFlow?.value?.let {
+        signupFlow.value?.let {
             when (it) {
                 is LoginState.Failure -> {
-                    val contetx = LocalContext.current
-                    Toast.makeText(contetx, it.exception.message, Toast.LENGTH_LONG).show()
+                    val context = LocalContext.current
+                    Toast.makeText(context, it.exception.message, Toast.LENGTH_SHORT).show()
                 }
 
                 LoginState.Loading -> {
@@ -250,7 +246,7 @@ class SignUpScreen : ComponentActivity() {
 
                 is LoginState.Success -> {
                     LaunchedEffect(Unit) {
-                        val intent = Intent(contextAplication, LoginScreen::class.java)
+                        val intent = Intent(contextAplication, Home::class.java)
                         startActivity(intent)
                         finish()
                     }
@@ -260,7 +256,6 @@ class SignUpScreen : ComponentActivity() {
     }
 
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun SelectBirthday() {
@@ -279,10 +274,10 @@ class SignUpScreen : ComponentActivity() {
                     .padding(start = 16.dp, end = 2.dp),
                 shape = RoundedCornerShape(35.dp),
                 singleLine = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = mainColor,
                     focusedBorderColor = mainColor,
                     unfocusedBorderColor = mainColor,
-                    cursorColor = mainColor,
                 )
             )
             IconButton(
@@ -318,7 +313,6 @@ class SignUpScreen : ComponentActivity() {
         }
     }
 
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CustomDatePickerDialog(
@@ -344,12 +338,11 @@ class SignUpScreen : ComponentActivity() {
         }
     }
 
-
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun SelectSexoDropMenu(selectedSexo: String): String {
-        var selectedSexo1 = selectedSexo
-        val sexoList = arrayOf("Femenino", "Masculino", "Otro")
+    private fun selectSexDropMenu(selectedSex: String): String {
+        var sex = selectedSex
+        val sexList = arrayOf("Femenino", "Masculino", "Otro")
         var expanded by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
@@ -363,7 +356,7 @@ class SignUpScreen : ComponentActivity() {
                 color = Color.Transparent,
             ) {
                 TextField(
-                    value = selectedSexo1,
+                    value = sex,
                     onValueChange = {},
                     label = {
                         Text(text = "Sexo", color = mainColor) //
@@ -390,7 +383,7 @@ class SignUpScreen : ComponentActivity() {
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {
-                    sexoList.forEach { specialty ->
+                    sexList.forEach { specialty ->
                         DropdownMenuItem(
                             text = {
                                 Text(
@@ -398,7 +391,7 @@ class SignUpScreen : ComponentActivity() {
                                 )
                             },
                             onClick = {
-                                selectedSexo1 = specialty
+                                sex = specialty
                                 expanded = false
                             }
                         )
@@ -406,15 +399,6 @@ class SignUpScreen : ComponentActivity() {
                 }
             }
         }
-        return selectedSexo1
+        return sex
     }
-
 }
-
-
-
-
-
-
-
-

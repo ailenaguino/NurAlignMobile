@@ -1,4 +1,4 @@
-package com.losrobotines.myfirstcleancompose.di
+package com.losrobotines.nuralign.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.losrobotines.nuralign.feature_login.data.AuthRepositoryImpl

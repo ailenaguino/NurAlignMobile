@@ -1,9 +1,7 @@
 package com.losrobotines.nuralign.feature_login.presentation.screens.login
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -30,14 +28,13 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -87,8 +84,8 @@ class LoginScreen : ComponentActivity() {
                     val currentUser = firebaseAuth.currentUser
 
                     if (currentUser != null) {
-                        //val intent = Intent(this, Home::class.java)
-                        //startActivity(intent)
+                        val intent = Intent(this, Home::class.java)
+                        startActivity(intent)
                         finish()
                     } else {
                         val contextAplication = LocalContext.current.applicationContext
@@ -100,14 +97,13 @@ class LoginScreen : ComponentActivity() {
 
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("PrivateResource", "NotConstructor")
     @Composable
-    fun LoginScreen(contextAplication: Context, viewModel: LoginViewModel?) {
+    fun LoginScreen(contextAplication: Context, viewModel: LoginViewModel) {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
 
-        val loginFlow = viewModel?.loginFlow?.collectAsState()
+        val loginFlow = viewModel.loginFlow.collectAsState()
 
         Image(
             painterResource(id = R.drawable.img),
@@ -141,9 +137,9 @@ class LoginScreen : ComponentActivity() {
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 label = { Text("Ingrese su email", color = mainColor) },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor
+                    unfocusedBorderColor = mainColor,
                 )
             )
 
@@ -159,16 +155,16 @@ class LoginScreen : ComponentActivity() {
                 label = { Text("Ingrese su contraseña", color = mainColor) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = mainColor,
                     focusedBorderColor = mainColor,
                     unfocusedBorderColor = mainColor,
-                    cursorColor = mainColor
                 )
             )
 
             Spacer(modifier = Modifier.height(45.dp))
 
-            SignInBotton(email, password)
+            SignInButton(email, password)
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -187,15 +183,15 @@ class LoginScreen : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(55.dp))
 
-            signupScreenBotton(contextAplication)
+            SignupScreenBotton(contextAplication)
 
         }
 
-        loginFlow?.value?.let {
+        loginFlow.value?.let {
             when (it) {
                 is LoginState.Failure -> {
                     val contetx = LocalContext.current
-                    Toast.makeText(contetx, it.exception.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(contetx, it.exception.message, Toast.LENGTH_SHORT).show()
 
                 }
 
@@ -227,7 +223,7 @@ class LoginScreen : ComponentActivity() {
     }
 
     @Composable
-    fun signupScreenBotton(contextApplication: Context) {
+    fun SignupScreenBotton(contextApplication: Context) {
         TextButton(
             onClick = {
                 val intent = Intent(contextApplication, SignUpScreen::class.java)
@@ -261,11 +257,11 @@ class LoginScreen : ComponentActivity() {
     }
 
     @Composable
-    private fun SignInBotton(email: String, password: String) {
+    private fun SignInButton(email: String, password: String) {
         Button(
             onClick = {
                 if (email.isEmpty() && password.isEmpty()) {
-                    Toast.makeText(applicationContext, "Complete los campos", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "Complete los campos", Toast.LENGTH_SHORT)
                         .show()
                 } else {
                     viewModel.login(email, password)

@@ -18,11 +18,18 @@ class SignUpViewModel @Inject constructor(private val repository: AuthRepository
     val signupFlow: StateFlow<LoginState<FirebaseUser>?> = _signupFlow
 
     fun signup(
-        email: String, password: String, name: String,
+        email: String,
+        password: String,
+        name: String,
         sexo: String
     ) = viewModelScope.launch {
         _signupFlow.value = LoginState.Loading
         val result = repository.signup(email, password)
         _signupFlow.value = result
+    }
+
+    fun logout() {
+        repository.logout()
+        _signupFlow.value = null
     }
 }
