@@ -17,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +31,8 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -64,8 +67,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.feature_login.presentation.screens.home.Home
@@ -103,8 +108,13 @@ class SignUpScreen : ComponentActivity() {
     fun SignUpScreen(contextAplication: Context, viewModel: SignUpViewModel) {
         var userEmail by remember { mutableStateOf("") }
         var userPassword by remember { mutableStateOf("") }
-        var userName by remember { mutableStateOf("") }
-        var selectedSex by remember { mutableStateOf("Seleccione su sexo") }
+        var confirmPassword by remember { mutableStateOf("") }
+        var passwordVisible by remember { mutableStateOf(false) }
+        var confirmPasswordVisible by remember { mutableStateOf(false) }
+        var userFirstName by remember { mutableStateOf("") }
+        var userLastName by remember { mutableStateOf("") }
+        val userBirthDate by remember { mutableStateOf("") }
+        var userSex by remember { mutableStateOf("Seleccione su sexo") }
 
         val signupFlow = viewModel.signupFlow.collectAsState()
 
@@ -159,7 +169,22 @@ class SignUpScreen : ComponentActivity() {
                 shape = RoundedCornerShape(35.dp),
                 label = { Text("Contraseña"/*, color = mainColor*/) },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible)
+                    VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val description = if (passwordVisible)
+                        "Ocultar contraseña" else "Mostrar contraseña"
+
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(imageVector = image, description)
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     cursorColor = mainColor,
                     focusedBorderColor = mainColor,
@@ -170,8 +195,43 @@ class SignUpScreen : ComponentActivity() {
             Spacer(modifier = Modifier.height(5.dp))
 
             OutlinedTextField(
-                value = userName,
-                onValueChange = { userName = it },
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp),
+                shape = RoundedCornerShape(35.dp),
+                label = { Text("Confirmar contraseña"/*, color = mainColor*/) },
+                singleLine = true,
+                visualTransformation = if (confirmPasswordVisible)
+                    VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    val image = if (confirmPasswordVisible)
+                        Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val description = if (confirmPasswordVisible)
+                        "Ocultar contraseña" else "Mostrar contraseña"
+
+                    IconButton(
+                        onClick = { confirmPasswordVisible = !confirmPasswordVisible },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(imageVector = image, description)
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = mainColor,
+                    focusedBorderColor = mainColor,
+                    unfocusedBorderColor = mainColor,
+                )
+            )
+            MatchingPassword(userPassword, confirmPassword)
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            OutlinedTextField(
+                value = userFirstName,
+                onValueChange = { userFirstName = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
@@ -187,18 +247,42 @@ class SignUpScreen : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            SelectBirthday()
+            OutlinedTextField(
+                value = userLastName,
+                onValueChange = { userLastName = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp),
+                shape = RoundedCornerShape(35.dp),
+                label = { Text("Apellido"/*, color = mainColor*/) },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = mainColor,
+                    focusedBorderColor = mainColor,
+                    unfocusedBorderColor = mainColor,
+                )
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            selectBirthday()
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            selectedSex = selectSexDropMenu(selectedSex)
-
+            userSex = selectSexDropMenu()
 
             Spacer(modifier = Modifier.height(55.dp))
 
             Button(
                 onClick = {
-                    viewModel.signup(userEmail, userPassword, userName, selectedSex)
+                    viewModel.signup(
+                        userEmail,
+                        userPassword,
+                        userFirstName,
+                        userLastName,
+                        userBirthDate,
+                        userSex
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -215,7 +299,7 @@ class SignUpScreen : ComponentActivity() {
             Spacer(modifier = Modifier.height(30.dp))
 
             ClickableText(
-                text = AnnotatedString("Ya estoy Registrado"),
+                text = AnnotatedString("Ya estoy registrado"),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = {
                     val intent = Intent(contextAplication, LoginScreen::class.java)
@@ -258,15 +342,15 @@ class SignUpScreen : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun SelectBirthday() {
-        val date1 = remember { mutableStateOf("") }
+    fun selectBirthday(): String {
+        val date = remember { mutableStateOf("") }
         val isOpen = remember { mutableStateOf(false) }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
 
             OutlinedTextField(
                 readOnly = true,
-                value = date1.value,
+                value = date.value,
                 label = { Text("Fecha de Nacimiento"/*, color = mainColor*/) },
                 onValueChange = {},
                 modifier = Modifier
@@ -289,7 +373,7 @@ class SignUpScreen : ComponentActivity() {
                     tint = secondaryColor,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(start = 1.dp, end = 11.dp, top=2.dp)
+                        .padding(start = 1.dp, end = 11.dp, top = 2.dp)
                         .size(40.dp)
                 )
             }
@@ -300,7 +384,7 @@ class SignUpScreen : ComponentActivity() {
                 onAccept = {
                     isOpen.value = false // close dialog
                     if (it != null) { // Set the date
-                        date1.value = Instant
+                        date.value = Instant
                             .ofEpochMilli(it)
                             .atZone(ZoneId.of("UTC"))
                             .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
@@ -311,6 +395,7 @@ class SignUpScreen : ComponentActivity() {
                 }
             )
         }
+        return date.value
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -340,10 +425,10 @@ class SignUpScreen : ComponentActivity() {
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun selectSexDropMenu(selectedSex: String): String {
-        var sex = selectedSex
+    private fun selectSexDropMenu(): String {
         val sexList = arrayOf("Femenino", "Masculino", "Otro")
         var expanded by remember { mutableStateOf(false) }
+        var selectedSex by remember { mutableStateOf("Seleccioná tu sexo") }
 
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -356,7 +441,7 @@ class SignUpScreen : ComponentActivity() {
                 color = Color.Transparent,
             ) {
                 TextField(
-                    value = sex,
+                    value = selectedSex,
                     onValueChange = {},
                     label = {
                         Text(text = "Sexo", color = mainColor) //
@@ -383,15 +468,15 @@ class SignUpScreen : ComponentActivity() {
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {
-                    sexList.forEach { specialty ->
+                    sexList.forEach {
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    text = specialty,
+                                    text = it,
                                 )
                             },
                             onClick = {
-                                sex = specialty
+                                selectedSex = it
                                 expanded = false
                             }
                         )
@@ -399,6 +484,25 @@ class SignUpScreen : ComponentActivity() {
                 }
             }
         }
-        return sex
+        return selectedSex
+    }
+
+    @Composable
+    private fun MatchingPassword(password: String, confirmPassword: String) {
+        if (password != confirmPassword) {
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Las contraseñas deben coincidir",
+                    color = Color.Red,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+        }
     }
 }

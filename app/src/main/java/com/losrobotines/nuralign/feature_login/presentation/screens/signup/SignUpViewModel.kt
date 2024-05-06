@@ -20,8 +20,10 @@ class SignUpViewModel @Inject constructor(private val repository: AuthRepository
     fun signup(
         email: String,
         password: String,
-        name: String,
-        sexo: String
+        firstName: String,
+        lastName: String,
+        brithDate: String,
+        sex: String
     ) = viewModelScope.launch {
         _signupFlow.value = LoginState.Loading
         val result = repository.signup(email, password)

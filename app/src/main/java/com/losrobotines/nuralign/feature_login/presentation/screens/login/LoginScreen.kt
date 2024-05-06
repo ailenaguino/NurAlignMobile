@@ -183,15 +183,15 @@ class LoginScreen : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(55.dp))
 
-            SignupScreenBotton(contextAplication)
+            SignUpScreenButton(contextAplication)
 
         }
 
         loginFlow.value?.let {
             when (it) {
                 is LoginState.Failure -> {
-                    val contetx = LocalContext.current
-                    Toast.makeText(contetx, it.exception.message, Toast.LENGTH_SHORT).show()
+                    val context = LocalContext.current
+                    Toast.makeText(context, it.exception.message, Toast.LENGTH_SHORT).show()
 
                 }
 
@@ -223,7 +223,7 @@ class LoginScreen : ComponentActivity() {
     }
 
     @Composable
-    fun SignupScreenBotton(contextApplication: Context) {
+    fun SignUpScreenButton(contextApplication: Context) {
         TextButton(
             onClick = {
                 val intent = Intent(contextApplication, SignUpScreen::class.java)
