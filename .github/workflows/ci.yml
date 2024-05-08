@@ -2,9 +2,9 @@ name: NurAlign CI
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "ci-cd" ]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "ci-cd" ]
 
 jobs:
   build:
