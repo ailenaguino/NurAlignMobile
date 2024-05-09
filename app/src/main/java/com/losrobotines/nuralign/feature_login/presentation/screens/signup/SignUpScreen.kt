@@ -2,7 +2,7 @@ package com.losrobotines.nuralign.feature_login.presentation.screens.signup
 
 import android.annotation.SuppressLint
 import com.losrobotines.nuralign.R
-import com.losrobotines.nuralign.feature_login.presentation.screens.LoginState
+import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor

@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_login.presentation.screens
+package com.losrobotines.nuralign.feature_login.presentation.utils
 
 sealed class LoginState<out R> {
     data class Success<out R>(val result: R) : LoginState<R>()

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.losrobotines.nuralign.feature_login.domain.AuthRepository
-import com.losrobotines.nuralign.feature_login.presentation.screens.LoginState
+import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

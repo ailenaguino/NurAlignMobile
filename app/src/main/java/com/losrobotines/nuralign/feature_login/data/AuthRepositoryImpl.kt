@@ -4,7 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.losrobotines.nuralign.feature_login.data.utils.await
 import com.losrobotines.nuralign.feature_login.domain.AuthRepository
-import com.losrobotines.nuralign.feature_login.presentation.screens.LoginState
+import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) :

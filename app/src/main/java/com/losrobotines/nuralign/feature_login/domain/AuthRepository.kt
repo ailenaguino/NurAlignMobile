@@ -1,7 +1,7 @@
 package com.losrobotines.nuralign.feature_login.domain
 
 import com.google.firebase.auth.FirebaseUser
-import com.losrobotines.nuralign.feature_login.presentation.screens.LoginState
+import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 
 interface AuthRepository {
     val currentUser: FirebaseUser?
