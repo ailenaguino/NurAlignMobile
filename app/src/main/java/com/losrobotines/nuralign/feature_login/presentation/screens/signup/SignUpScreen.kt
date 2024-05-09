@@ -397,7 +397,7 @@ class SignUpScreen : ComponentActivity() {
                         date.value = Instant
                             .ofEpochMilli(it)
                             .atZone(ZoneId.of("UTC"))
-                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            .format(DateTimeFormatter.ofPattern("ddMMyyyy"))
                     }
                 },
                 onCancel = {
