@@ -20,15 +20,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -52,6 +57,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
@@ -102,6 +108,8 @@ class LoginScreen : ComponentActivity() {
     fun LoginScreen(contextAplication: Context, viewModel: LoginViewModel) {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+        var passwordVisible by remember { mutableStateOf(false) }
+
 
         val loginFlow = viewModel.loginFlow.collectAsState()
 
@@ -127,64 +135,85 @@ class LoginScreen : ComponentActivity() {
                     .padding(top = 80.dp)
             )
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                label = { Text("Ingrese su email", color = mainColor) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                    label = { Text("Ingrese su email", color = mainColor) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
                 )
-            )
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                label = { Text("Ingrese su contraseña", color = mainColor) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = mainColor,
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    label = { Text("Ingrese su contraseña", color = mainColor) },
+                    singleLine = true,
+                    visualTransformation = if (passwordVisible)
+                        VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        val description = if (passwordVisible)
+                            "Ocultar contraseña" else "Mostrar contraseña"
+
+                        IconButton(
+                            onClick = { passwordVisible = !passwordVisible },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Icon(imageVector = image, description, tint = secondaryColor)
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = mainColor,
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
                 )
-            )
 
-            Spacer(modifier = Modifier.height(45.dp))
+                Spacer(modifier = Modifier.height(45.dp))
 
-            SignInButton(email, password)
+                SignInButton(email, password)
 
-            Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
-            ClickableText(
-                text = AnnotatedString("Olvidé mi contraseña"),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = {
+                ClickableText(
+                    text = AnnotatedString("Olvidé mi contraseña"),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onClick = {
 
-                },
-                style = TextStyle(
-                    fontSize = 17.sp,
-                    fontFamily = FontFamily.Default,
-                    color = mainColor
+                    },
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = FontFamily.Default,
+                        color = mainColor
+                    )
                 )
-            )
 
-            Spacer(modifier = Modifier.height(55.dp))
+                Spacer(modifier = Modifier.height(55.dp))
 
-            SignUpScreenButton(contextAplication)
+                SignUpScreenButton(contextAplication)
 
+                Spacer(modifier = Modifier.height(20.dp))
+            }
         }
 
         loginFlow.value?.let {
@@ -279,7 +308,4 @@ class LoginScreen : ComponentActivity() {
             Text("Iniciar sesión")
         }
     }
-
-
-
 }
