@@ -65,6 +65,7 @@ import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.feature_login.presentation.screens.home.Home
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreen
+import com.losrobotines.nuralign.home.HomeScreen
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -90,7 +91,7 @@ class LoginScreen : ComponentActivity() {
                     val currentUser = firebaseAuth.currentUser
 
                     if (currentUser != null) {
-                        val intent = Intent(this, Home::class.java)
+                        val intent = Intent(this, HomeScreen::class.java)
                         startActivity(intent)
                         finish()
                     } else {
@@ -114,7 +115,7 @@ class LoginScreen : ComponentActivity() {
         val loginFlow = viewModel.loginFlow.collectAsState()
 
         Image(
-            painterResource(id = R.drawable.img),
+            painterResource(id = R.drawable.fondo),
             contentDescription = "fondo",
             alignment = Alignment.TopCenter,
             modifier = Modifier
@@ -241,7 +242,7 @@ class LoginScreen : ComponentActivity() {
 
                 is LoginState.Success -> {
                     LaunchedEffect(Unit) {
-                        val intent = Intent(contextAplication, Home::class.java)
+                        val intent = Intent(contextAplication, HomeScreen::class.java)
                         startActivity(intent)
                         finish()
                     }
