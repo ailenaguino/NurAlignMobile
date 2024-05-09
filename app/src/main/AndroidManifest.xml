@@ -13,6 +13,11 @@
         android:theme="@style/Theme.NurAlign"
         tools:targetApi="31">
         <activity
+            android:name=".feature_sleep.presentation.screens.SleepTrackerScreen"
+            android:exported="false"
+            android:label="@string/title_activity_sleep_tracker_screen"
+            android:theme="@style/Theme.NurAlign" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

@@ -2,8 +2,30 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="app">
+      <entry key="SleepTrackerScreen">
         <State />
+      </entry>
+      <entry key="SliderHour">
+        <State />
+      </entry>
+      <entry key="SliderMinimalExample">
+        <State />
+      </entry>
+      <entry key="app">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\54113\.android\avd\Pixel_7_API_30.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-09T01:44:09.143346500Z" />
+        </State>
       </entry>
     </value>
   </component>

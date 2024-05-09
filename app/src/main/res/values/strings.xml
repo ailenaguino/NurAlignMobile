@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NurAlign</string>
+    <string name="title_activity_sleep_tracker_screen">SleepTrackerScreen</string>
 </resources>
