@@ -122,7 +122,7 @@ class SignUpScreen : ComponentActivity() {
         val signupFlow = viewModel.signupFlow.collectAsState()
 
         Image(
-            painterResource(id = R.drawable.img),
+            painterResource(id = R.drawable.fondo),
             contentDescription = "fondo",
             alignment = Alignment.TopCenter,
             modifier = Modifier
@@ -330,11 +330,18 @@ class SignUpScreen : ComponentActivity() {
                 }
 
                 LoginState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(68.dp),
-                        color = secondaryColor,
-                        strokeWidth = 5.dp
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(68.dp),
+                            color = secondaryColor,
+                            strokeWidth = 5.dp
+                        )
+                    }
                 }
 
                 is LoginState.Success -> {

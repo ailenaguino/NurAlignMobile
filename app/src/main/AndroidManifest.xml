@@ -26,6 +26,7 @@
             android:exported="false"
             android:label="SignUpScreen"
             android:theme="@style/Theme.NurAlign" />
+        <activity android:name=".home.HomeScreen" />
         <activity
             android:name=".feature_login.presentation.screens.login.LoginScreen"
             android:exported="true"
