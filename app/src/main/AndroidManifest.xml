@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".NurAlignApp"
@@ -16,6 +16,11 @@
         android:theme="@style/Theme.NurAlign"
         tools:targetApi="31">
         <activity
+            android:name=".feature_medication.presentation.screens.AddMedicationScreen"
+            android:exported="false"
+            android:label="@string/title_activity_medication_tracker_screen"
+            android:theme="@style/Theme.NurAlign" />
+        <activity
             android:name=".feature_sleep.presentation.screens.SleepTrackerScreen"
             android:exported="false"
             android:label="@string/title_activity_sleep_tracker_screen"
@@ -23,8 +28,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.NurAlign"/>
+            android:theme="@style/Theme.NurAlign" />
         <activity android:name=".feature_login.presentation.screens.home.Home" />
         <activity
             android:name=".feature_login.presentation.screens.signup.SignUpScreen"
