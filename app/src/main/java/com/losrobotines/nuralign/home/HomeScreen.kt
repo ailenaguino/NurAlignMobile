@@ -1,6 +1,7 @@
 package com.losrobotines.nuralign.home
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreen
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
@@ -114,6 +116,13 @@ class HomeScreen : ComponentActivity() {
                                 modifier = Modifier
                                     .size(90.dp)
                                     .clickable {
+                                        if(nameIndex == 2){
+                                            val intent = Intent(
+                                                content,
+                                                SleepTrackerScreen::class.java
+                                            )
+                                            startActivity(intent)
+                                        }
                                         /*
                                         when (nameIndex) {
                                             0 -> {
