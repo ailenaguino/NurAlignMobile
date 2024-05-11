@@ -16,6 +16,11 @@
         android:theme="@style/Theme.NurAlign"
         tools:targetApi="31">
         <activity
+            android:name=".feature_settings.presentation.screens.SettingsScreen"
+            android:exported="false"
+            android:label="@string/title_activity_settings_screen"
+            android:theme="@style/Theme.NurAlign" />
+        <activity
             android:name=".feature_medication.presentation.screens.AddMedicationScreen"
             android:exported="false"
             android:label="@string/title_activity_medication_tracker_screen"

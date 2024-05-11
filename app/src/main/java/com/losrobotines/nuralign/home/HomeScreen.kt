@@ -39,6 +39,7 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTracker
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreen
+import com.losrobotines.nuralign.feature_settings.presentation.screens.SettingsScreen
 
 
 class HomeScreen : ComponentActivity() {
@@ -139,6 +140,13 @@ class HomeScreen : ComponentActivity() {
                                                 val intent = Intent(
                                                     content,
                                                     SleepTrackerScreen::class.java
+                                                )
+                                                startActivity(intent)
+                                            }
+                                            8 -> {
+                                                val intent = Intent(
+                                                    content,
+                                                    SettingsScreen::class.java
                                                 )
                                                 startActivity(intent)
                                             }

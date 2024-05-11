@@ -2,4 +2,5 @@
     <string name="app_name">NurAlign</string>
     <string name="title_activity_sleep_tracker_screen">SleepTrackerScreen</string>
     <string name="title_activity_medication_tracker_screen">MedicationTrackerScreen</string>
+    <string name="title_activity_settings_screen">SettingsScreen</string>
 </resources>
