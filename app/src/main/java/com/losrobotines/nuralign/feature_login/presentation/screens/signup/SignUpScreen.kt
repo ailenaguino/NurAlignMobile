@@ -76,12 +76,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.losrobotines.nuralign.feature_login.presentation.screens.home.Home
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import com.losrobotines.nuralign.home.HomeScreen
 
 @AndroidEntryPoint
 class SignUpScreen : ComponentActivity() {
@@ -346,7 +346,7 @@ class SignUpScreen : ComponentActivity() {
 
                 is LoginState.Success -> {
                     LaunchedEffect(Unit) {
-                        val intent = Intent(contextAplication, Home::class.java)
+                        val intent = Intent(contextAplication, HomeScreen::class.java)
                         startActivity(intent)
                         finish()
                     }
