@@ -1,25 +1,23 @@
-package com.losrobotines.nuralign.feature_medication.presentation.screens
+package com.losrobotines.nuralign.feature_therapy.presentation.screens
 
+
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
@@ -40,17 +38,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.shared.SharedComponents
+import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+import dagger.hilt.android.AndroidEntryPoint
 
-class AddMedicationScreen : ComponentActivity() {
+@AndroidEntryPoint
+class AddTherapistScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -60,7 +59,7 @@ class AddMedicationScreen : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NewMedScreen()
+                    AddATherapistScreen()
                 }
             }
         }
@@ -68,8 +67,8 @@ class AddMedicationScreen : ComponentActivity() {
 }
 
 @Composable
-fun NewMedScreen() {
-    SharedComponents().HalfCircleTop(title = "Agregar nueva medicación")
+private fun AddATherapistScreen() {
+    SharedComponents().HalfCircleTop(title = "Agregar terapeuta")
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -77,102 +76,115 @@ fun NewMedScreen() {
     ) {
         item {
             Spacer(modifier = Modifier.height(130.dp))
-            NewMedElement()
+            TherapistNameInput()
         }
-
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            TherapistEmailInput()
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            TherapistPhoneInput()
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            WeeklyOrNo()
+            Divider(color = secondaryColor, thickness = 2.dp)
+        }
         item {
             Spacer(modifier = Modifier.height(8.dp))
             SharedComponents().SelectDayButtons()
         }
-
         item {
-            Spacer(modifier = Modifier.height(8.dp))
-            Optional()
-            Divider(color = secondaryColor, thickness = 2.dp)
+            Spacer(modifier = Modifier.height(24.dp))
+            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
+                SaveButton()
+            }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(32.dp))
-            AddIcon()
-        }
     }
 }
 
 @Composable
-fun NewMedElement() {
-    var medicationName by remember { mutableStateOf("") }
-    var medicationDose by remember { mutableStateOf("") }
+private fun TherapistNameInput() {
+    var therapistName by remember { mutableStateOf("") }
 
-    Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
-
-        Box(
-            contentAlignment = Alignment.CenterStart,
+    Box {
+        OutlinedTextField(
+            value = therapistName,
+            onValueChange = { therapistName = it },
             modifier = Modifier
-                .weight(0.7f)
-                .padding(horizontal = 4.dp)
-        ) {
-            OutlinedTextField(
-                value = medicationName,
-                onValueChange = { medicationName = it },
-                modifier = Modifier
-                    .height(80.dp)
-                    .width(250.dp),
-                shape = RoundedCornerShape(20.dp),
-                singleLine = true,
-                label = { Text("Nombre", color = secondaryColor) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = secondaryColor,
-                    unfocusedBorderColor = secondaryColor
-                )
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+            shape = RoundedCornerShape(35.dp),
+            label = { Text("Nombre del terapeuta", color = secondaryColor) },
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = secondaryColor,
+                unfocusedBorderColor = secondaryColor
             )
-        }
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-                .weight(0.3f)
-                .padding(horizontal = 4.dp)
-        ) {
-            OutlinedTextField(
-                value = medicationDose,
-                onValueChange = { medicationDose = it },
-                modifier = Modifier
-                    .height(80.dp)
-                    .width(250.dp),
-                shape = RoundedCornerShape(20.dp),
-                singleLine = true,
-                label = { Text("Dosis", color = secondaryColor) },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = secondaryColor,
-                    unfocusedBorderColor = secondaryColor
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun AddIcon() {
-    Box(contentAlignment = Alignment.Center) {
-        Icon(
-            Icons.Filled.Add,
-            tint = secondaryColor,
-            contentDescription = "agregar",
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .align(Alignment.TopStart)
-                .clickable { /*TODO*/ }
         )
     }
+
 }
 
-@Preview
+
 @Composable
-fun Optional(){
-    Row(horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically){
-        Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.weight(0.7f)){
-            Text(text = "Opcional", color = secondaryColor, fontSize = 16.sp)
+private fun TherapistEmailInput() {
+    var therapistEmail by remember { mutableStateOf("") }
+
+    Box {
+        OutlinedTextField(
+            value = therapistEmail,
+            onValueChange = { therapistEmail = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+            shape = RoundedCornerShape(35.dp),
+            label = { Text("Email del terapeuta", color = secondaryColor) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = secondaryColor,
+                unfocusedBorderColor = secondaryColor
+            )
+        )
+    }
+
+}
+
+@Composable
+private fun TherapistPhoneInput() {
+    var therapistPhone by remember { mutableStateOf("") }
+
+    Box {
+        OutlinedTextField(
+            value = therapistPhone,
+            onValueChange = { therapistPhone = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+            shape = RoundedCornerShape(35.dp),
+            label = { Text("Teléfono del terapeuta", color = secondaryColor) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = secondaryColor,
+                unfocusedBorderColor = secondaryColor
+            )
+        )
+    }
+
+}
+
+@Composable
+private fun WeeklyOrNo() {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.weight(0.7f)) {
+            Text(text = "¿Es semanal?", color = secondaryColor, fontSize = 16.sp)
         }
 
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
@@ -208,3 +220,17 @@ fun Optional(){
     }
 
 }
+
+@Composable
+private fun SaveButton() {
+    val context = LocalContext.current
+    Button(
+        onClick = {
+            context.startActivity(Intent(context, TherapyTrackerScreen::class.java))
+        },
+        colors = ButtonDefaults.buttonColors(containerColor = mainColor)
+    ) {
+        Text(text = "Guardar")
+    }
+}
+

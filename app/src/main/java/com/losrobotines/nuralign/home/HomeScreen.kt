@@ -40,6 +40,7 @@ import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreen
 import com.losrobotines.nuralign.feature_settings.presentation.screens.SettingsScreen
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreen
 
 
 class HomeScreen : ComponentActivity() {
@@ -73,6 +74,7 @@ class HomeScreen : ComponentActivity() {
         ) {
             Text(
                 text = "¡Bienvenido Roberto!",
+                color = Color.White,
                 fontSize = 25.sp,
                 modifier = Modifier
                     .padding(top = 43.dp)
@@ -140,6 +142,13 @@ class HomeScreen : ComponentActivity() {
                                                 val intent = Intent(
                                                     content,
                                                     SleepTrackerScreen::class.java
+                                                )
+                                                startActivity(intent)
+                                            }
+                                            3 -> {
+                                                val intent = Intent(
+                                                    content,
+                                                    AddTherapistScreen::class.java
                                                 )
                                                 startActivity(intent)
                                             }
