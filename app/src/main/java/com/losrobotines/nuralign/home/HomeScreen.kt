@@ -38,6 +38,7 @@ import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedi
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreen
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreen
 
 
 class HomeScreen : ComponentActivity() {
@@ -118,11 +119,10 @@ class HomeScreen : ComponentActivity() {
                                     .size(90.dp)
                                     .clickable {
                                         when (nameIndex) {
-
-                                            2 -> {
+                                            0 -> {
                                                 val intent = Intent(
                                                     content,
-                                                    SleepTrackerScreen::class.java
+                                                    MoodTrackerScreen::class.java
                                                 )
                                                 startActivity(intent)
                                             }
@@ -134,6 +134,15 @@ class HomeScreen : ComponentActivity() {
                                                 )
                                                 startActivity(intent)
                                             }
+
+                                            2 -> {
+                                                val intent = Intent(
+                                                    content,
+                                                    SleepTrackerScreen::class.java
+                                                )
+                                                startActivity(intent)
+                                            }
+
                                         }
                                         /*
                                         when (nameIndex) {

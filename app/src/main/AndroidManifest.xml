@@ -36,6 +36,7 @@
             android:label="SignUpScreen"
             android:theme="@style/Theme.NurAlign" />
         <activity android:name=".home.HomeScreen" />
+        <activity android:name=".feature_mood_tracker_presentation_screens.MoodTrackerScreen" />
         <activity
             android:name=".feature_login.presentation.screens.login.LoginScreen"
             android:exported="true"
