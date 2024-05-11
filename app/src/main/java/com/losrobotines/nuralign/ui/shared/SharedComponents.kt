@@ -3,7 +3,9 @@ package com.losrobotines.nuralign.ui.shared
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -28,7 +30,7 @@ class SharedComponents {
             painter = painterResource(id = R.drawable.fondo),
             contentDescription = "Fondo",
             alignment = Alignment.TopCenter,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         )
         Box(
             modifier = Modifier.fillMaxWidth(),
