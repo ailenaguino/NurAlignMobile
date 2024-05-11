@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
-import com.losrobotines.nuralign.feature_login.presentation.screens.home.Home
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreen
 import com.losrobotines.nuralign.home.HomeScreen
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
