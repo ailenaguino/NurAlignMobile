@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreen
 import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreen
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreen
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
@@ -140,6 +141,13 @@ class HomeScreen : ComponentActivity() {
                                                 val intent = Intent(
                                                     content,
                                                     SleepTrackerScreen::class.java
+                                                )
+                                                startActivity(intent)
+                                            }
+                                            6 -> {
+                                                val intent = Intent(
+                                                    content,
+                                                    AchievementsScreen::class.java
                                                 )
                                                 startActivity(intent)
                                             }
