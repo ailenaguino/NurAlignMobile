@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -40,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.ui.shared.SharedComponents
@@ -66,43 +70,41 @@ class AddTherapistScreen : ComponentActivity() {
     }
 }
 
+@Preview
 @Composable
 private fun AddATherapistScreen() {
-    SharedComponents().HalfCircleTop(title = "Agregar terapeuta")
-    LazyColumn(
+
+    LazyVerticalGrid(columns = GridCells.Fixed(1),) {
+    item{SharedComponents().HalfCircleTop(title = "Agregar terapeuta")}
+    item{Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(16.dp, 0.dp)
     ) {
-        item {
-            Spacer(modifier = Modifier.height(130.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             TherapistNameInput()
-        }
-        item {
+
             Spacer(modifier = Modifier.height(8.dp))
             TherapistEmailInput()
-        }
-        item {
+
             Spacer(modifier = Modifier.height(8.dp))
             TherapistPhoneInput()
-        }
-        item {
+
             Spacer(modifier = Modifier.height(8.dp))
             WeeklyOrNo()
             Divider(color = secondaryColor, thickness = 2.dp)
-        }
-        item {
+
             Spacer(modifier = Modifier.height(8.dp))
             SharedComponents().SelectDayButtons()
-        }
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
-            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxSize()) {
                 SaveButton()
-            }
+
         }
 
-    }
+    }}
+}
 }
 
 @Composable
