@@ -24,6 +24,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.losrobotines.nuralign.navigation.Routes
 
 data class BottomNavigationItemContent(
     val title: String,
@@ -35,6 +37,7 @@ data class BottomNavigationItemContent(
 @Composable
 fun BottomNavigationBar(
     screenContent: @Composable () -> Unit,
+    navController:  NavController
 ) {
     val context = LocalContext.current.applicationContext
 
@@ -73,28 +76,22 @@ fun BottomNavigationBar(
                 BottomNavigationItem(
                     selected = bottomNavState == index,
                     onClick = {
-                        /*
+
                         when (item.title) {
                             "Asistencia" -> {
-                                val intent = Intent(context, Estado::class.java)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(intent)
+                                navController.navigate(Routes.SleepTrackerScreen.route)
                             }
 
                             "Inicio" -> {
-                                val intent = Intent(context, HomeScreen::class.java)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(intent)
+                                navController.navigate(Routes.HomeScreen.route)
                             }
 
                             "Ajustes" -> {
-                                val intent = Intent(context, Medicacion::class.java)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(intent)
+                                navController.navigate(Routes.SettingsScreen.route)
                             }
                         }
 
-                         */
+
                     },
                     icon = {
                         Image(
@@ -114,6 +111,5 @@ fun BottomNavigationBar(
             }
         }
     }
-
     screenContent()
 }
