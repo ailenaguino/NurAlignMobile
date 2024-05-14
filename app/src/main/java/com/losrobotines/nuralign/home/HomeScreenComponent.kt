@@ -28,34 +28,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @Composable
 fun HomeScreenComponent(navController: NavController) {
     val context = LocalContext.current.applicationContext
-    Image(
-        painter = painterResource(id = R.drawable.fondo),
-        contentDescription = "Fondo",
-        alignment = Alignment.TopCenter,
-        modifier = Modifier.fillMaxWidth()
-    )
+    SharedComponents().HalfCircleTop(title = "Bienvenido Carlos")
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(top = 80.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "¡Bienvenido Roberto!",
-            color = Color.White,
-            fontSize = 25.sp,
-            modifier = Modifier
-                .padding(top = 43.dp)
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
-                .clickable {
-
-                }
-        )
         val nombres = listOf(
             "Estados de\n   ánimo",
             "Medicación",
@@ -79,7 +63,7 @@ fun HomeScreenComponent(navController: NavController) {
                 repeat(3) { imageIndex ->
                     val nameIndex = rowIndex * 3 + imageIndex
                     Spacer(modifier = Modifier.width(5.dp))
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
                         val imageName = nombres.getOrElse(nameIndex) { "" }
                         Log.d(
                             "Antes de haces clik",

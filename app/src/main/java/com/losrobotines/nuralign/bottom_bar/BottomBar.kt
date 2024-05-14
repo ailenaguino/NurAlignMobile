@@ -1,9 +1,9 @@
 package com.losrobotines.nuralign.bottom_bar
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -20,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 
@@ -47,7 +49,7 @@ sealed class Destinations(
     )
 
     @Composable
-    fun BottomBarInternet(
+    fun BottomBarNavigation(
         navController: NavHostController,
         state: MutableState<Boolean>,
         modifier: Modifier = Modifier
@@ -58,29 +60,32 @@ sealed class Destinations(
 
         NavigationBar(
             modifier = modifier,
-            containerColor = secondaryColor,
+            containerColor = mainColor,
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
             screens.forEach { screen ->
-
                 NavigationBarItem(
-                    label = {
-                        Text(text = screen.title)
-                    },
                     icon = {
                         Image(
                             painter = painterResource(id = screen.icon),
                             contentDescription = screen.title,
                             modifier = Modifier
-                                .size(50.dp)
-                                .padding(top = 10.dp, end = 5.dp),
-                            //     alignment = Alignment.Center, colorFilter = ColorFilter.tint(
-                            //       mainColor
-                            //)
+                                .size(45.dp)
+                                .padding(end = 5.dp)
+                                .align(Alignment.CenterVertically)
+                                .background(Color.Transparent) // Cambia el color de fondo aquí,
                         )
                     },
+                    /*label = {
+                        Text(
+                            text = screen.title,
+                            modifier = Modifier.padding(top = 69.dp, end = 5.dp)
+                        )
+                    },
+
+                     */
                     selected = currentRoute == screen.route,
                     onClick = {
                         navController.navigate(screen.route) {
@@ -89,12 +94,16 @@ sealed class Destinations(
                             }
                             launchSingleTop = true
                             restoreState = true
+                            navController.navigate(Destinations.Home.route)
                         }
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        unselectedTextColor = Color.Gray, selectedTextColor = Color.White
+                        indicatorColor = secondaryColor,
+                        selectedIconColor = Color.White,
+                        unselectedTextColor = Color.White
                     ),
-                )
+
+                    )
             }
         }
     }

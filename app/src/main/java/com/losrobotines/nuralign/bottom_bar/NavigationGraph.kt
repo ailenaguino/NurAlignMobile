@@ -9,6 +9,7 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginV
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_settings.presentation.screens.SettingsScreen
 import com.losrobotines.nuralign.home.HomeScreenComponent
+import com.losrobotines.nuralign.navigation.Routes
 
 @Composable
 fun NavigationGraph(
@@ -23,9 +24,7 @@ fun NavigationGraph(
             )
         }
         composable(Destinations.Home.route) {
-            HomeScreenComponent(
-                navController
-            )
+          HomeScreenComponent(navController)
         }
         composable(Destinations.Configuracion.route) {
             SettingsScreen(

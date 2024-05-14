@@ -58,6 +58,7 @@ import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
@@ -74,14 +75,8 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
 
     val loginFlow = viewModel.loginFlow.collectAsState()
 
-    Image(
-        painterResource(id = R.drawable.fondo),
-        contentDescription = "fondo",
-        alignment = Alignment.TopCenter,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
 
+    SharedComponents().HalfCircleTop(title = "")
     Column(
         modifier = Modifier
             .fillMaxSize()
