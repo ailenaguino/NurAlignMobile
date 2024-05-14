@@ -1,8 +1,10 @@
 package com.losrobotines.nuralign.feature_sleep.presentation.screens
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -35,7 +37,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,8 +53,11 @@ import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlin.math.roundToInt
 import com.losrobotines.nuralign.ui.shared.SharedComponents
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class SleepTrackerScreen : ComponentActivity() {
+@AndroidEntryPoint
+class SleepTrackerScreen @Inject constructor() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -62,7 +67,8 @@ class SleepTrackerScreen : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SleepScreen()
+                    val sleepViewModel by viewModels<SleepViewModel>()
+                    SleepScreen(sleepViewModel)
                 }
             }
         }
@@ -70,7 +76,10 @@ class SleepTrackerScreen : ComponentActivity() {
 }
 
 @Composable
-fun SleepScreen() {
+fun SleepScreen(viewModel: SleepViewModel) {
+
+    val sliderPosition: Float by viewModel.sliderPosition.observeAsState(0f)
+
     SharedComponents().HalfCircleTop("Seguimiento del sueño")
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -79,7 +88,7 @@ fun SleepScreen() {
     ) {
         item {
             Spacer(modifier = Modifier.height(110.dp))
-            SliderHour()
+            SliderHour(sliderPosition) { viewModel.onSliderChanged(it) }
             Spacer(modifier = Modifier.height(24.dp))
         }
 
@@ -110,17 +119,15 @@ fun SleepScreen() {
 
         item {
             Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
-                SaveButton()
+                SaveButton(sliderPosition) { viewModel.retrieveData(it) }
             }
         }
 
     }
 }
 
-@Preview
 @Composable
-fun SliderHour() {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+fun SliderHour(sliderPosition: Float, onSliderChanged:(Float) -> Unit) {
 
     Column {
         Box(
@@ -159,7 +166,7 @@ fun SliderHour() {
             }
             Slider(
                 value = sliderPosition,
-                onValueChange = { sliderPosition = it.roundToInt().toFloat() },
+                onValueChange = {onSliderChanged(it.roundToInt().toFloat())},
                 steps = 24,
                 valueRange = 0f..24f,
                 colors = SliderDefaults.colors(
@@ -264,11 +271,10 @@ fun AdditionalNotes() {
     )
 }
 
-@Preview
 @Composable
-fun SaveButton() {
+fun SaveButton(sliderPosition: Float, retrieveData:(Float) -> Unit) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { retrieveData(sliderPosition) },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor)
     ) {
         Text(text = "Guardar")
