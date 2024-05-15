@@ -79,6 +79,8 @@ dependencies {
 
     //Ktorm
     implementation("org.ktorm:ktorm-core:4.0.0")
+    implementation("org.ktorm:ktorm-support-mysql:4.0.0")
+    implementation ("org.mariadb.jdbc:mariadb-java-client:2.1.2")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
