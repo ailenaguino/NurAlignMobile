@@ -2,21 +2,17 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="SleepTrackerScreen">
+        <State />
+      </entry>
+      <entry key="SliderHour">
+        <State />
+      </entry>
+      <entry key="SliderMinimalExample">
+        <State />
+      </entry>
       <entry key="app">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="LMX430V8NBSKAAPJ8D" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-06T00:45:58.891153800Z" />
-        </State>
+        <State />
       </entry>
     </value>
   </component>

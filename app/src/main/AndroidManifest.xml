@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".NurAlignApp"
@@ -15,29 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NurAlign"
         tools:targetApi="31">
+
+
+
+
         <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.NurAlign"/>
-        <activity android:name=".feature_login.presentation.screens.home.Home" />
-        <activity
-            android:name=".feature_login.presentation.screens.signup.SignUpScreen"
-            android:exported="false"
-            android:label="SignUpScreen"
-            android:theme="@style/Theme.NurAlign" />
-        <activity android:name=".home.HomeScreen" />
-        <activity
-            android:name=".feature_login.presentation.screens.login.LoginScreen"
+            android:name=".navigation.MainActivity"
             android:exported="true"
-            android:label="LoginScreen"
-            android:theme="@style/Theme.NurAlign">
+            android:theme="@style/Theme.NurAlign" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
     </application>
 
 </manifest>

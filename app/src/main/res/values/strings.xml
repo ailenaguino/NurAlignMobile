@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NurAlign</string>
+    <string name="title_activity_sleep_tracker_screen">SleepTrackerScreen</string>
+    <string name="title_activity_medication_tracker_screen">MedicationTrackerScreen</string>
+    <string name="title_activity_settings_screen">SettingsScreen</string>
+    <string name="title_activity_add_therapist_screen">AddTherapistScreen</string>
+    <string name="title_activity_therapy_tracker_screen">TherapyTrackerScreen</string>
+    <string name="title_activity_achievements_screen">AchievementsScreen</string>
 </resources>
