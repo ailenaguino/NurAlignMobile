@@ -46,31 +46,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlin.math.roundToInt
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 
-class SleepTrackerScreen : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NurAlignTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    SleepScreen()
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun SleepScreen() {
+fun SleepScreen(navController: NavController,) {
     SharedComponents().HalfCircleTop("Seguimiento del sueño")
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
