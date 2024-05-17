@@ -166,7 +166,7 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
 
             Spacer(modifier = Modifier.height(55.dp))
 
-            SignUpScreenButton(navController,contextAplication)
+            SignUpScreenButton(navController)
 
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -206,7 +206,7 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
 }
 
 @Composable
-fun SignUpScreenButton(navController: NavController,contextApplication: Context) {
+fun SignUpScreenButton(navController: NavController) {
     TextButton(
         onClick = {
             navController.navigate(Routes.SignUpScreen.route)

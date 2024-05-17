@@ -46,7 +46,7 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 
 @Composable
- fun AddATherapistScreen(navController: NavController) {
+ fun AddTherapistScreenComponent(navController: NavController) {
 
     LazyVerticalGrid(columns = GridCells.Fixed(1),) {
     item{SharedComponents().HalfCircleTop(title = "Agregar terapeuta")}

@@ -42,7 +42,7 @@ import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @Composable
-fun MoodTrackerScreen(navController: NavController) {
+fun MoodTrackerScreenComponent(navController: NavController) {
     val context = LocalContext.current.applicationContext
     SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
 

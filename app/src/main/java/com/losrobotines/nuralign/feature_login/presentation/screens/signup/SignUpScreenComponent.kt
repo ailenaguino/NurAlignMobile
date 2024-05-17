@@ -91,8 +91,6 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
     val userBirthDate by remember { mutableStateOf("") }
     var userSex by remember { mutableStateOf("Seleccione su sexo") }
 
-    val contextAplication = LocalContext.current.applicationContext
-
     val signupFlow = viewModel.signupFlow.collectAsState()
 
     SharedComponents().HalfCircleTop(title = "")

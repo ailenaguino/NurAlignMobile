@@ -1,7 +1,6 @@
-package com.losrobotines.nuralign.feature_settings.presentation.screens
+package com.losrobotines.nuralign.feature_settings.presentation.screens.settings
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -47,8 +46,7 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @SuppressLint("PrivateResource", "NotConstructor")
 @Composable
-fun SettingsScreen(navigationController: NavHostController, viewModel: LoginViewModel) {
-    val context = LocalContext.current.applicationContext
+fun SettingsScreenComponent(navigationController: NavHostController, viewModel: LoginViewModel) {
     Image(
         painterResource(id = R.drawable.fondo),
         contentDescription = "fondo",

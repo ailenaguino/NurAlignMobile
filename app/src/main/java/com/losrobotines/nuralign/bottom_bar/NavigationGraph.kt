@@ -4,12 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreen
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
-import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
-import com.losrobotines.nuralign.feature_settings.presentation.screens.SettingsScreen
+import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.home.HomeScreenComponent
-import com.losrobotines.nuralign.navigation.Routes
 
 @Composable
 fun NavigationGraph(
@@ -19,7 +17,7 @@ fun NavigationGraph(
 
     NavHost(navController, startDestination = Destinations.Home.route) {
         composable(Destinations.Asistencia.route) {
-            AchievementsScreen(
+            AchievementsScreenComponent(
                 navController
             )
         }
@@ -27,7 +25,7 @@ fun NavigationGraph(
           HomeScreenComponent(navController)
         }
         composable(Destinations.Configuracion.route) {
-            SettingsScreen(
+            SettingsScreenComponent(
                 navController,
                 loginViewModel
             )
