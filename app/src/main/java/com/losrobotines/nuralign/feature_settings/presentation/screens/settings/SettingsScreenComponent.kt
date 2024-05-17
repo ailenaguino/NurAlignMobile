@@ -1,10 +1,8 @@
 package com.losrobotines.nuralign.feature_settings.presentation.screens.settings
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,17 +27,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
@@ -47,60 +43,49 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 @SuppressLint("PrivateResource", "NotConstructor")
 @Composable
 fun SettingsScreenComponent(navigationController: NavHostController, viewModel: LoginViewModel) {
-    Image(
-        painterResource(id = R.drawable.fondo),
-        contentDescription = "fondo",
-        alignment = Alignment.TopCenter,
-        modifier = Modifier
-            .fillMaxSize()
-    )
+    SharedComponents().HalfCircleTop("Ajustes")
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(start = 15.dp, end = 15.dp)
     ) {
         item {
-            Column(
+            Spacer(modifier = Modifier.height(200.dp))
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
             ) {
-                Spacer(modifier = Modifier.height(200.dp))
-                Box(
+                Text(
+                    "Notificaciones", style = TextStyle(
+                        fontSize = 30.sp,
+                        fontFamily = FontFamily.Default,
+                        color = secondaryColor
+
+                    )
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+                Divider(
+                    color = secondaryColor,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
-                ) {
-                    Text(
-                        "Notificaciones", style = TextStyle(
-                            fontSize = 30.sp,
-                            fontFamily = FontFamily.Default,
-                            color = secondaryColor
-
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(40.dp))
-                    Divider(
-                        color = secondaryColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(3.dp)
-                            .align(Alignment.BottomCenter)
-                    )
-                }
+                        .height(3.dp)
+                        .align(Alignment.BottomCenter)
+                )
             }
         }
+
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
                     .fillMaxWidth()
+                    .padding(15.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.CenterStart,
                     modifier = Modifier
                         .weight(0.8f)
-                        .padding(start = 5.dp)
                 ) {
                     Text(
                         "Mostrar notificaciones generales",
@@ -143,11 +128,58 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                 }
             }
         }
+
+        item {
+            Spacer(modifier = Modifier.height(40.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
+            ) {
+                Text(
+                    "Datos Personales", style = TextStyle(
+                        fontSize = 30.sp,
+                        fontFamily = FontFamily.Default,
+                        color = secondaryColor
+
+                    )
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+                Divider(
+                    color = secondaryColor,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(3.dp)
+                        .align(Alignment.BottomCenter)
+                )
+            }
+        }
+
         item {
             Row(
                 verticalAlignment = Alignment.Bottom,
                 modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp, top = 350.dp)
+                    .fillMaxWidth()
+                    .padding(15.dp)
+            ) {
+                Text(
+                    text = "Editar datos personales",
+                    color = secondaryColor,
+                    //fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.clickable {
+                        navigationController.navigate(Routes.PersonalInformationScreen.route)
+                    }
+                )
+
+            }
+        }
+
+        item {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 200.dp)
                     .fillMaxWidth()
             ) {
                 Text(

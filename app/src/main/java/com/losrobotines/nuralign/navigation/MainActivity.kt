@@ -30,6 +30,7 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignU
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreenComponent
+import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
@@ -75,7 +76,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) {
-                        NavigationGraphAplication(
+                        NavigationGraphApplication(
                             navController = navController,
                             loginViewModel = loginViewModel,
                             signUpViewModel = signUpViewModel,
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavigationGraphAplication(
+fun NavigationGraphApplication(
     navController: NavHostController,
     loginViewModel: LoginViewModel,
     signUpViewModel: SignUpViewModel,
@@ -129,6 +130,9 @@ fun NavigationGraphAplication(
         }
         composable(Routes.SettingsScreen.route) {
             SettingsScreenComponent(navController, loginViewModel)
+        }
+        composable(Routes.PersonalInformationScreen.route) {
+            PersonalInformationScreenComponent(navController)
         }
     }
 }
