@@ -22,18 +22,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.losrobotines.nuralign.bottom_bar.Destinations.Home.BottomBarNavigation
-import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreen
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
-import com.losrobotines.nuralign.feature_medication.presentation.screens.NewMedScreen
-import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreen
-import com.losrobotines.nuralign.feature_settings.presentation.screens.SettingsScreen
-import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepScreen
-import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddATherapistScreen
-import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyScreen
+import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
+import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreenComponent
+import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
+import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
+import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
 import com.losrobotines.nuralign.home.HomeScreenComponent
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,7 +76,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) {
-                        NavigationGraphAplication(
+                        NavigationGraphApplication(
                             navController = navController,
                             loginViewModel = loginViewModel,
                             signUpViewModel = signUpViewModel,
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavigationGraphAplication(
+fun NavigationGraphApplication(
     navController: NavHostController,
     loginViewModel: LoginViewModel,
     signUpViewModel: SignUpViewModel,
@@ -110,25 +111,28 @@ fun NavigationGraphAplication(
             HomeScreenComponent(navController)
         }
         composable(Routes.MoodTrackerScreen.route) {
-            MoodTrackerScreen(navController)
+            MoodTrackerScreenComponent(navController)
         }
         composable(Routes.AddMedicationScreen.route) {
-            NewMedScreen(navController)
+            AddMedicationScreenComponent(navController)
         }
         composable(Routes.SleepTrackerScreen.route) {
-            SleepScreen(navController)
+            SleepTrackerScreenComponent(navController)
         }
         composable(Routes.TherapyTrackerScreen.route) {
-            TherapyScreen(navController)
+            TherapyTrackerScreenComponent(navController)
         }
         composable(Routes.AddTherapyScreen.route) {
-            AddATherapistScreen(navController)
+            AddTherapistScreenComponent(navController)
         }
         composable(Routes.AchievementsScreen.route) {
-            AchievementsScreen(navController)
+            AchievementsScreenComponent(navController)
         }
         composable(Routes.SettingsScreen.route) {
-            SettingsScreen(navController, loginViewModel)
+            SettingsScreenComponent(navController, loginViewModel)
+        }
+        composable(Routes.PersonalInformationScreen.route) {
+            PersonalInformationScreenComponent(navController)
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens
 
-import android.content.Intent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +40,7 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 
 @Composable
- fun TherapyScreen(navController: NavController) {
+fun TherapyTrackerScreenComponent(navController: NavController) {
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item { SharedComponents().HalfCircleTop(title = "Seguimiento de terapia") }
         item {
@@ -158,7 +157,7 @@ private fun TherapistElement() {
 }
 
 
-@Preview
+//@Preview
 @Composable
 private fun AddNewTherapistButton(navController: NavController) {
     val context = LocalContext.current
