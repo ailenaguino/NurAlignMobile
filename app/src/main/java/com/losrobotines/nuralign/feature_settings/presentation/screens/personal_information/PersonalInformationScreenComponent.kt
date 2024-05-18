@@ -4,17 +4,21 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,17 +58,15 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PersonalInformationScreenComponent(navigationController: NavHostController) {
-    SharedComponents().HalfCircleTop("Ajustes")
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp, 0.dp)
-    ) {
+    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
-            Spacer(modifier = Modifier.height(110.dp))
-            Box(
+            SharedComponents().HalfCircleTop("Ajustes")
+        }
+        item {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp)
             ) {
                 Text(
                     text = "Mis datos personales", style = TextStyle(
@@ -73,38 +75,42 @@ fun PersonalInformationScreenComponent(navigationController: NavHostController) 
                         color = secondaryColor
                     )
                 )
-                Spacer(modifier = Modifier.height(40.dp))
                 Divider(
                     color = secondaryColor,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(3.dp)
-                        .align(Alignment.BottomCenter)
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Field(string = "Nombre")
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Field(string = "Apellido")
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Field(string = "Apodo")
+                Spacer(modifier = Modifier.height(20.dp))
+
+                BirthDate()
+                Spacer(modifier = Modifier.height(20.dp))
+
+                SelectSexDropMenu()
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Box(
+                    contentAlignment = Alignment.BottomEnd,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = {  },
+                        colors = ButtonDefaults.buttonColors(containerColor = mainColor)
+                    ) {
+                        Text(text = "Guardar")
+                    }
+                }
             }
         }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            Field(string = "Nombre")
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            Field(string = "Apellido")
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            Field(string = "Apodo")
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            BirthDate()
-
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            SelectSexDropMenu()
-        }
-
     }
 }
 
