@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,7 +30,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,58 +47,57 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlin.math.roundToInt
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 
+
 @Composable
-fun SleepTrackerScreenComponent(navController: NavController) {
-    SharedComponents().HalfCircleTop("Seguimiento del sueño")
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp, 0.dp)
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(110.dp))
-            SliderHour()
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: SleepViewModel) {
+    val sliderPosition: Float by sleepViewModel.sliderPosition.observeAsState(0f)
 
+    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
-            QuestionGoToSleep()
-            Spacer(modifier = Modifier.height(8.dp))
+            SharedComponents().HalfCircleTop("Seguimiento del sueño")
         }
-
-        item {
-            QuestionGeneral(q = "¿Tuviste pensamientos negativos?")
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        item {
-            QuestionGeneral(q = "¿Estuviste ansioso antes de dormir?")
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            QuestionGeneral(q = "¿Dormiste de corrido?")
-            Spacer(modifier = Modifier.height(8.dp))
-
-        }
-
-        item {
-            AdditionalNotes()
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
-                SaveButton()
+        item{
+            Box(modifier = Modifier.padding(top=8.dp)) {
+                SharedComponents().CompanionTextBalloon("¡Buen día! ¿Cómo pasaste la noche?")
             }
         }
+        item {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(16.dp, 0.dp)
+            ) {
+                SliderHour(sliderPosition) { sleepViewModel.onSliderChanged(it) }
+                Spacer(modifier = Modifier.height(24.dp))
 
+                QuestionGoToSleep()
+                Spacer(modifier = Modifier.height(8.dp))
+
+                QuestionGeneral(q = "¿Tuviste pensamientos negativos?")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                QuestionGeneral(q = "¿Estuviste ansioso antes de dormir?")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                QuestionGeneral(q = "¿Dormiste de corrido?")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                AdditionalNotes()
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box(
+                    contentAlignment = Alignment.BottomEnd,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    SaveButton(sliderPosition) { sleepViewModel.retrieveData(it) }
+                }
+            }
+        }
     }
 }
 
-@Preview
 @Composable
-fun SliderHour() {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+fun SliderHour(sliderPosition: Float, onSliderChanged: (Float) -> Unit) {
 
     Column {
         Box(
@@ -116,7 +116,10 @@ fun SliderHour() {
                 .padding(16.dp, 16.dp, 16.dp, 0.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.weight(3.3f)) {
+                Box(
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier.weight(3.3f)
+                ) {
                     Text(text = "0", color = secondaryColor)
                 }
                 Box(
@@ -136,7 +139,7 @@ fun SliderHour() {
             }
             Slider(
                 value = sliderPosition,
-                onValueChange = { sliderPosition = it.roundToInt().toFloat() },
+                onValueChange = { onSliderChanged(it.roundToInt().toFloat()) },
                 steps = 24,
                 valueRange = 0f..24f,
                 colors = SliderDefaults.colors(
@@ -158,13 +161,17 @@ fun QuestionGoToSleep() {
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.weight(0.7f)) {
-            Text(text = "¿A qué hora te fuiste a dormir?", fontSize = 16.sp, color = secondaryColor)
+            Text(
+                text = "¿A qué hora te fuiste a dormir?",
+                fontSize = 16.sp,
+                color = secondaryColor
+            )
         }
 
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
             OutlinedTextField(
                 value = hour,
-                onValueChange = { hour = it },
+                onValueChange = {hour = it},
                 modifier = Modifier
                     .height(50.dp)
                     .width(75.dp),
@@ -229,7 +236,13 @@ fun AdditionalNotes() {
     OutlinedTextField(
         value = text,
         onValueChange = { text = it },
-        label = { Text("Notas adicionales", color = secondaryColor, textAlign = TextAlign.Center) },
+        label = {
+            Text(
+                "Notas adicionales",
+                color = secondaryColor,
+                textAlign = TextAlign.Center
+            )
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp),
@@ -241,11 +254,10 @@ fun AdditionalNotes() {
     )
 }
 
-@Preview
 @Composable
-fun SaveButton() {
+fun SaveButton(sliderPosition: Float, retrieveData: (Float) -> Unit) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { retrieveData(sliderPosition) },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor)
     ) {
         Text(text = "Guardar")

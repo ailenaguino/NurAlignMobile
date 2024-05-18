@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.bottom_bar
+package com.losrobotines.nuralign.ui.bottom_bar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -55,7 +54,7 @@ sealed class Destinations(
         modifier: Modifier = Modifier
     ) {
         val screens = listOf(
-            Destinations.Asistencia, Destinations.Home, Destinations.Configuracion
+            Asistencia, Home, Configuracion
         )
 
         NavigationBar(
@@ -75,7 +74,7 @@ sealed class Destinations(
                                 .size(45.dp)
                                 .padding(end = 5.dp)
                                 .align(Alignment.CenterVertically)
-                                .background(Color.Transparent) // Cambia el color de fondo aquí,
+                                .background(Color.Transparent)
                         )
                     },
                     /*label = {
@@ -94,7 +93,7 @@ sealed class Destinations(
                             }
                             launchSingleTop = true
                             restoreState = true
-                            navController.navigate(Destinations.Home.route)
+                            navController.navigate(Home.route)
                         }
                     },
                     colors = NavigationBarItemDefaults.colors(

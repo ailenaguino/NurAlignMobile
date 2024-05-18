@@ -1,10 +1,12 @@
 package com.losrobotines.nuralign.ui.shared
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
@@ -20,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+import kotlinx.coroutines.delay
 
 class SharedComponents {
 
@@ -52,7 +58,7 @@ class SharedComponents {
             modifier = Modifier.fillMaxWidth(),
             Alignment.TopCenter
         ) {
-            Icon(
+            /*Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 tint = Color.White,
                 contentDescription = "ir atrás",
@@ -61,7 +67,7 @@ class SharedComponents {
                     .padding(8.dp)
                     .align(Alignment.TopStart)
                     .clickable { }
-            )
+            )*/
             Text(
                 text = title,
                 fontSize = 25.sp,
@@ -107,5 +113,67 @@ class SharedComponents {
                 }
             }
         }
+    }
+
+    @Composable
+    fun CompanionTextBalloon(text: String) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp)
+                .background(
+                    Color.LightGray,
+                    RoundedCornerShape(32.dp)
+                )
+        ) {
+            Box(modifier = Modifier.weight(0.8f).padding(horizontal = 16.dp, vertical = 8.dp)) {
+                TypewriterText(texts = listOf(text))
+            }
+            Box(modifier = Modifier.weight(0.2f)) {
+                Image(
+                    painterResource(id = R.drawable.robotin_bebe),
+                    contentDescription = "Fondo",
+                    modifier = Modifier
+                        .size(85.dp)
+                        .padding(end = 1.dp, start = 4.dp)
+                )
+            }
+        }
+    }
+
+
+    @Composable
+    fun TypewriterText(
+        texts: List<String>,
+    ) {
+        var textIndex by remember {
+            mutableStateOf(0)
+        }
+        var textToDisplay by remember {
+            mutableStateOf("")
+        }
+
+        LaunchedEffect(
+            key1 = texts,
+        ) {
+            while (textIndex < texts.size) {
+                texts[textIndex].forEachIndexed { charIndex, _ ->
+                    textToDisplay = texts[textIndex]
+                        .substring(
+                            startIndex = 0,
+                            endIndex = charIndex + 1,
+                        )
+                    delay(100)
+                }
+                textIndex = (textIndex + 1) % texts.size
+                delay(1000)
+            }
+        }
+
+        Text(
+            text = textToDisplay,
+            fontSize = 24.sp,
+            color = secondaryColor
+        )
     }
 }
