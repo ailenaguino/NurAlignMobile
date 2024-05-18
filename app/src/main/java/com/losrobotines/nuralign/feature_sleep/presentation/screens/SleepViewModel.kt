@@ -32,7 +32,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
         viewModelScope.launch {
             sleepRepository.saveSleepData(
                 SleepInfo(
-                    4,
+                    1,
                     getDate(),
                     hoursSlept.toInt().toShort(),
                     1,
@@ -46,7 +46,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
     }
 
     private fun getDate(): String {
-        val formatter = SimpleDateFormat("yyyy/MM/dd")
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
         val date = Date()
         return formatter.format(date)
     }
