@@ -30,7 +30,7 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignU
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
-import com.losrobotines.nuralign.feature_mood_tracker_presentation_screens.MoodTrackerScreenComponent
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
