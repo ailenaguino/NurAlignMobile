@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.losrobotines.nuralign.feature_login.data.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.domain.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
+import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import dagger.Module
 import dagger.Provides
@@ -28,16 +29,22 @@ object AppModule {
     fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
 
     @Provides
-    fun provideSleepRepository(): SleepRepository {
-        return SleepRepositoryImpl()
-    }
-
-    @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit
             .Builder()
-            .baseUrl("https://newastro.vercel.app/")
+            .baseUrl("http://77.37.69.38:8081/")
             .build()
+    }
+
+
+    //SLEEP TRACKER
+    @Provides
+    fun provideSleepApiService(retrofit: Retrofit):SleepApiService{
+        return retrofit.create(SleepApiService::class.java)
+    }
+    @Provides
+    fun provideSleepRepository(sleepApiService: SleepApiService): SleepRepository {
+        return SleepRepositoryImpl(sleepApiService)
     }
 }
