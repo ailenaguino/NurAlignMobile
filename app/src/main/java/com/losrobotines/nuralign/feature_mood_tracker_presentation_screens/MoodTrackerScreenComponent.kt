@@ -1,13 +1,7 @@
 package com.losrobotines.nuralign.feature_mood_tracker_presentation_screens
 
-import android.content.Context
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.ui.platform.LocalContext
-import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,10 +19,8 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,84 +33,65 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
-import com.losrobotines.nuralign.home.BottomNavigationBar
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
-class MoodTrackerScreen : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NurAlignTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.fillMaxSize()
+@Composable
+fun MoodTrackerScreenComponent(navController: NavController) {
+    val context = LocalContext.current.applicationContext
+    SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        robotin()
+
+        linea()
+
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item {
+                animoDeprimido()
+            }
+            item {
+                animoElevado()
+            }
+            item {
+                animoIrritable()
+            }
+            item {
+                animoAnsioso()
+            }
+            /*
+            item {
+                Spacer(modifier = Modifier.height(50.dp))
+                Button(
+                    onClick = {
+                    },
+                    modifier = Modifier
+                        .padding(start = 280.dp)
+                        .padding(vertical = 36.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = secondaryColor,
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(15.dp)
                 ) {
-                    val context = LocalContext.current.applicationContext
-
-                    BottomNavigationBar {
-                        screenMoodTracker(context = context)
-                    }
+                    Text("Guardar")
                 }
+                Spacer(modifier = Modifier.height(100.dp))
             }
-        }
-    }
-
-    @Composable
-    private fun screenMoodTracker(context: Context) {
-        SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            robotin()
-
-            linea()
-
-            Spacer(modifier = Modifier.height(10.dp))
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                item {
-                    animoDeprimido()
-                }
-                item {
-                    animoElevado()
-                }
-                item {
-                    animoIrritable()
-                }
-                item {
-                    animoAnsioso()
-                }
-                /*
-                item {
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Button(
-                        onClick = {
-                        },
-                        modifier = Modifier
-                            .padding(start = 280.dp)
-                            .padding(vertical = 36.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = secondaryColor,
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(15.dp)
-                    ) {
-                        Text("Guardar")
-                    }
-                    Spacer(modifier = Modifier.height(100.dp))
-                }
-                 */
-            }
+             */
         }
     }
 }
 
+
 @Composable
-private fun MoodTrackerScreen.animoDeprimido() {
+private fun animoDeprimido() {
     Spacer(modifier = Modifier.height(10.dp))
     val colors = listOf(
         Color(0xff9ebadc),
@@ -137,7 +110,7 @@ private fun MoodTrackerScreen.animoDeprimido() {
 }
 
 @Composable
-private fun MoodTrackerScreen.animoElevado() {
+private fun animoElevado() {
     Spacer(modifier = Modifier.height(20.dp))
     val colors = listOf(
         Color(0xff91c776),
@@ -156,7 +129,7 @@ private fun MoodTrackerScreen.animoElevado() {
 }
 
 @Composable
-private fun MoodTrackerScreen.animoIrritable() {
+private fun animoIrritable() {
     Spacer(modifier = Modifier.height(20.dp))
     val colors = listOf(
         Color(0xffdec278),
@@ -175,7 +148,7 @@ private fun MoodTrackerScreen.animoIrritable() {
 }
 
 @Composable
-private fun MoodTrackerScreen.animoAnsioso() {
+private fun animoAnsioso() {
     Spacer(modifier = Modifier.height(20.dp))
     val colores = listOf(
         Color(0xffc381ba),

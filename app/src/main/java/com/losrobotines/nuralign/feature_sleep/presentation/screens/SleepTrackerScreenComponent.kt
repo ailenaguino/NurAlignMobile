@@ -1,23 +1,19 @@
 package com.losrobotines.nuralign.feature_sleep.presentation.screens
 
-import android.os.Bundle
-import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,12 +22,10 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -48,27 +42,49 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.losrobotines.nuralign.ui.theme.NurAlignTheme
+import androidx.navigation.NavController
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlin.math.roundToInt
 import com.losrobotines.nuralign.ui.shared.SharedComponents
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class SleepTrackerScreen @Inject constructor() : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NurAlignTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+@Composable
+fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: SleepViewModel) {
+    val sliderPosition: Float by sleepViewModel.sliderPosition.observeAsState(0f)
+
+    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+        item {
+            SharedComponents().HalfCircleTop("Seguimiento del sueño")
+        }
+        item {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(16.dp, 0.dp)
+            ) {
+                SliderHour(sliderPosition) { sleepViewModel.onSliderChanged(it) }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                QuestionGoToSleep()
+                Spacer(modifier = Modifier.height(8.dp))
+
+                QuestionGeneral(q = "¿Tuviste pensamientos negativos?")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                QuestionGeneral(q = "¿Estuviste ansioso antes de dormir?")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                QuestionGeneral(q = "¿Dormiste de corrido?")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                AdditionalNotes()
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box(
+                    contentAlignment = Alignment.BottomEnd,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    val sleepViewModel by viewModels<SleepViewModel>()
-                    SleepScreen(sleepViewModel)
+                    SaveButton(sliderPosition) { sleepViewModel.retrieveData(it) }
                 }
             }
         }
@@ -76,58 +92,7 @@ class SleepTrackerScreen @Inject constructor() : ComponentActivity() {
 }
 
 @Composable
-fun SleepScreen(viewModel: SleepViewModel) {
-
-    val sliderPosition: Float by viewModel.sliderPosition.observeAsState(0f)
-
-    SharedComponents().HalfCircleTop("Seguimiento del sueño")
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp, 0.dp)
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(110.dp))
-            SliderHour(sliderPosition) { viewModel.onSliderChanged(it) }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        item {
-            QuestionGoToSleep()
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            QuestionGeneral(q = "¿Tuviste pensamientos negativos?")
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        item {
-            QuestionGeneral(q = "¿Estuviste ansioso antes de dormir?")
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            QuestionGeneral(q = "¿Dormiste de corrido?")
-            Spacer(modifier = Modifier.height(8.dp))
-
-        }
-
-        item {
-            AdditionalNotes()
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
-                SaveButton(sliderPosition) { viewModel.retrieveData(it) }
-            }
-        }
-
-    }
-}
-
-@Composable
-fun SliderHour(sliderPosition: Float, onSliderChanged:(Float) -> Unit) {
+fun SliderHour(sliderPosition: Float, onSliderChanged: (Float) -> Unit) {
 
     Column {
         Box(
@@ -146,7 +111,10 @@ fun SliderHour(sliderPosition: Float, onSliderChanged:(Float) -> Unit) {
                 .padding(16.dp, 16.dp, 16.dp, 0.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.weight(3.3f)) {
+                Box(
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier.weight(3.3f)
+                ) {
                     Text(text = "0", color = secondaryColor)
                 }
                 Box(
@@ -166,7 +134,7 @@ fun SliderHour(sliderPosition: Float, onSliderChanged:(Float) -> Unit) {
             }
             Slider(
                 value = sliderPosition,
-                onValueChange = {onSliderChanged(it.roundToInt().toFloat())},
+                onValueChange = { onSliderChanged(it.roundToInt().toFloat()) },
                 steps = 24,
                 valueRange = 0f..24f,
                 colors = SliderDefaults.colors(
@@ -188,7 +156,11 @@ fun QuestionGoToSleep() {
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.weight(0.7f)) {
-            Text(text = "¿A qué hora te fuiste a dormir?", fontSize = 16.sp, color = secondaryColor)
+            Text(
+                text = "¿A qué hora te fuiste a dormir?",
+                fontSize = 16.sp,
+                color = secondaryColor
+            )
         }
 
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
@@ -259,7 +231,13 @@ fun AdditionalNotes() {
     OutlinedTextField(
         value = text,
         onValueChange = { text = it },
-        label = { Text("Notas adicionales", color = secondaryColor, textAlign = TextAlign.Center) },
+        label = {
+            Text(
+                "Notas adicionales",
+                color = secondaryColor,
+                textAlign = TextAlign.Center
+            )
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp),
@@ -272,7 +250,7 @@ fun AdditionalNotes() {
 }
 
 @Composable
-fun SaveButton(sliderPosition: Float, retrieveData:(Float) -> Unit) {
+fun SaveButton(sliderPosition: Float, retrieveData: (Float) -> Unit) {
     Button(
         onClick = { retrieveData(sliderPosition) },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor)

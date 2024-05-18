@@ -56,6 +56,8 @@ dependencies {
 
     //Dagger
     implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     // For instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
@@ -81,6 +83,11 @@ dependencies {
     implementation("org.ktorm:ktorm-core:4.0.0")
     implementation("org.ktorm:ktorm-support-mysql:4.0.0")
     implementation ("org.mariadb.jdbc:mariadb-java-client:2.1.2")
+
+    //Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")

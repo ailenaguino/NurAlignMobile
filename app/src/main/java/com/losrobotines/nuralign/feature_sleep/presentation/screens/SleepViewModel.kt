@@ -29,11 +29,10 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
     }
 
     fun retrieveData(hoursSlept: Float) {
-        Log.i("slider value", "${hoursSlept.toInt()}")
         viewModelScope.launch {
             sleepRepository.saveSleepData(
                 SleepInfo(
-                    1,
+                    4,
                     getDate(),
                     hoursSlept.toInt().toShort(),
                     1,
