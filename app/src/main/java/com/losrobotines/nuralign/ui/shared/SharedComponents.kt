@@ -58,7 +58,7 @@ class SharedComponents {
             modifier = Modifier.fillMaxWidth(),
             Alignment.TopCenter
         ) {
-            Icon(
+            /*Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 tint = Color.White,
                 contentDescription = "ir atrás",
@@ -67,7 +67,7 @@ class SharedComponents {
                     .padding(8.dp)
                     .align(Alignment.TopStart)
                     .clickable { }
-            )
+            )*/
             Text(
                 text = title,
                 fontSize = 25.sp,

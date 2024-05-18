@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +47,7 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlin.math.roundToInt
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 
+
 @Composable
 fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: SleepViewModel) {
     val sliderPosition: Float by sleepViewModel.sliderPosition.observeAsState(0f)
@@ -55,6 +55,11 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
             SharedComponents().HalfCircleTop("Seguimiento del sueño")
+        }
+        item{
+            Box(modifier = Modifier.padding(top=8.dp)) {
+                SharedComponents().CompanionTextBalloon("¡Buen día! ¿Cómo pasaste la noche?")
+            }
         }
         item {
             Column(
@@ -166,7 +171,7 @@ fun QuestionGoToSleep() {
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
             OutlinedTextField(
                 value = hour,
-                onValueChange = { hour = it },
+                onValueChange = {hour = it},
                 modifier = Modifier
                     .height(50.dp)
                     .width(75.dp),

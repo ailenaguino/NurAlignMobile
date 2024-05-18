@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
-import com.losrobotines.nuralign.feature_home.HomeScreenComponent
+import com.losrobotines.nuralign.feature_home.presentation.HomeScreenComponent
 
 @Composable
 fun NavigationGraph(
