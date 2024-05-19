@@ -1,7 +1,6 @@
-package com.losrobotines.nuralign.feature_mood_tracker_presentation_screens
+package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,12 +18,13 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,55 +43,55 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @Composable
 fun MoodTrackerScreenComponent(navController: NavController) {
-    val context = LocalContext.current.applicationContext
-    SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        robotin()
-
-        linea()
-
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item {
-                animoDeprimido()
-            }
-            item {
-                animoElevado()
-            }
-            item {
-                animoIrritable()
-            }
-            item {
-                animoAnsioso()
-            }
-            /*
-            item {
-                Spacer(modifier = Modifier.height(50.dp))
-                Button(
-                    onClick = {
-                    },
-                    modifier = Modifier
-                        .padding(start = 280.dp)
-                        .padding(vertical = 36.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = secondaryColor,
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(15.dp)
-                ) {
-                    Text("Guardar")
-                }
-                Spacer(modifier = Modifier.height(100.dp))
-            }
-             */
+    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+        item {
+            SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
         }
+        item {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Robotin()
+                Linea()
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+        item {
+            AnimoDeprimido()
+        }
+        item {
+            AnimoElevado()
+        }
+        item {
+            AnimoIrritable()
+        }
+        item {
+            AnimoAnsioso()
+        }
+        /*
+        item {
+            Spacer(modifier = Modifier.height(50.dp))
+            Button(
+                onClick = {
+                },
+                modifier = Modifier
+                    .padding(start = 280.dp)
+                    .padding(vertical = 36.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = secondaryColor,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(15.dp)
+            ) {
+                Text("Guardar")
+            }
+            Spacer(modifier = Modifier.height(100.dp))
+        }
+         */
     }
 }
 
 
 @Composable
-private fun animoDeprimido() {
+private fun AnimoDeprimido() {
     Spacer(modifier = Modifier.height(10.dp))
     val colors = listOf(
         Color(0xff9ebadc),
@@ -100,7 +100,7 @@ private fun animoDeprimido() {
         Color(0xff1b477c),
         Color(0xff001e41)
     )
-    selectAnimo(
+    SelectAnimo(
         "Animo más deprimido",
         modifier = Modifier.fillMaxWidth(),
         iconResId = R.drawable.animo_deprimido_additional_note_icon,
@@ -110,7 +110,7 @@ private fun animoDeprimido() {
 }
 
 @Composable
-private fun animoElevado() {
+private fun AnimoElevado() {
     Spacer(modifier = Modifier.height(20.dp))
     val colors = listOf(
         Color(0xff91c776),
@@ -119,7 +119,7 @@ private fun animoElevado() {
         Color(0xff29630e),
         Color(0xff144000)
     )
-    selectAnimo(
+    SelectAnimo(
         "Ánimo más elevado",
         modifier = Modifier.fillMaxWidth(),
         iconResId = R.drawable.animo_elevado_additional_note_icon,
@@ -129,7 +129,7 @@ private fun animoElevado() {
 }
 
 @Composable
-private fun animoIrritable() {
+private fun AnimoIrritable() {
     Spacer(modifier = Modifier.height(20.dp))
     val colors = listOf(
         Color(0xffdec278),
@@ -138,7 +138,7 @@ private fun animoIrritable() {
         Color(0xff5f4b18),
         Color(0xff402e00)
     )
-    selectAnimo(
+    SelectAnimo(
         "Ánimo más irritable",
         modifier = Modifier.fillMaxWidth(),
         iconResId = R.drawable.animo_irritable_additional_note_icon,
@@ -148,7 +148,7 @@ private fun animoIrritable() {
 }
 
 @Composable
-private fun animoAnsioso() {
+private fun AnimoAnsioso() {
     Spacer(modifier = Modifier.height(20.dp))
     val colores = listOf(
         Color(0xffc381ba),
@@ -157,7 +157,7 @@ private fun animoAnsioso() {
         Color(0xff732166),
         Color(0xff400036)
     )
-    selectAnimo(
+    SelectAnimo(
         "Ánimo más ansioso",
         modifier = Modifier.fillMaxWidth(),
         iconResId = R.drawable.animo_ansioso_additional_note_icon,
@@ -167,7 +167,7 @@ private fun animoAnsioso() {
 }
 
 @Composable
-fun linea() {
+fun Linea() {
     val lineaModifier = Modifier
         .fillMaxWidth()
         .height(4.dp)
@@ -193,14 +193,14 @@ fun linea() {
 }
 
 @Composable
-fun selectAnimo(
+fun SelectAnimo(
     title: String,
     modifier: Modifier,
     iconResId: Int,
     iconContentDescription: String,
     colors: List<Color>
 ) {
-    var selectedBox by remember { mutableStateOf(-1) }
+    var selectedBox by remember { mutableIntStateOf(-1) }
     val labels = listOf("Nulo", "Leve", "Moderado", "Alto", "Severo")
 
     Box(
@@ -271,14 +271,14 @@ fun selectAnimo(
 }
 
 @Composable
-private fun robotin() {
+private fun Robotin() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 start = 20.dp,
                 end = 20.dp,
-                top = 150.dp
+                top = 20.dp
             )
             .background(
                 Color.LightGray,
