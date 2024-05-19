@@ -2,7 +2,8 @@ package com.losrobotines.nuralign.feature_login.domain.providers
 
 import com.losrobotines.nuralign.feature_login.domain.models.PatientInfo
 
-interface SignUpProvider{
+interface PatientProvider{
 
-    suspend fun savePatientData(patientInfo: PatientInfo)
+    suspend fun savePatientData(patientInfo: PatientInfo):Short
+
 }

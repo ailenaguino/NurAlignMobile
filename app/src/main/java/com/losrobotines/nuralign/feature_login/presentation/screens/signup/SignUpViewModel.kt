@@ -1,12 +1,10 @@
 package com.losrobotines.nuralign.feature_login.presentation.screens.signup
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_login.domain.providers.SignUpProvider
 import com.losrobotines.nuralign.feature_login.domain.models.PatientInfo
 import com.losrobotines.nuralign.feature_login.domain.usecases.PreparePatientDataToBeSavedUseCase
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
@@ -14,14 +12,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val repository: AuthRepository,
-    private val preparePatientData: PreparePatientDataToBeSavedUseCase
+    private val preparePatientDataToBeSavedUseCase: PreparePatientDataToBeSavedUseCase
 ) : ViewModel() {
 
     private val _signupFlow = MutableStateFlow<LoginState<FirebaseUser>?>(null)
@@ -34,7 +30,7 @@ class SignUpViewModel @Inject constructor(
             _signupFlow.value = LoginState.Loading
             _signupFlow.value = repository.signup(email, password)
             if (_signupFlow.value is LoginState.Success) {
-                preparePatientData(PatientInfo(
+                preparePatientDataToBeSavedUseCase(PatientInfo(
                     email, password, firstName, lastName, birthDate, sex, firstName
                 ))
             }

@@ -3,9 +3,9 @@ package com.losrobotines.nuralign.di
 import com.google.firebase.auth.FirebaseAuth
 import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
 import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
-import com.losrobotines.nuralign.feature_login.data.providers.SignUpProviderImpl
+import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_login.domain.providers.SignUpProvider
+import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
 import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
@@ -25,7 +25,9 @@ object AppModule {
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Provides
-    fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
+    fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth)
+    }
 
     @Provides
     @Singleton
@@ -43,8 +45,8 @@ object AppModule {
         return retrofit.create(PatientApiService::class.java)
     }
     @Provides
-    fun provideSignUpProvider(patientApiService: PatientApiService): SignUpProvider{
-        return SignUpProviderImpl(patientApiService)
+    fun providePatientProvider(patientApiService: PatientApiService): PatientProvider{
+        return PatientProviderImpl(patientApiService)
     }
 
     //SLEEP TRACKER

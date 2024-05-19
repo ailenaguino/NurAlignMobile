@@ -1,9 +1,13 @@
 package com.losrobotines.nuralign.feature_sleep.presentation.screens
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,30 +17,34 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepository) :
+class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepository,
+                                         private val authRepository: AuthRepository) :
     ViewModel() {
 
-    private val _sliderPosition = MutableLiveData<Float>()
+    private val _sliderPosition = MutableLiveData(0F)
     var sliderPosition: LiveData<Float> = _sliderPosition
 
     fun onSliderChanged(sliderValue: Float) {
         _sliderPosition.value = sliderValue
     }
 
-    fun saveData(hoursSlept: Float) {
-        viewModelScope.launch {
-            sleepRepository.saveSleepData(
-                SleepInfo(
-                    1,
-                    getDate(),
-                    hoursSlept.toInt().toShort(),
-                    1,
-                    "N",
-                    "N",
-                    "N",
-                    ""
+    fun saveData() {
+        if(currentUserExists()) {
+            getPatentId()
+            viewModelScope.launch {
+                sleepRepository.saveSleepData(
+                    SleepInfo(
+                        1,
+                        getDate(),
+                        _sliderPosition.value!!.toInt().toShort(),
+                        1,
+                        "N",
+                        "N",
+                        "N",
+                        ""
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -44,6 +52,27 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         val date = Date()
         return formatter.format(date)
+    }
+
+    private fun getPatentId(){
+        val uid = authRepository.currentUser!!.uid
+        val doc = Firebase.firestore.collection("users").document(uid)
+        doc.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    Log.d("Firestore", "DocumentSnapshot data: ${document.data}")
+                } else {
+                    Log.d("Firestore", "No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("Firestore", "get failed with ", exception)
+            }
+
+    }
+
+    private fun currentUserExists():Boolean{
+        return authRepository.currentUser != null
     }
 
 }

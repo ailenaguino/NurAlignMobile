@@ -73,6 +73,9 @@ dependencies {
     //Auth
     implementation("com.google.firebase:firebase-auth")
 
+    //Firestore
+    implementation("com.google.firebase:firebase-firestore")
+
     //BottonNavigation
     implementation ("androidx.compose.material:material:1.6.7")
 
