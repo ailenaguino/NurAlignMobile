@@ -3,13 +3,17 @@ package com.losrobotines.nuralign.feature_medication.presentation.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -41,31 +45,28 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @Composable
 fun AddMedicationScreenComponent(navController: NavController) {
-    SharedComponents().HalfCircleTop(title = "Agregar nueva medicación")
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp, 0.dp)
-    ) {
+    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
-            Spacer(modifier = Modifier.height(130.dp))
-            AddMedicationElement()
+            SharedComponents().HalfCircleTop(title = "Agregar nueva medicación")
         }
-
         item {
-            Spacer(modifier = Modifier.height(8.dp))
-            SharedComponents().SelectDayButtons()
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                AddMedicationElement()
+                Spacer(modifier = Modifier.height(8.dp))
 
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-            Optional()
-            Divider(color = secondaryColor, thickness = 2.dp)
-        }
+                SharedComponents().SelectDayButtons()
+                Spacer(modifier = Modifier.height(8.dp))
 
-        item {
-            Spacer(modifier = Modifier.height(32.dp))
-            AddIcon()
+                Optional()
+                Divider(color = secondaryColor, thickness = 2.dp)
+
+                Spacer(modifier = Modifier.height(32.dp))
+                AddIcon()
+            }
         }
     }
 }
@@ -125,7 +126,7 @@ fun AddMedicationElement() {
 
 @Composable
 fun AddIcon() {
-    Box(contentAlignment = Alignment.Center) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
         Icon(
             Icons.Filled.Add,
             tint = secondaryColor,
@@ -133,7 +134,7 @@ fun AddIcon() {
             modifier = Modifier
                 .size(50.dp)
                 .padding(8.dp)
-                .align(Alignment.TopStart)
+                .align(Alignment.TopCenter)
                 .clickable { /*TODO*/ }
         )
     }
@@ -141,9 +142,12 @@ fun AddIcon() {
 
 @Preview
 @Composable
-fun Optional(){
-    Row(horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically){
-        Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.weight(0.7f)){
+fun Optional() {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.weight(0.7f)) {
             Text(text = "Opcional", color = secondaryColor, fontSize = 16.sp)
         }
 
