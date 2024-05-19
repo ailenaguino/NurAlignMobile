@@ -88,7 +88,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var userFirstName by remember { mutableStateOf("") }
     var userLastName by remember { mutableStateOf("") }
-    val userBirthDate by remember { mutableStateOf("") }
+    var userBirthDate by remember { mutableStateOf("") }
     var userSex by remember { mutableStateOf("Seleccione su sexo") }
 
     val signupFlow = viewModel.signupFlow.collectAsState()
@@ -236,7 +236,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            SelectBirthday()
+            userBirthDate = SelectBirthday()
 
             Spacer(modifier = Modifier.height(13.dp))
 
@@ -320,7 +320,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SelectBirthday() {
+fun SelectBirthday(): String {
     val date = remember { mutableStateOf("") }
     val isOpen = remember { mutableStateOf(false) }
 
@@ -374,6 +374,7 @@ fun SelectBirthday() {
             }
         )
     }
+    return date.value
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

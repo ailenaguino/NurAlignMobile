@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_login.domain
+package com.losrobotines.nuralign.feature_login.domain.providers
 
 import com.google.firebase.auth.FirebaseUser
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState

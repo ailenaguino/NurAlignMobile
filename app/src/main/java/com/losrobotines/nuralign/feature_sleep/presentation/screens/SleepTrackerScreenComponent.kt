@@ -89,7 +89,7 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
                     contentAlignment = Alignment.BottomEnd,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    SaveButton(sliderPosition) { sleepViewModel.retrieveData(it) }
+                    SaveButton(sliderPosition) { sleepViewModel.saveData(it) }
                 }
             }
         }
