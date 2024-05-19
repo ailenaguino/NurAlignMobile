@@ -3,6 +3,7 @@ package com.losrobotines.nuralign.feature_settings.presentation.screens.settings
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -43,145 +45,114 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 @SuppressLint("PrivateResource", "NotConstructor")
 @Composable
 fun SettingsScreenComponent(navigationController: NavHostController, viewModel: LoginViewModel) {
-    SharedComponents().HalfCircleTop("Ajustes")
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 15.dp, end = 15.dp)
-    ) {
+    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
-            Spacer(modifier = Modifier.height(200.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
-            ) {
-                Text(
-                    "Notificaciones", style = TextStyle(
-                        fontSize = 30.sp,
-                        fontFamily = FontFamily.Default,
-                        color = secondaryColor
-
-                    )
-                )
-                Spacer(modifier = Modifier.height(40.dp))
-                Divider(
-                    color = secondaryColor,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(3.dp)
-                        .align(Alignment.BottomCenter)
-                )
-            }
+            SharedComponents().HalfCircleTop("Ajustes")
         }
-
         item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(15.dp)
             ) {
                 Box(
-                    contentAlignment = Alignment.CenterStart,
                     modifier = Modifier
-                        .weight(0.8f)
+                        .fillMaxWidth()
                 ) {
                     Text(
-                        "Mostrar notificaciones generales",
-                        color = secondaryColor,
-                        fontSize = 16.sp,
-                    )
-                }
-                Box(
-                    contentAlignment = Alignment.CenterEnd,
-                    modifier = Modifier.weight(0.2f)
-                ) {
-                    var checked by remember { mutableStateOf(false) }
-                    Switch(
-                        checked = checked,
-                        onCheckedChange = {
-                            checked = it
-                        },
-                        thumbContent = if (checked) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = "si",
-                                    tint = secondaryColor,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        } else {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Clear,
-                                    contentDescription = "no",
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedTrackColor = mainColor
+                        "Notificaciones", style = TextStyle(
+                            fontSize = 30.sp,
+                            fontFamily = FontFamily.Default,
+                            color = secondaryColor
                         )
                     )
+                    Divider(
+                        color = secondaryColor,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(3.dp)
+                            .align(Alignment.BottomCenter)
+                    )
                 }
-            }
-        }
+                Spacer(modifier = Modifier.height(10.dp))
 
-        item {
-            Spacer(modifier = Modifier.height(40.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
-            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier
+                            .weight(0.8f)
+                    ) {
+                        Text(
+                            "Mostrar notificaciones generales",
+                            color = secondaryColor,
+                            fontSize = 16.sp,
+                        )
+                    }
+                    Box(
+                        contentAlignment = Alignment.CenterEnd,
+                        modifier = Modifier.weight(0.2f)
+                    ) {
+                        var checked by remember { mutableStateOf(false) }
+                        Switch(
+                            checked = checked,
+                            onCheckedChange = {
+                                checked = it
+                            },
+                            thumbContent = if (checked) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = "si",
+                                        tint = secondaryColor,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            } else {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Clear,
+                                        contentDescription = "no",
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = mainColor
+                            )
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(50.dp))
+
                 Text(
                     "Datos Personales", style = TextStyle(
                         fontSize = 30.sp,
                         fontFamily = FontFamily.Default,
                         color = secondaryColor
-
                     )
                 )
-                Spacer(modifier = Modifier.height(40.dp))
                 Divider(
                     color = secondaryColor,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(3.dp)
-                        .align(Alignment.BottomCenter)
                 )
-            }
-        }
+                Spacer(modifier = Modifier.height(10.dp))
 
-        item {
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp)
-            ) {
                 Text(
                     text = "Editar datos personales",
                     color = secondaryColor,
-                    //fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
                         navigationController.navigate(Routes.PersonalInformationScreen.route)
                     }
                 )
+                Spacer(modifier = Modifier.height(200.dp))
 
-            }
-        }
-
-        item {
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp, top = 200.dp)
-                    .fillMaxWidth()
-            ) {
                 Text(
                     text = "Cerrar sesión",
                     color = Color.Red,
