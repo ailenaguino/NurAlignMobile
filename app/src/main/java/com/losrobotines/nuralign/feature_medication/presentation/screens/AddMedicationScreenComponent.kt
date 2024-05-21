@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -61,12 +63,8 @@ fun AddMedicationScreenComponent(navController: NavController) {
         ) {
             items(medicationCount.size) {
                 MedicationRow()
-                Text(medicationCount[it].toString())
                 if (medicationCount.size > 0) {
                     RemoveIcon(onClick = {
-                        //Log.i("index line:", medicationCount[it].toString())
-                        //borrar medicationCount[it]
-                        //medicationCount.remove(it)
                         medicationCount.removeAt(it)
                     })
                 }
@@ -75,6 +73,16 @@ fun AddMedicationScreenComponent(navController: NavController) {
                 AddIcon(onClick = {
                     medicationCount.add(medicationCount.size + 1)
                 })
+            }
+            item {
+                if (medicationCount.size > 0) {
+                    Box(
+                        contentAlignment = Alignment.BottomEnd,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        SaveButton()
+                    }
+                }
             }
         }
     }
@@ -221,4 +229,14 @@ fun MedicationRow() {
 
     Optional()
     Divider(color = secondaryColor, thickness = 2.dp)
+}
+
+@Composable
+fun SaveButton() {
+    Button(
+        onClick = { /*TODO*/ },
+        colors = ButtonDefaults.buttonColors(containerColor = mainColor)
+    ) {
+        Text(text = "Guardar")
+    }
 }
