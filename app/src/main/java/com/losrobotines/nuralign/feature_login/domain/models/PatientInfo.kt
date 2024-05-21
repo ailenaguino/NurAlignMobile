@@ -7,5 +7,7 @@ data class PatientInfo(
     val lastName: String,
     var birthDate: String,
     var sex: String,
-    val nickname: String
+    val nickname: String,
+    val generalNotifications: String,
+    val companionNotifications: String
 )

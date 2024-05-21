@@ -7,7 +7,9 @@ data class PatientDto(
     @SerializedName("password") val password: String,
     @SerializedName("name") val firstName: String,
     @SerializedName("lastName") val lastName: String,
-    @SerializedName("birthdate") val birtDate: String,
+    @SerializedName("birthdate") val birthDate: String,
     @SerializedName("sex") val sex: String,
-    @SerializedName("nickname") val nickname: String
+    @SerializedName("nickname") val nickname: String,
+    @SerializedName("generalNotifications") val generalNotifications: String,
+    @SerializedName("companionNotifications") val companionNotifications: String
 )

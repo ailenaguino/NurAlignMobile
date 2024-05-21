@@ -31,7 +31,7 @@ class SignUpViewModel @Inject constructor(
             _signupFlow.value = repository.signup(email, password)
             if (_signupFlow.value is LoginState.Success) {
                 preparePatientDataToBeSavedUseCase(PatientInfo(
-                    email, password, firstName, lastName, birthDate, sex, firstName
+                    email, password, firstName, lastName, birthDate, sex, firstName, "Y", "Y"
                 ))
             }
         }

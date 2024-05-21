@@ -5,8 +5,8 @@ import javax.inject.Inject
 class FormatSexUseCase @Inject constructor(){
     operator fun invoke(sex: String): String {
         return when(sex){
-            "Femenino" -> "F"
-            "Masculino" -> "M"
+            "Femenino" -> "FEMALE"
+            "Masculino" -> "MALE"
             else -> "X"
         }
     }

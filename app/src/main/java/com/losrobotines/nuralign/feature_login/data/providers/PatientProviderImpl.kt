@@ -24,9 +24,11 @@ class PatientProviderImpl @Inject constructor(private val apiService: PatientApi
             password = patientInfo.password,
             firstName = patientInfo.firstName,
             lastName = patientInfo.lastName,
-            birtDate = patientInfo.birthDate,
+            birthDate = patientInfo.birthDate,
             sex = patientInfo.sex,
-            nickname = patientInfo.nickname
+            nickname = patientInfo.nickname,
+            generalNotifications = patientInfo.generalNotifications,
+            companionNotifications = patientInfo.companionNotifications
         )
     }
 }
