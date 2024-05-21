@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_sleep.data.models
+package com.losrobotines.nuralign.feature_sleep.data.dto
 
 import com.google.gson.annotations.SerializedName
 

@@ -89,7 +89,7 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
                     contentAlignment = Alignment.BottomEnd,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    SaveButton(sliderPosition) { sleepViewModel.retrieveData(it) }
+                    SaveButton() { sleepViewModel.saveData() }
                 }
             }
         }
@@ -255,9 +255,9 @@ fun AdditionalNotes() {
 }
 
 @Composable
-fun SaveButton(sliderPosition: Float, retrieveData: (Float) -> Unit) {
+fun SaveButton(saveData: () -> Unit) {
     Button(
-        onClick = { retrieveData(sliderPosition) },
+        onClick = { saveData() },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor)
     ) {
         Text(text = "Guardar")
