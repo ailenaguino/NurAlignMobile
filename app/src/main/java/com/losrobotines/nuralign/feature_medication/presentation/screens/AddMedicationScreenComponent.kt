@@ -20,6 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -29,6 +32,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,32 +49,46 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @Composable
 fun AddMedicationScreenComponent(navController: NavController) {
-    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-        item {
-            SharedComponents().HalfCircleTop(title = "Agregar nueva medicación")
+    val medicationCount = remember { mutableStateListOf<Int>() }
+    Column {
+        LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+            item {
+                SharedComponents().HalfCircleTop(title = "Agregar nueva medicación")
+            }
         }
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                AddMedicationElement()
-                Spacer(modifier = Modifier.height(8.dp))
-
-                SharedComponents().SelectDayButtons()
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Optional()
-                Divider(color = secondaryColor, thickness = 2.dp)
-
-                Spacer(modifier = Modifier.height(32.dp))
-                AddIcon()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            items(medicationCount.size) {
+                MedicationRow()
+                if (medicationCount.size > 0) {
+                    RemoveIcon(onClick = {
+                        medicationCount.removeAt(it)
+                    })
+                }
+            }
+            item {
+                AddIcon(onClick = {
+                    medicationCount.add(medicationCount.size + 1)
+                })
+            }
+            item {
+                if (medicationCount.size > 0) {
+                    Box(
+                        contentAlignment = Alignment.BottomEnd,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        SaveButton()
+                    }
+                }
             }
         }
     }
 }
 
+@Preview
 @Composable
 fun AddMedicationElement() {
     var medicationName by remember { mutableStateOf("") }
@@ -125,7 +143,7 @@ fun AddMedicationElement() {
 }
 
 @Composable
-fun AddIcon() {
+fun AddIcon(onClick: () -> Unit = {}) {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
         Icon(
             Icons.Filled.Add,
@@ -135,7 +153,24 @@ fun AddIcon() {
                 .size(50.dp)
                 .padding(8.dp)
                 .align(Alignment.TopCenter)
-                .clickable { /*TODO*/ }
+                .clickable { onClick() }
+        )
+    }
+    Spacer(modifier = Modifier.height(32.dp))
+}
+
+@Composable
+fun RemoveIcon(onClick: () -> Unit = {}) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+        Icon(
+            Icons.Filled.Remove,
+            tint = secondaryColor,
+            contentDescription = "quitar",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(8.dp)
+                .align(Alignment.TopCenter)
+                .clickable { onClick() }
         )
     }
 }
@@ -182,5 +217,26 @@ fun Optional() {
             )
         }
     }
+}
 
+@Composable
+fun MedicationRow() {
+    AddMedicationElement()
+    Spacer(modifier = Modifier.height(8.dp))
+
+    SharedComponents().SelectDayButtons()
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Optional()
+    Divider(color = secondaryColor, thickness = 2.dp)
+}
+
+@Composable
+fun SaveButton() {
+    Button(
+        onClick = { /*TODO*/ },
+        colors = ButtonDefaults.buttonColors(containerColor = mainColor)
+    ) {
+        Text(text = "Guardar")
+    }
 }

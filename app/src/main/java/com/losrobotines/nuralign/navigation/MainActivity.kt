@@ -38,6 +38,7 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewMod
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
+import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -95,6 +96,7 @@ class MainActivity : ComponentActivity() {
                                     MoodTrackerScreenComponent(navController)
                                 }
                                 composable(Routes.AddMedicationScreen.route) {
+                                    //val addMedicationViewModel by viewModels<AddMedicationViewModel>()
                                     AddMedicationScreenComponent(navController)
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {
