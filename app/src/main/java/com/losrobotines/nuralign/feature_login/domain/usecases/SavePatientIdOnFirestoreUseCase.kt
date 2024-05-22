@@ -8,16 +8,17 @@ import javax.inject.Inject
 
 class SavePatientIdOnFirestoreUseCase @Inject constructor() {
 
-    operator fun invoke(id:Short){
+    operator fun invoke(id: Short) {
         val firebaseUser = Firebase.auth.currentUser
-        if(firebaseUser!=null) {
-            var uid:String
-            firebaseUser.let { uid = it!!.uid }
+        if (firebaseUser != null) {
+            var uid: String
+            firebaseUser.let { uid = it.uid }
+            val doc = Firebase.firestore.collection("users").document(uid)
+
             val user = hashMapOf(
-                "patientId" to id
+                "id" to id.toInt()
             )
-            Firebase.firestore.collection("users").document(uid)
-                .set(user)
+            doc.set(user)
                 .addOnSuccessListener { documentReference ->
                     Log.d("Firestore", "DocumentSnapshot added with ID: $documentReference")
                 }

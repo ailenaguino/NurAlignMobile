@@ -14,4 +14,4 @@ interface PatientApiService {
 
 }
 
-data class PatientId(@SerializedName("patientId") val patientId: Short)
+data class PatientId(@SerializedName("id") val patientId: Short)

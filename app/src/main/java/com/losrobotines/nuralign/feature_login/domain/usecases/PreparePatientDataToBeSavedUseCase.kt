@@ -12,7 +12,6 @@ class PreparePatientDataToBeSavedUseCase @Inject constructor(
     suspend operator fun invoke(patientInfo: PatientInfo) {
         patientInfo.birthDate = formatBirthDateUseCase(patientInfo.birthDate) ?: "X"
         patientInfo.sex = formatSexUseCase(patientInfo.sex)
-        val id = patientProvider.savePatientData(patientInfo)
-        if(id.toInt()!=0) SavePatientIdOnFirestoreUseCase().invoke(id)
+        patientProvider.savePatientData(patientInfo)
     }
 }
