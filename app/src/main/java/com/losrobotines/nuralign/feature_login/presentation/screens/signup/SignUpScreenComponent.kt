@@ -310,7 +310,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
             is LoginState.Success -> {
                 LaunchedEffect(Unit) {
-                    navController.navigate(Routes.HomeScreen.route)
+                    navController.navigate(Routes.LoginScreen.route)
                 }
             }
         }

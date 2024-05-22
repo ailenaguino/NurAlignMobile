@@ -9,8 +9,6 @@ interface AuthRepository {
     suspend fun signup(
         email: String,
         password: String,
-        //name: String, ESTO DESPUES GUARDAR EN LA DB
-        //sexo: String/*, birthday :Date*/
     ): LoginState<FirebaseUser>
 
     fun logout()
