@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_sleep.presentation.screens
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +11,7 @@ import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
@@ -30,11 +30,10 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
 
     fun saveData() {
         if(currentUserExists()) {
-            getPatentId()
             viewModelScope.launch {
                 sleepRepository.saveSleepData(
                     SleepInfo(
-                        1,
+                        getPatentId(),
                         getDate(),
                         _sliderPosition.value!!.toInt().toShort(),
                         1,
@@ -54,21 +53,12 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
         return formatter.format(date)
     }
 
-    private fun getPatentId(){
+    private suspend fun getPatentId(): Short {
+        val idResult: Short
         val uid = authRepository.currentUser!!.uid
         val doc = Firebase.firestore.collection("users").document(uid)
-        doc.get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    Log.d("Firestore", "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d("Firestore", "No such document")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("Firestore", "get failed with ", exception)
-            }
-
+        idResult = doc.get().await().getLong("id")!!.toShort()
+        return idResult
     }
 
     private fun currentUserExists():Boolean{
