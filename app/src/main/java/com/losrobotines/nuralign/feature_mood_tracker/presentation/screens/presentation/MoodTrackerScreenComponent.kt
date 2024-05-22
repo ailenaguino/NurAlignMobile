@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -81,26 +82,6 @@ fun MoodTrackerScreenComponent(
         item { AnimoIrritable(moodTrackerViewModel, isSaved) }
         item { AnimoAnsioso(moodTrackerViewModel, isSaved) }
         item { saveButtom(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved) }
-        //DespuesbORRAR
-        if (isVisibleSelectedAnimos) {
-            item {
-                Column {
-                    if (moodTrackerViewModel.lowestValue.value != -1) {
-                        Text(text = "Deprimido: ${moodTrackerViewModel.lowestValue.value} **Nota: ${moodTrackerViewModel.lowestNote.value}")
-                    }
-                    if (moodTrackerViewModel.highestValue.value != -1) {
-                        Text(text = "Elevado: ${moodTrackerViewModel.highestValue.value} **Nota: ${moodTrackerViewModel.highestNote.value}")
-                    }
-                    if (moodTrackerViewModel.irritableValue.value != -1) {
-                        Text(text = "Irritable: ${moodTrackerViewModel.irritableValue.value} **Nota: ${moodTrackerViewModel.irritableNote.value}")
-                    }
-                    if (moodTrackerViewModel.anxiousValue.value != -1) {
-                        Text(text = "Ansioso: ${moodTrackerViewModel.anxiousValue.value} **Nota: ${moodTrackerViewModel.anxiousNote.value}")
-                    }
-                    Text(text = "Fecha de registro: ${moodTrackerViewModel.effectiveDate.value}")
-                }
-            }
-        }
     }
 }
 
@@ -226,7 +207,7 @@ fun Linea() {
             .fillMaxWidth()
     ) {
         Text(
-            text = "Vie, 10 de Mayo",
+            text = "Mie, 22 de Mayo",
             color = Color.Black,
             style = TextStyle(fontSize = 20.sp),
             modifier = Modifier
@@ -254,31 +235,45 @@ fun SelectAnimo(
 ) {
     val labels = listOf("Nulo", "Leve", "Moderado", "Alto", "Severo")
 
-    var selectedBox by remember {
-        mutableStateOf(
-            when (animoType) {
-                "elevado" -> moodTrackerViewModel.highestValue.value
-                "deprimido" -> moodTrackerViewModel.lowestValue.value
-                "irritable" -> moodTrackerViewModel.irritableValue.value
-                "ansioso" -> moodTrackerViewModel.anxiousValue.value
-                else -> -1 // Valor por defecto si no se encuentra ningún tipo de ánimo
-            }
-        )
-    }
-
-    val textValue = remember(animoType) {
-        mutableStateOf(
-            when (animoType) {
-                "elevado" -> moodTrackerViewModel.highestNote.value
-                "deprimido" -> moodTrackerViewModel.lowestNote.value
-                "irritable" -> moodTrackerViewModel.irritableNote.value
-                "ansioso" -> moodTrackerViewModel.anxiousNote.value
-                else -> ""
-            }
-        )
-    }
-
+    var selectedBox by remember { mutableStateOf(-1) }
+    var textValue by remember { mutableStateOf("") }
     var isTextFieldVisible by remember { mutableStateOf(false) }
+
+    // Actualizar selectedBox y textValue con los valores del ViewModel
+    selectedBox = when (animoType) {
+        "elevado" -> moodTrackerViewModel.highestValue.intValue
+        "deprimido" -> moodTrackerViewModel.lowestValue.intValue
+        "irritable" -> moodTrackerViewModel.irritableValue.intValue
+        "ansioso" -> moodTrackerViewModel.anxiousValue.intValue
+        else -> -1
+    }
+
+    textValue = when (animoType) {
+        "elevado" -> moodTrackerViewModel.highestNote.value
+        "deprimido" -> moodTrackerViewModel.lowestNote.value
+        "irritable" -> moodTrackerViewModel.irritableNote.value
+        "ansioso" -> moodTrackerViewModel.anxiousNote.value
+        else -> ""
+    }
+
+    LaunchedEffect(animoType) {
+        // Cada vez que el valor de animoType cambie, se jecuta
+        selectedBox = when (animoType) {
+            "elevado" -> moodTrackerViewModel.highestValue.intValue
+            "deprimido" -> moodTrackerViewModel.lowestValue.intValue
+            "irritable" -> moodTrackerViewModel.irritableValue.intValue
+            "ansioso" -> moodTrackerViewModel.anxiousValue.intValue
+            else -> -1
+        }
+
+        textValue = when (animoType) {
+            "elevado" -> moodTrackerViewModel.highestNote.value
+            "deprimido" -> moodTrackerViewModel.lowestNote.value
+            "irritable" -> moodTrackerViewModel.irritableNote.value
+            "ansioso" -> moodTrackerViewModel.anxiousNote.value
+            else -> ""
+        }
+    }
 
     Box(
         contentAlignment = Alignment.Center, modifier = Modifier
@@ -356,9 +351,9 @@ fun SelectAnimo(
         }
         if (isTextFieldVisible) {
             TextField(
-                value = textValue.value,
+                value = textValue,
                 onValueChange = {
-                    textValue.value = it
+                    textValue = it
                     when (animoType) {
                         "elevado" -> moodTrackerViewModel.highestNote.value = it
                         "deprimido" -> moodTrackerViewModel.lowestNote.value = it

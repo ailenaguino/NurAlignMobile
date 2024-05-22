@@ -21,8 +21,10 @@ class MoodTrackerRepositoryImpl @Inject constructor(private val apiService: Mood
         }
     }
 
-    override suspend fun getMoodTrackerInfo(patientId: Int, date: String): MoodTrackerInfo? {
-        val dto = apiService.getMoodTrackerInfo(patientId, date)
+    override suspend fun getMoodTrackerInfo(patientId: Int): MoodTrackerInfo? {
+
+        val dto = apiService.getMoodTrackerInfo(patientId)
+        Log.d("MoodTrackerRepository", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
     }
 
@@ -51,6 +53,7 @@ class MoodTrackerRepositoryImpl @Inject constructor(private val apiService: Mood
             }
         }
     }
+
 
     private fun mapDomainToData(moodTrackerInfo: MoodTrackerInfo): MoodTrackerDto {
         return MoodTrackerDto(

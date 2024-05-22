@@ -14,9 +14,8 @@ interface MoodTrackerApiService {
     suspend fun insertMoodTrackerInfoIntoDatabase(@Body body: MoodTrackerDto)
 
 
-    @GET("moodTracker/{patientId}/{date}")
+    @GET("moodTracker/{patientId}")
     suspend fun getMoodTrackerInfo(
-        @Path("patientId") patientId: Int,
-        @Path("date") date: String
-    ): MoodTrackerDto
+        @Path("patientId") patientId: Int
+    ): MoodTrackerDto?
 }

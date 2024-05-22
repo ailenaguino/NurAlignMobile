@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
-
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MoodTrackerViewModel @Inject constructor(
@@ -43,36 +42,41 @@ class MoodTrackerViewModel @Inject constructor(
 
     val anxiousValue = mutableIntStateOf(-1)
     val anxiousNote = mutableStateOf("")
-/*
+
     init {
-        // Load the data when ViewModel is created
-        loadMoodTrackerInfo()
+        loadMoodTrackerInfoToDatabase()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun loadMoodTrackerInfo() {
+    fun loadMoodTrackerInfoToDatabase() {
         viewModelScope.launch {
-            if (currentUserExists()) {
-                val patientId = 8 // Modificado a String
-                val date = getDate()
-                val info = moodTrackerRepository.getMoodTrackerInfo(patientId, date)
-                info?.let {
-                    highestValue.intValue = it.highestValue.toInt()
-                    highestNote.value = it.highestNote
-                    lowestValue.intValue = it.lowestValue.toInt()
-                    lowestNote.value = it.lowestNote
-                    irritableValue.intValue = it.irritableValue.toInt()
-                    irritableNote.value = it.irritableNote
-                    anxiousValue.intValue = it.anxiousValue.toInt()
-                    anxiousNote.value = it.anxiousNote
-                    effectiveDate.value = LocalDate.parse(it.effectiveDate)
-                    isSaved.value = true
+            try {
+                if (currentUserExists()) {
+                    val patientId =
+                        11 // ************************(AUNMENTAR CADA VEZ QUE AGREGES EN LA BASE DE DATOS)******************
+                    val date = getDate()
+                    val info = moodTrackerRepository.getMoodTrackerInfo(patientId)
+                    if (info != null) {
+                        highestValue.intValue = info.highestValue.toInt()
+                        highestNote.value = info.highestNote
+                        lowestValue.intValue = info.lowestValue.toInt()
+                        lowestNote.value = info.lowestNote
+                        irritableValue.intValue = info.irritableValue.toInt()
+                        irritableNote.value = info.irritableNote
+                        anxiousValue.intValue = info.anxiousValue.toInt()
+                        anxiousNote.value = info.anxiousNote
+                        effectiveDate.value = LocalDate.parse(info.effectiveDate)
+                        isSaved.value = true
+                    } else {
+                        isSaved.value = false
+                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                isSaved.value = false
             }
         }
     }
-
- */
 
 
     fun saveData() {
@@ -83,13 +87,13 @@ class MoodTrackerViewModel @Inject constructor(
                 MoodTrackerInfo(
                     patientId = 8,
                     effectiveDate = getDate(),
-                    highestValue = highestValue.intValue.toString()  /*.absoluteValue  SI AGREGO ESTO ME SALE ERROR 500*/,
-                    lowestValue = lowestValue.intValue.toString()/*.absoluteValue*/,
+                    highestValue = highestValue.intValue.toString(),
+                    lowestValue = lowestValue.intValue.toString(),
                     highestNote = highestNote.value,
                     lowestNote = lowestNote.value,
-                    irritableValue = irritableValue.intValue.toString()/*.absoluteValue*/,
+                    irritableValue = irritableValue.intValue.toString(),
                     irritableNote = irritableNote.value,
-                    anxiousValue = anxiousValue.intValue.toString() /*.absoluteValue*/,
+                    anxiousValue = anxiousValue.intValue.toString(),
                     anxiousNote = anxiousNote.value
                 )
             )
@@ -127,6 +131,5 @@ class MoodTrackerViewModel @Inject constructor(
     }
 
 }
-
 
 

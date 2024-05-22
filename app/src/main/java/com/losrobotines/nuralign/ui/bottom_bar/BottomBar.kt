@@ -92,7 +92,7 @@ sealed class Destinations(
                     selected = currentRoute == screen.route,
                     onClick = {
                         if (screen == Destinations.Asistencia) {
-                            val callIntent: Intent = Uri.parse("tel:111").let { number ->
+                            val callIntent: Intent = Uri.parse("tel:0800-333-1665").let { number ->
                                 Intent(Intent.ACTION_DIAL, number)
                             }
                             context.startActivity(callIntent)
