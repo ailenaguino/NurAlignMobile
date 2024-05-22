@@ -17,8 +17,10 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepository,
-                                         private val authRepository: AuthRepository) :
+class SleepViewModel @Inject constructor(
+    private val sleepRepository: SleepRepository,
+    private val authRepository: AuthRepository
+) :
     ViewModel() {
 
     private val _sliderPosition = MutableLiveData(0F)
@@ -29,7 +31,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
     }
 
     fun saveData() {
-        if(currentUserExists()) {
+        if (currentUserExists()) {
             getPatentId()
             viewModelScope.launch {
                 sleepRepository.saveSleepData(
@@ -54,7 +56,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
         return formatter.format(date)
     }
 
-    private fun getPatentId(){
+    private fun getPatentId() {
         val uid = authRepository.currentUser!!.uid
         val doc = Firebase.firestore.collection("users").document(uid)
         doc.get()
@@ -71,7 +73,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
 
     }
 
-    private fun currentUserExists():Boolean{
+    private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
     }
 

@@ -30,7 +30,6 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignU
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
@@ -38,7 +37,8 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewMod
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
-import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationViewModel
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -73,7 +73,6 @@ class MainActivity : ComponentActivity() {
                             if (isAuthenticated) {
                                 BottomBarNavigation(
                                     navController = navController,
-                                    state = remember { mutableStateOf(true) },
                                     modifier = Modifier
                                 )
                             }
@@ -93,10 +92,10 @@ class MainActivity : ComponentActivity() {
                                     HomeScreenComponent(navController)
                                 }
                                 composable(Routes.MoodTrackerScreen.route) {
-                                    MoodTrackerScreenComponent(navController)
+                                    val moodTrackerViewModel by viewModels<MoodTrackerViewModel>()
+                                    MoodTrackerScreenComponent(navController, moodTrackerViewModel)
                                 }
                                 composable(Routes.AddMedicationScreen.route) {
-                                    //val addMedicationViewModel by viewModels<AddMedicationViewModel>()
                                     AddMedicationScreenComponent(navController)
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {

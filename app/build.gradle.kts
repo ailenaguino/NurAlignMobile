@@ -58,6 +58,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     // For instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
