@@ -17,8 +17,10 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepository,
-                                         private val authRepository: AuthRepository) :
+class SleepViewModel @Inject constructor(
+    private val sleepRepository: SleepRepository,
+    private val authRepository: AuthRepository
+) :
     ViewModel() {
 
     private val _sliderPosition = MutableLiveData(0F)
@@ -29,6 +31,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
     }
 
     fun saveData() {
+
         if(currentUserExists()) {
             viewModelScope.launch {
                 sleepRepository.saveSleepData(
@@ -47,6 +50,8 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
         }
     }
 
+
+
     private fun getDate(): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         val date = Date()
@@ -61,7 +66,7 @@ class SleepViewModel @Inject constructor(private val sleepRepository: SleepRepos
         return idResult
     }
 
-    private fun currentUserExists():Boolean{
+    private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
     }
 

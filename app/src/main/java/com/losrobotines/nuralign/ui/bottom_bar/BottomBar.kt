@@ -1,5 +1,7 @@
 package com.losrobotines.nuralign.ui.bottom_bar
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -30,7 +33,7 @@ sealed class Destinations(
     val icon: Int
 ) {
     data object Asistencia : Destinations(
-        route = Routes.AchievementsScreen.route,
+        route = "",
         title = "Asistencia",
         icon = R.drawable.call_icon
     )
@@ -50,9 +53,10 @@ sealed class Destinations(
     @Composable
     fun BottomBarNavigation(
         navController: NavHostController,
-        state: MutableState<Boolean>,
         modifier: Modifier = Modifier
     ) {
+        val context = LocalContext.current
+
         val screens = listOf(
             Asistencia, Home, Configuracion
         )
@@ -87,14 +91,22 @@ sealed class Destinations(
                      */
                     selected = currentRoute == screen.route,
                     onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        if (screen == Destinations.Asistencia) {
+                            val callIntent: Intent = Uri.parse("tel:0800-333-1665").let { number ->
+                                Intent(Intent.ACTION_DIAL, number)
                             }
-                            launchSingleTop = true
-                            restoreState = true
-                            navController.navigate(Home.route)
+                            context.startActivity(callIntent)
+                        } else {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                                navController.navigate(Home.route)
+                            }
                         }
+
                     },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = secondaryColor,
