@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_login.presentation.screens.signup
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
@@ -17,22 +19,74 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val repository: AuthRepository,
-    private val preparePatientDataToBeSavedUseCase: PreparePatientDataToBeSavedUseCase
+    private val preparePatientDataToBeSavedUseCase: PreparePatientDataToBeSavedUseCase,
 ) : ViewModel() {
 
     private val _signupFlow = MutableStateFlow<LoginState<FirebaseUser>?>(null)
     val signupFlow: StateFlow<LoginState<FirebaseUser>?> = _signupFlow
 
+    private val _email = MutableLiveData("")
+    var email: LiveData<String> = _email
+
+    private val _password = MutableLiveData("")
+    var password: LiveData<String> = _password
+
+    private val _firstName = MutableLiveData("")
+    var firstName: LiveData<String> = _firstName
+
+    private val _lastName = MutableLiveData("")
+    var lastName: LiveData<String> = _lastName
+
+    private val _birthDate = MutableLiveData("")
+    var birthDate: LiveData<String> = _birthDate
+
+    private val _sex = MutableLiveData("Seleccione su sexo")
+    var sex: LiveData<String> = _sex
+
+
+    fun onEmailChanged(emailValue: String) {
+        _email.value = emailValue
+    }
+
+    fun onPasswordChanged(passValue: String) {
+        _password.value = passValue
+    }
+
+    fun onFirstNameChanged(firstNameValue: String) {
+        _firstName.value = firstNameValue
+    }
+
+    fun onLastNameChanged(lastNameValue: String) {
+        _lastName.value = lastNameValue
+    }
+
+    fun onBirthDateChanged(birthdateValue: String) {
+        _birthDate.value = birthdateValue
+    }
+
+    fun onSexChanged(sexValue: String) {
+        _sex.value = sexValue
+    }
+
     @SuppressLint("NewApi")
-    fun signup(email: String, password: String, firstName: String,
-               lastName: String, birthDate: String, sex: String) {
+    fun signup() {
         viewModelScope.launch {
             _signupFlow.value = LoginState.Loading
-            _signupFlow.value = repository.signup(email, password)
+            _signupFlow.value = repository.signup(email.value!!, password.value!!)
             if (_signupFlow.value is LoginState.Success) {
-                preparePatientDataToBeSavedUseCase(PatientInfo(
-                    email, password, firstName, lastName, birthDate, sex, firstName, "Y", "Y"
-                ))
+                preparePatientDataToBeSavedUseCase(
+                    PatientInfo(
+                        email.value!!,
+                        password.value!!,
+                        firstName.value!!,
+                        lastName.value!!,
+                        birthDate.value!!,
+                        sex.value!!,
+                        firstName.value!!,
+                        "Y",
+                        "Y"
+                    )
+                )
             }
         }
     }

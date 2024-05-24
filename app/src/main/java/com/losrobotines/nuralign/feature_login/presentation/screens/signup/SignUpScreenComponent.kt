@@ -47,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -81,15 +82,15 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewModel) {
-    var userEmail by remember { mutableStateOf("") }
-    var userPassword by remember { mutableStateOf("") }
+    val userEmail: String by viewModel.email.observeAsState("")
+    val userPassword: String by viewModel.password.observeAsState("")
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
-    var userFirstName by remember { mutableStateOf("") }
-    var userLastName by remember { mutableStateOf("") }
-    var userBirthDate by remember { mutableStateOf("") }
-    var userSex by remember { mutableStateOf("Seleccione su sexo") }
+    val userFirstName by viewModel.firstName.observeAsState("")
+    val userLastName by viewModel.lastName.observeAsState("")
+    val userBirthDate by viewModel.birthDate.observeAsState("")
+    val userSex by viewModel.sex.observeAsState("Seleccione su sexo")
 
     val signupFlow = viewModel.signupFlow.collectAsState()
 
@@ -115,7 +116,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
         ) {
             OutlinedTextField(
                 value = userEmail,
-                onValueChange = { userEmail = it },
+                onValueChange = { viewModel.onEmailChanged(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
@@ -133,7 +134,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
             OutlinedTextField(
                 value = userPassword,
-                onValueChange = { userPassword = it },
+                onValueChange = { viewModel.onPasswordChanged(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
@@ -202,7 +203,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
             OutlinedTextField(
                 value = userFirstName,
-                onValueChange = { userFirstName = it },
+                onValueChange = { viewModel.onFirstNameChanged(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
@@ -220,7 +221,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
             OutlinedTextField(
                 value = userLastName,
-                onValueChange = { userLastName = it },
+                onValueChange = { viewModel.onLastNameChanged(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
@@ -236,24 +237,17 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            userBirthDate = SelectBirthday()
+            viewModel.onBirthDateChanged(SelectBirthday())
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            userSex = selectSexDropMenu()
+            viewModel.onSexChanged(selectSexDropMenu())
 
             Spacer(modifier = Modifier.height(55.dp))
 
             Button(
                 onClick = {
-                    viewModel.signup(
-                        userEmail,
-                        userPassword,
-                        userFirstName,
-                        userLastName,
-                        userBirthDate,
-                        userSex
-                    )
+                    viewModel.signup()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
