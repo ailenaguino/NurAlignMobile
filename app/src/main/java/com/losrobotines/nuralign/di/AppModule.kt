@@ -1,13 +1,14 @@
 package com.losrobotines.nuralign.di
 
-import android.app.Activity
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.losrobotines.nuralign.feature_login.data.AuthRepositoryImpl
-import com.losrobotines.nuralign.feature_login.domain.AuthRepository
+import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
+import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
+import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
+import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
+import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerRepositoryImpl
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
 import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
@@ -27,7 +28,9 @@ object AppModule {
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Provides
-    fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
+    fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth)
+    }
 
     @Provides
     @Singleton
@@ -35,18 +38,41 @@ object AppModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://77.37.69.38:8081/api/")
+            .baseUrl("http://77.37.69.38:8081/api/")//hacer esto variable ambiental(externalizarla)
             .build()
     }
 
+    //SIGNUP
+    @Provides
+    fun providePatientApiService(retrofit: Retrofit): PatientApiService {
+        return retrofit.create(PatientApiService::class.java)
+    }
+
+    @Provides
+    fun providePatientProvider(patientApiService: PatientApiService): PatientProvider {
+        return PatientProviderImpl(patientApiService)
+    }
 
     //SLEEP TRACKER
     @Provides
-    fun provideSleepApiService(retrofit: Retrofit):SleepApiService{
+    fun provideSleepApiService(retrofit: Retrofit): SleepApiService {
         return retrofit.create(SleepApiService::class.java)
     }
+
     @Provides
     fun provideSleepRepository(sleepApiService: SleepApiService): SleepRepository {
         return SleepRepositoryImpl(sleepApiService)
     }
+
+    @Provides
+    fun provideMoodTrackerApiService(retrofit: Retrofit): MoodTrackerApiService {
+        return retrofit.create(MoodTrackerApiService::class.java)
+    }
+
+    @Provides
+    fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerRepository {
+        return MoodTrackerRepositoryImpl(moodTrackerApiService)
+    }
+
+
 }

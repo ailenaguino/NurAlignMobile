@@ -1,9 +1,9 @@
-package com.losrobotines.nuralign.feature_login.data
+package com.losrobotines.nuralign.feature_login.data.providers
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.losrobotines.nuralign.feature_login.data.utils.await
-import com.losrobotines.nuralign.feature_login.domain.AuthRepository
+import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import javax.inject.Inject
 

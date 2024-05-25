@@ -1,12 +1,9 @@
 package com.losrobotines.nuralign.feature_sleep.data
 
-import android.util.Log
-import com.losrobotines.nuralign.feature_sleep.data.models.SleepTrackerDto
+import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import javax.inject.Inject
 
 
@@ -14,12 +11,9 @@ class SleepRepositoryImpl @Inject constructor(private val apiService: SleepApiSe
 
     override suspend fun saveSleepData(sleepInfo: SleepInfo) {
         try {
-            val c = mapDomainToData(sleepInfo)
-            //val body: RequestBody = create("application/json".toMediaTypeOrNull(), c.toString())
-            //val requestBody = c.toString().toRequestBody("application/json".toMediaTypeOrNull())
-            Log.i("post retrofit", "$c")
-            apiService.insertSleepTrackerInfoIntoDatabase(c)
-        } catch(e:IllegalArgumentException){
+            val dto = mapDomainToData(sleepInfo)
+            apiService.insertSleepTrackerInfoIntoDatabase(dto)
+        } catch(e:Exception){
             e.printStackTrace()
         }
     }
