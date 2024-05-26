@@ -1,6 +1,7 @@
 package com.losrobotines.nuralign.di
 
 import com.google.firebase.auth.FirebaseAuth
+import com.losrobotines.nuralign.BuildConfig
 import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
 import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
@@ -38,7 +39,7 @@ object AppModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://77.37.69.38:8081/api/")//hacer esto variable ambiental(externalizarla)
+            .baseUrl(BuildConfig.API_URL)
             .build()
     }
 

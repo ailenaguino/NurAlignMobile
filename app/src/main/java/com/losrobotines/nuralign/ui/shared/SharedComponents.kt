@@ -186,7 +186,7 @@ class SharedComponents {
         Text(
             text = textToDisplay,
             fontSize = 20.sp,
-            color = secondaryColor
+            color = Color.Black
         )
     }
 
@@ -218,7 +218,7 @@ class SharedComponents {
                     LargeFloatingActionButton(
                         onClick = { isVisible = !isVisible },
                         shape = RoundedCornerShape(10.dp),
-                        containerColor = Color.LightGray
+                        containerColor = Color.White
                     ) {
                         Row(modifier = Modifier.padding(4.dp)) {
                             Box(
