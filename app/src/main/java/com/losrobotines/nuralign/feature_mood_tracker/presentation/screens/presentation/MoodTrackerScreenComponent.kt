@@ -72,7 +72,7 @@ fun MoodTrackerScreenComponent(
         item {
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(modifier = Modifier.height(10.dp))
-                SharedComponents().CompanionTextBalloon("¿Cómo te sentiste hoy?")
+                SharedComponents().CompanionTextBalloon(listOf("¿Cómo te sentiste hoy?"))
                 Linea()
                 Spacer(modifier = Modifier.height(10.dp))
             }

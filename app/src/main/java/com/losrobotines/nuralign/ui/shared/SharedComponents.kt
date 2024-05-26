@@ -1,5 +1,11 @@
 package com.losrobotines.nuralign.ui.shared
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +26,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -116,7 +125,7 @@ class SharedComponents {
     }
 
     @Composable
-    fun CompanionTextBalloon(text: String) {
+    fun CompanionTextBalloon(texts: List<String>) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -126,8 +135,12 @@ class SharedComponents {
                     RoundedCornerShape(32.dp)
                 )
         ) {
-            Box(modifier = Modifier.weight(0.8f).padding(horizontal = 16.dp, vertical = 8.dp)) {
-                TypewriterText(texts = listOf(text))
+            Box(
+                modifier = Modifier
+                    .weight(0.8f)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                TypewriterText(texts = texts)
             }
             Box(modifier = Modifier.weight(0.2f)) {
                 Image(
@@ -172,8 +185,76 @@ class SharedComponents {
 
         Text(
             text = textToDisplay,
-            fontSize = 24.sp,
+            fontSize = 20.sp,
             color = secondaryColor
         )
     }
+
+    @OptIn(ExperimentalAnimationApi::class)
+    @Composable
+    fun fabCompanion(texts: List<String>) {
+        var isVisible by remember {
+            mutableStateOf(false)
+        }
+        AnimatedContent(
+            targetState = isVisible,
+            transitionSpec = { fadeIn() with fadeOut() },
+            content = { visible ->
+                if (visible) {
+                    LargeFloatingActionButton(
+                        onClick = { isVisible = !isVisible },
+                        shape = RoundedCornerShape(50.dp),
+                        containerColor = secondaryColor
+                    ) {
+                        Image(
+                            painterResource(id = R.drawable.robotin_bebe),
+                            contentDescription = "Robotín",
+                            modifier = Modifier
+                                .size(85.dp)
+                                .padding(4.dp)
+                        )
+                    }
+                } else {
+                    LargeFloatingActionButton(
+                        onClick = { isVisible = !isVisible },
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = Color.LightGray
+                    ) {
+                        Row(modifier = Modifier.padding(4.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(0.8f)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                TypewriterText(texts = texts)
+                            }
+                            Box(modifier = Modifier.weight(0.2f)) {
+                                Image(
+                                    painterResource(id = R.drawable.robotin_bebe),
+                                    contentDescription = "Fondo",
+                                    modifier = Modifier
+                                        .size(85.dp)
+                                        .padding(end = 1.dp, start = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }, label = "companion animation"
+        )
+    }
 }
+
+/*FloatingActionButton(
+    onClick = { isVisible = !isVisible },
+    shape = RoundedCornerShape(50.dp),
+    containerColor = mainColor
+) {
+    Image(
+        painterResource(id = R.drawable.robotin_bebe),
+        contentDescription = "Robotín",
+        modifier = Modifier
+            .size(85.dp)
+            .padding(4.dp)
+    )
+}*/
