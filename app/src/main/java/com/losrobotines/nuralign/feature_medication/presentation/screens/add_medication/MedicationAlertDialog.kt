@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_medication.presentation.screens
+package com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,16 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -32,67 +29,66 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.compose.ui.window.DialogProperties
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationViewModel
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 @Composable
-fun AddMedicationScreenComponent(navController: NavController) {
-    val medicationCount = remember { mutableStateListOf<Int>() }
-    Column {
-        LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-            item {
-                SharedComponents().HalfCircleTop(title = "Agregar nueva medicación")
+fun AddMedicationAlertDialog(
+    onDismissRequest: () -> Unit,
+    confirmButton: () -> Unit
+) {
+    AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 15.dp),
+        title = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Nueva medicación",
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        text = {
+            MedicationRow()
+        },
+        onDismissRequest = { onDismissRequest() },
+        confirmButton = {
+            Button(onClick = { confirmButton() }) {
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismissRequest() }) {
+                Text("Cancelar")
             }
         }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            items(medicationCount.size) {
-                MedicationRow()
-                if (medicationCount.size > 0) {
-                    RemoveIcon(onClick = {
-                        medicationCount.removeAt(it)
-                    })
-                }
-            }
-            item {
-                AddIcon(onClick = {
-                    medicationCount.add(medicationCount.size + 1)
-                })
-            }
-            item {
-                if (medicationCount.size > 0) {
-                    Box(
-                        contentAlignment = Alignment.BottomEnd,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        SaveButton()
-                    }
-                }
-            }
-        }
-    }
+    )
 }
 
-@Preview
 @Composable
-fun AddMedicationElement() {
+fun EditMedicationAlertDialog() {
+
+}
+
+@Composable
+fun MedicationElement() {
     var medicationName by remember { mutableStateOf("") }
-    var medicationDose by remember { mutableStateOf("") }
+    var medicationGrammage by remember { mutableIntStateOf(0) }
 
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
 
@@ -124,8 +120,8 @@ fun AddMedicationElement() {
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
-                value = medicationDose,
-                onValueChange = { medicationDose = it },
+                value = medicationGrammage.toString(),
+                onValueChange = { medicationGrammage = it.toInt() },
                 modifier = Modifier
                     .height(80.dp)
                     .width(250.dp),
@@ -143,41 +139,10 @@ fun AddMedicationElement() {
 }
 
 @Composable
-fun AddIcon(onClick: () -> Unit = {}) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            Icons.Filled.Add,
-            tint = secondaryColor,
-            contentDescription = "agregar",
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .align(Alignment.TopCenter)
-                .clickable { onClick() }
-        )
-    }
-    Spacer(modifier = Modifier.height(32.dp))
-}
-
-@Composable
-fun RemoveIcon(onClick: () -> Unit = {}) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            Icons.Filled.Remove,
-            tint = secondaryColor,
-            contentDescription = "quitar",
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .align(Alignment.TopCenter)
-                .clickable { onClick() }
-        )
-    }
-}
-
-@Preview
-@Composable
 fun Optional() {
+    var checked by remember { mutableStateOf(false) }
+    var checkedValue by remember { mutableStateOf("N") }
+
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
@@ -187,7 +152,6 @@ fun Optional() {
         }
 
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
-            var checked by remember { mutableStateOf(false) }
             Switch(
                 checked = checked,
                 onCheckedChange = {
@@ -221,22 +185,40 @@ fun Optional() {
 
 @Composable
 fun MedicationRow() {
-    AddMedicationElement()
-    Spacer(modifier = Modifier.height(8.dp))
+    Column {
+        MedicationElement()
+        Spacer(modifier = Modifier.height(8.dp))
 
-    SharedComponents().SelectDayButtons()
-    Spacer(modifier = Modifier.height(8.dp))
+        SharedComponents().SelectDayButtons()
+        Spacer(modifier = Modifier.height(8.dp))
 
-    Optional()
-    Divider(color = secondaryColor, thickness = 2.dp)
+        Optional()
+        Divider(color = secondaryColor, thickness = 2.dp)
+    }
 }
 
 @Composable
-fun SaveButton() {
+fun SaveButton(addMedicationViewModel: MedicationViewModel) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { /*addMedicationViewModel.saveData()*/ },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor)
     ) {
         Text(text = "Guardar")
+    }
+}
+
+@Composable
+fun RemoveIcon(onClick: () -> Unit = {}) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+        Icon(
+            Icons.Filled.Remove,
+            tint = secondaryColor,
+            contentDescription = "quitar",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(8.dp)
+                .align(Alignment.TopCenter)
+                .clickable { onClick() }
+        )
     }
 }
