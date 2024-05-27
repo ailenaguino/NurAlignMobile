@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +52,8 @@ fun HomeScreenComponent(navController: NavController) {
         HomeItemData.Achievement,
         HomeItemData.Routine
     )
+
+    var isVisible by remember { mutableStateOf(false) }
 
     Column() {
         LazyVerticalGrid(
@@ -84,9 +91,15 @@ fun HomeScreenComponent(navController: NavController) {
                 //HomeItem(homeItemsList[item], navController)
                 HomeCardItem(homeItemsList[item], navController)
             }
+            item{
+                Button(onClick = {isVisible = true}) {
+                    
+                }
+            }
         }
 
     }
+    SharedComponents().companionCongratulation(isVisible = isVisible)
 }
 
 /*
@@ -182,7 +195,9 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                 imageVector = homeItemData.image,
                 contentDescription = "Seguimiento del ánimo",
                 tint = mainColor,
-                modifier = Modifier.size(60.dp).padding(4.dp)
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(4.dp)
             )
             Text(text = homeItemData.name, color = mainColor, textAlign = TextAlign.Center, fontSize = 14.sp)
         }
