@@ -11,7 +11,7 @@ class PatientProviderImpl @Inject constructor(private val apiService: PatientApi
     override suspend fun savePatientData(patientInfo: PatientInfo) {
         val dto = mapDomainToData(patientInfo)
         val id = apiService.insertPatientInfoIntoDatabase(dto).patientId
-        SavePatientIdOnFirestoreUseCase().invoke(id)
+        //SavePatientIdOnFirestoreUseCase().invoke(id)
     }
 
     private fun mapDomainToData(patientInfo: PatientInfo): PatientDto{
