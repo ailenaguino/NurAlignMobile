@@ -1,15 +1,14 @@
 package com.losrobotines.nuralign.di
 
 import com.google.firebase.auth.FirebaseAuth
-import com.losrobotines.nuralign.BuildConfig
 import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
 import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerRepositoryImpl
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
@@ -39,7 +38,7 @@ object AppModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BuildConfig.API_URL)
+            .baseUrl("http://77.37.69.38:8081/api/")
             .build()
     }
 
@@ -71,8 +70,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerRepository {
-        return MoodTrackerRepositoryImpl(moodTrackerApiService)
+    fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerProvider {
+        return MoodTrackerProviderImpl(moodTrackerApiService)
     }
 
 

@@ -65,6 +65,8 @@ fun MoodTrackerScreenComponent(
     val context = LocalContext.current.applicationContext
     var isVisibleSelectedAnimos by remember { mutableStateOf(false) }
     val isSaved by moodTrackerViewModel.isSaved.observeAsState(false)
+    val route by moodTrackerViewModel.route.observeAsState("")
+    var isVisible by remember { mutableStateOf(false) }
 
 
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
@@ -101,9 +103,19 @@ fun MoodTrackerScreenComponent(
         item { AnimoIrritable(moodTrackerViewModel, isSaved) }
         item { AnimoAnsioso(moodTrackerViewModel, isSaved) }
         item { saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved) }
+        item{
+            Button(onClick = {
+                isVisible = true
+                moodTrackerViewModel.checkNextTracker()
+            }) {}
+        }
     }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) { goToNextTracker(navController, route) }
 }
 
+fun goToNextTracker(navController: NavController, route: String){
+    navController.navigate(route)
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
