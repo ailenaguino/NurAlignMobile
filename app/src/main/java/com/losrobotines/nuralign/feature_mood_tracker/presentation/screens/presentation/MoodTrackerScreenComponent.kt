@@ -105,6 +105,7 @@ fun MoodTrackerScreenComponent(
         item { saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved) }
         item{
             Button(onClick = {
+                //verificacion de que se guardó la info
                 isVisible = true
                 moodTrackerViewModel.checkNextTracker()
             }) {}
@@ -114,6 +115,9 @@ fun MoodTrackerScreenComponent(
 }
 
 fun goToNextTracker(navController: NavController, route: String){
+    if(route == ""){
+        //loading circle visible
+    }
     navController.navigate(route)
 }
 

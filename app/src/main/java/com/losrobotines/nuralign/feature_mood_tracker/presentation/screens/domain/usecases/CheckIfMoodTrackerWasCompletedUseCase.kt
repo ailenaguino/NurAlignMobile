@@ -8,8 +8,7 @@ import javax.inject.Inject
 class CheckIfMoodTrackerWasCompletedUseCase @Inject constructor(private val moodTrackerProvider: MoodTrackerProvider) {
 
     suspend operator fun invoke(domainId: Int): Boolean{
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        val date = formatter.format(Date())
+        val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val result = moodTrackerProvider.getTodaysTracker(domainId,date)
         return (result != null)
     }
