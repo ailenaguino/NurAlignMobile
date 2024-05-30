@@ -50,6 +50,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -59,7 +62,6 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     // For instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")

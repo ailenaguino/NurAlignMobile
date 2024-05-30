@@ -14,7 +14,7 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun save(currentUser: String, domainUser: Long) {
         Firebase.firestore.collection("users").document(currentUser)
-            .set(hashMapOf("id" to domainUser.toInt())).await()
+            .set(hashMapOf("id" to domainUser.toInt()))
     }
 }
 //Investigar Task
