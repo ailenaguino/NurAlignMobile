@@ -4,10 +4,10 @@ import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import javax.inject.Inject
 
-class SaveSleepTrackerInfoUseCase @Inject constructor(
+class GetSleepDataUseCase @Inject constructor(
     private val sleepRepository: SleepRepository
 ) {
-    suspend fun execute(sleepInfo: SleepInfo) {
-        sleepRepository.saveSleepData(sleepInfo)
+    suspend fun execute(patientId: Int): SleepInfo? {
+        return sleepRepository.getSleepData(patientId)
     }
 }
