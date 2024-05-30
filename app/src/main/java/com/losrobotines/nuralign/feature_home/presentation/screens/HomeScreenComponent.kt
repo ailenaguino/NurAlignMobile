@@ -81,7 +81,6 @@ fun HomeScreenComponent(navController: NavController) {
             modifier = Modifier.padding(16.dp)
         ) {
             items(homeItemsList.size) { item ->
-                //HomeItem(homeItemsList[item], navController)
                 HomeCardItem(homeItemsList[item], navController)
             }
             item{
@@ -99,54 +98,6 @@ fun goToNextTracker(navController: NavController, route: String){
     navController.navigate(route)
 }
 
-/*
-@Composable
-private fun HomeItem(homeItemData: HomeItemData, navController: NavController) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(contentAlignment = Alignment.CenterStart) {
-            Image(
-                painterResource(id = homeItemData.image),
-                contentDescription = "Fondo",
-                modifier = Modifier
-                    .size(90.dp)
-                    .clickable {
-                        when (homeItemData.index) {
-                            0 -> {
-                                navController.navigate(Routes.MoodTrackerScreen.route)
-                            }
-
-                            1 -> {
-                                navController.navigate(Routes.AddMedicationScreen.route)
-                            }
-
-                            2 -> {
-                                navController.navigate(Routes.SleepTrackerScreen.route)
-                            }
-
-                            3 -> {
-                                navController.navigate(Routes.AddTherapyScreen.route)
-                            }
-
-                            6 -> {
-                                navController.navigate(Routes.AchievementsScreen.route)
-                            }
-                        }
-                    }
-            )
-        }
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = homeItemData.name,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeCardItem(homeItemData: HomeItemData, navController: NavController) {
