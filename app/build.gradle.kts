@@ -50,6 +50,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
@@ -59,6 +60,8 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
+    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     // For instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
@@ -93,6 +96,16 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
+    // Unit testing dependencies
+    testImplementation ("io.mockk:mockk:1.13.7")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+    testImplementation ("androidx.arch.core:core-testing:2.2.0")
+    // JUnit 5 dependencies
+    testImplementation ("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+
+
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -109,4 +122,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

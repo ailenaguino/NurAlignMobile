@@ -243,7 +243,7 @@ fun SaveButton(sleepViewModel: SleepViewModel, sliderPosition: Float, isSaved: B
                 Toast.makeText(context, "Complete todos los campos", Toast.LENGTH_SHORT).show()
             } else {
                 sleepViewModel.setSleepTime(sliderPosition.toInt())
-                   sleepViewModel.saveData()
+                sleepViewModel.saveData()
                 sleepViewModel.setIsSaved(true)
             }
 

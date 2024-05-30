@@ -12,6 +12,9 @@ import com.google.firebase.ktx.Firebase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -22,8 +25,10 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class SleepViewModel @Inject constructor(
-    private val sleepRepository: SleepRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val saveSleepDataUseCase: SaveSleepTrackerInfoUseCase,
+    private val getSleepDataUseCase: GetSleepDataUseCase,
+    private val formatTimeUseCase: FormatTimeUseCase,
 ) :
     ViewModel() {
 
@@ -87,14 +92,13 @@ class SleepViewModel @Inject constructor(
         if (currentUserExists()) {
             viewModelScope.launch {
                 _bedTime.value?.let {
+                    val formattedBedTime = formatTimeUseCase.removeColonFromTime(_bedTime.value!!)
                     _additionalNotes.value?.let { aditionalNote ->
                         SleepInfo(
                             getPatentId(),
                             getDate(),
                             _sleepHours.intValue.toShort(),
-                           //  it.replace(":", ""),
-                            removeColonFromTime(it),
-                            //"1245",
+                            formattedBedTime,
                             _negativeThoughts.value.toString()[0].uppercase(),
                             _anxiousBeforeSleep.value.toString()[0].uppercase(),
                             _sleptThroughNight.value.toString()[0].uppercase(),
@@ -102,20 +106,11 @@ class SleepViewModel @Inject constructor(
                         )
                     }
                 }?.let {
-                    sleepRepository.saveSleepData(
-                        it
-                    )
+                    saveSleepDataUseCase.execute(it)
                 }
             }
         }
     }
-    private fun addColonToTime(time: String): String {
-        return time.chunked(2).joinToString(":")
-    }
-    private fun removeColonFromTime(time: String): String {
-        return time.replace(":", "")
-    }
-
 
 
     /*
