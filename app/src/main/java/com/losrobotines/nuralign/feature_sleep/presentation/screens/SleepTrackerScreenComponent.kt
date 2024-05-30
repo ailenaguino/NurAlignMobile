@@ -81,7 +81,7 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
         }
         item {
             Box(modifier = Modifier.padding(top = 8.dp)) {
-                SharedComponents().CompanionTextBalloon("¡Buen día! ¿Cómo pasaste la noche?")
+                SharedComponents().CompanionTextBalloon(listOf("¡Buen día! ¿Cómo pasaste la noche?"))
             }
         }
         item {
