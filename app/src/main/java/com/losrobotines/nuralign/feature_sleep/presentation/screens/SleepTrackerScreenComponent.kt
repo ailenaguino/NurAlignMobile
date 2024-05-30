@@ -28,7 +28,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
@@ -80,8 +82,20 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
             SharedComponents().HalfCircleTop("Seguimiento del sueño")
         }
         item {
-            Box(modifier = Modifier.padding(top = 8.dp)) {
-                SharedComponents().CompanionTextBalloon(listOf("¡Buen día! ¿Cómo pasaste la noche?"))
+            LargeFloatingActionButton(
+                onClick = {},
+                shape = RoundedCornerShape(10.dp),
+                containerColor = mainColor,
+                modifier = Modifier.padding(8.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 7.dp
+                )
+            ) {
+                SharedComponents().fabCompanion(
+                    listOf(
+                        "¡Buen día! ¿Cómo pasaste la noche?"
+                    )
+                )
             }
         }
         item {
@@ -133,13 +147,6 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
                 ) {
                     SaveButton(sleepViewModel, sliderPosition, isSaved)
                 }
-
-                Text(text = "********* ${sleepViewModel.sleepHours.intValue} **********")
-                Text(text = "********* ${sleepViewModel.bedTime.value} **********")
-                Text(text = "********* ${sleepViewModel.negativeThoughts.value.toString()[0].uppercase()} **********")
-                Text(text = "********* ${sleepViewModel.anxiousBeforeSleep.value} **********")
-                Text(text = "********* ${sleepViewModel.sleptThroughNight.value} **********")
-                Text(text = "********* ${sleepViewModel.additionalNotes.value} **********")
             }
         }
     }
@@ -321,20 +328,20 @@ fun SliderHour(sliderPosition: Float, isSaved: Boolean, onSliderChanged: (Float)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionGoToSleep(sleepViewModel: SleepViewModel, time: String, isSaved: Boolean) {
     val isOpen = remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
 
-        Text(text = "¿A qué hora te fuiste a dormir?", fontSize = 16.sp, color = secondaryColor)
+        Text(text = "¿A qué hora te fuiste a dormir?", fontSize = 16.sp, color = secondaryColor, modifier = Modifier.weight(0.6f))
 
-        Spacer(modifier = Modifier.width(16.dp))
+        //Spacer(modifier = Modifier.width(16.dp))
 
         Box(contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxWidth()
             .padding(start = 40.dp, end = 2.dp)
+            .weight(0.4f)
             .clickable(enabled = !isSaved) { isOpen.value = true }
         ) {
             OutlinedTextField(
