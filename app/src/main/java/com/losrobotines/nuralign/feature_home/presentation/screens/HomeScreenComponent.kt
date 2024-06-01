@@ -1,5 +1,4 @@
 package com.losrobotines.nuralign.feature_home.presentation.screens
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,15 +23,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_home.presentation.utils.HomeItemData
 import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.notification.Notification
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
-
 @Composable
 fun HomeScreenComponent(navController: NavController) {
     val homeItemsList = listOf(
@@ -47,8 +47,10 @@ fun HomeScreenComponent(navController: NavController) {
     )
 
     var isVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val notification = Notification()
 
-    Column() {
+    Column {
         LazyVerticalGrid(
             columns = GridCells.Fixed(1)
         ) {
@@ -83,18 +85,24 @@ fun HomeScreenComponent(navController: NavController) {
             items(homeItemsList.size) { item ->
                 HomeCardItem(homeItemsList[item], navController)
             }
-            item{
-                Button(onClick = {isVisible = true}) {
-                    
+            item {
+                Button(onClick = { isVisible = true }) {
+
                 }
             }
         }
-
+        Button(onClick = { notification.notificacionProgramada(context) }) {
+            Text(text = "Mostrar Notificación")
+        }
     }
-    SharedComponents().CompanionCongratulation(isVisible = isVisible) { goToNextTracker(navController, Routes.MoodTrackerScreen.route) }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+        goToNextTracker(
+            navController,
+            Routes.MoodTrackerScreen.route
+        )
+    }
 }
-
-fun goToNextTracker(navController: NavController, route: String){
+fun goToNextTracker(navController: NavController, route: String) {
     navController.navigate(route)
 }
 
@@ -147,8 +155,14 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                     .size(60.dp)
                     .padding(4.dp)
             )
-            Text(text = homeItemData.name, color = mainColor, textAlign = TextAlign.Center, fontSize = 14.sp)
+            Text(
+                text = homeItemData.name,
+                color = mainColor,
+                textAlign = TextAlign.Center,
+                fontSize = 14.sp
+            )
         }
 
     }
 }
+
