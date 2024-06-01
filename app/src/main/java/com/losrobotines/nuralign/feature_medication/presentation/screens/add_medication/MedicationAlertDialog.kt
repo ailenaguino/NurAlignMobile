@@ -68,7 +68,7 @@ fun AddMedicationAlertDialog(
         },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
-            Button(onClick = { confirmButton() }) {
+            Button(onClick = { confirmButton()  }) {
                 Text("Guardar")
             }
         },
@@ -81,8 +81,40 @@ fun AddMedicationAlertDialog(
 }
 
 @Composable
-fun EditMedicationAlertDialog() {
-
+fun EditMedicationAlertDialog(
+    onDismissRequest: () -> Unit,
+    confirmButton: () -> Unit,
+    medicationName: String,
+    medicationGrammage: Int
+) {
+    AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 15.dp),
+        title = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "$medicationName - $medicationGrammage",
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        text = {
+            MedicationRow()
+        },
+        onDismissRequest = { onDismissRequest() },
+        confirmButton = {
+            Button(onClick = { confirmButton() }) {
+                Text("Guardar cambios")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismissRequest() }) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 @Composable

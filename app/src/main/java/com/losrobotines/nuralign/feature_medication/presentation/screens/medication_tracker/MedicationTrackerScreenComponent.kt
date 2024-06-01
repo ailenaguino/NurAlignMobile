@@ -27,10 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication.AddMedicationAlertDialog
+import com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication.EditMedicationAlertDialog
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -97,7 +99,7 @@ fun MedicationElement() {
                 .weight(0.15f)
                 .padding(horizontal = 4.dp)
         ) {
-            EditMedication()
+            EditMedication(medicationName, medicationGrammage)
         }
         Box(
             contentAlignment = Alignment.CenterEnd,
@@ -109,7 +111,10 @@ fun MedicationElement() {
             Checkbox(
                 checked = isChecked,
                 onCheckedChange = { isChecked = it },
-                colors = CheckboxDefaults.colors(checkedColor = secondaryColor, uncheckedColor = secondaryColor)
+                colors = CheckboxDefaults.colors(
+                    checkedColor = secondaryColor,
+                    uncheckedColor = secondaryColor
+                )
             )
         }
     }
@@ -137,7 +142,7 @@ fun AddIcon(addMedicationViewModel: MedicationViewModel) {
 }
 
 @Composable
-fun EditMedication() {
+fun EditMedication(medicationName: String, medicationGrammage: Int) {
     var openAlertDialog by remember { mutableStateOf(false) }
 
     IconButton(
@@ -145,9 +150,11 @@ fun EditMedication() {
     ) {
         Icon(Icons.Default.ModeEdit, contentDescription = "editar", tint = secondaryColor)
         if (openAlertDialog) {
-            AddMedicationAlertDialog(
+            EditMedicationAlertDialog(
                 onDismissRequest = { openAlertDialog = false },
-                confirmButton = { openAlertDialog = false }
+                confirmButton = { openAlertDialog = false },
+                medicationName = medicationName,
+                medicationGrammage = medicationGrammage
             )
         }
     }

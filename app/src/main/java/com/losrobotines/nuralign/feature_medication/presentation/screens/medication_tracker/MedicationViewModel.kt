@@ -1,29 +1,33 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker
 
-import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationInfo
-import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationRepository
+import com.losrobotines.nuralign.feature_home.domain.usecases.GetPatientIdUseCase
+import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
+import com.losrobotines.nuralign.feature_medication.domain.usecases.EditExistingMedicationInListUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.GetMedicationInfoFromDatabaseUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.PrepareMedicationDataToSaveItIntoDatabaseUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.SaveMedicationInfoToDatabaseUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.SaveMedicationInfoToMedicationListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class MedicationViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val medicationRepository: MedicationRepository
+    private val getPatientIdUseCase: GetPatientIdUseCase,
+    private val getMedicationInfoFromDatabaseUseCase: GetMedicationInfoFromDatabaseUseCase,
+    private val saveMedicationInfoToDatabaseUseCase: SaveMedicationInfoToDatabaseUseCase,
+    private val prepareMedicationDataToSaveItIntoDatabaseUseCase: PrepareMedicationDataToSaveItIntoDatabaseUseCase,
+    private val saveMedicationInfoToMedicationListUseCase: SaveMedicationInfoToMedicationListUseCase,
+    private val editExistingMedicationInListUseCase: EditExistingMedicationInListUseCase
 ) : ViewModel() {
-    val medicationList = mutableListOf<MedicationInfo>()
-    val medicationName = mutableStateOf("viewmodel")
-    val medicationGrammage = mutableIntStateOf(9)
-    val medicationOptionalFlag = mutableStateOf("viewmodel")
+    private var medicationList = mutableListOf<MedicationInfo>()
+    private val medicationName = mutableStateOf("viewmodel")
+    private val medicationGrammage = mutableIntStateOf(9)
+    private val medicationOptionalFlag = mutableStateOf("viewmodel")
 
     init {
         loadMedicationInfoFromDatabase()
@@ -32,23 +36,7 @@ class MedicationViewModel @Inject constructor(
     private fun loadMedicationInfoFromDatabase() {
         viewModelScope.launch {
             try {
-                if (currentUserExists()) {
-                    val patientId =
-                        2.toShort() //una vez que esté el GET con patient_id, reemplazar por getPatientId()
-                    val info = medicationRepository.getMedicationList(patientId)
-                    if (info.isNotEmpty()) {
-                        for (med in info) {
-                            medicationList.add(
-                                MedicationInfo(
-                                    patientId,
-                                    med!!.medicationName,
-                                    med.medicationGrammage,
-                                    med.medicationOptionalFlag
-                                )
-                            )
-                        }
-                    }
-                }
+                getMedicationInfoFromDatabaseUseCase(getPatientIdUseCase())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -57,35 +45,36 @@ class MedicationViewModel @Inject constructor(
 
     fun saveData() {
         viewModelScope.launch {
-            medicationRepository.saveMedicationInfo(medicationList)
+            try {
+                saveMedicationInfoToDatabaseUseCase(
+                    prepareMedicationDataToSaveItIntoDatabaseUseCase(
+                        medicationList
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
-    private suspend fun getPatientId(): Short {
-        val idResult: Short
-        val uid = authRepository.currentUser!!.uid
-        val doc = Firebase.firestore.collection("users").document(uid)
-        idResult = doc.get().await().getLong("id")!!.toShort()
-        return idResult
-    }
-
-    private fun currentUserExists(): Boolean {
-        return authRepository.currentUser != null
-    }
-
-    private fun addNewMedicationToList(medication: MedicationInfo) {
-        medicationList.add(
-            MedicationInfo(
-                medication.patientId,
-                medication.medicationName,
-                medication.medicationGrammage,
-                medication.medicationOptionalFlag
+    private suspend fun addNewMedicationToList() {
+        try {
+            medicationList = saveMedicationInfoToMedicationListUseCase(
+                MedicationInfo(
+                    getPatientIdUseCase(),
+                    medicationName.value,
+                    medicationGrammage.intValue,
+                    medicationOptionalFlag.value
+                ), medicationList
             )
-        )
-
-        Log.d(
-            "addNewMedicationToList",
-            "medicación: ${medicationName.value} ${medicationGrammage.intValue}mg agregado al paciente ${medication.patientId}"
-        )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
+/*
+    private suspend fun editExistingMedication(medicationName: String, medicationGrammage: Int) {
+        editExistingMedicationInListUseCase(medicationName, medicationGrammage)
+    }
+ */
 }

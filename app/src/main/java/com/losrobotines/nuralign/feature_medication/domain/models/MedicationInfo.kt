@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_medication.domain.providers
+package com.losrobotines.nuralign.feature_medication.domain.models
 
 data class MedicationInfo(
     val patientId: Short,

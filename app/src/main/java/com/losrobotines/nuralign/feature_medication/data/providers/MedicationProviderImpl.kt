@@ -3,14 +3,14 @@ package com.losrobotines.nuralign.feature_medication.data.providers
 import android.util.Log
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
-import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationInfo
+import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationRepository
 import javax.inject.Inject
 
 class MedicationProviderImpl @Inject constructor(private val apiService: MedicationApiService) :
     MedicationRepository {
 
-    override suspend fun saveMedicationInfo(medicationInfo: MutableList<MedicationInfo>) {
+    override suspend fun saveMedicationInfo(medicationInfo: List<MedicationInfo>) {
         try {
             for (med in medicationInfo) {
                 val dto = mapDomainToData(med)
@@ -25,7 +25,7 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         }
     }
 
-    override suspend fun getMedicationList(patientId: Short): List<MedicationInfo?> {
+    override suspend fun getMedicationList(patientId: Short): MutableList<MedicationInfo?> {
         val dto = apiService.getMedicationList(patientId)
         Log.d("MedicationRepository", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
@@ -41,8 +41,8 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         )
     }
 
-    private fun mapDataToDomain(dto: List<MedicationDto?>): List<MedicationInfo> {
-        val list = mutableListOf<MedicationInfo>()
+    private fun mapDataToDomain(dto: List<MedicationDto?>): MutableList<MedicationInfo?> {
+        val list = mutableListOf<MedicationInfo?>()
         dto.let {
             for (med in it) {
                 if (med != null) {
