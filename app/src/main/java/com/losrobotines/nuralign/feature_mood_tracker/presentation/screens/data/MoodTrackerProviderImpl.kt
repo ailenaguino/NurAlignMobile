@@ -3,12 +3,13 @@ package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data
 import android.util.Log
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import retrofit2.HttpException
 import javax.inject.Inject
 
-class MoodTrackerRepositoryImpl @Inject constructor(private val apiService: MoodTrackerApiService) :
-    MoodTrackerRepository {
+class MoodTrackerProviderImpl @Inject constructor(private val apiService: MoodTrackerApiService) :
+    MoodTrackerProvider {
     override suspend fun saveMoodTrackerInfo(moodTrackerInfo: MoodTrackerInfo) {
         try {
             val dto = mapDomainToData(moodTrackerInfo)
@@ -26,6 +27,16 @@ class MoodTrackerRepositoryImpl @Inject constructor(private val apiService: Mood
         val dto = apiService.getMoodTrackerInfo(patientId)
         Log.d("MoodTrackerRepository", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
+    }
+
+    override suspend fun getTodaysTracker(patientId: Int, date: String): MoodTrackerInfo? {
+        try {
+            //val response = apiService.getTodaysTracker(patientId,date)
+            val response = null
+            return mapDataToDomain(response)
+        } catch (e: HttpException) {
+            return null
+        }
     }
 
 

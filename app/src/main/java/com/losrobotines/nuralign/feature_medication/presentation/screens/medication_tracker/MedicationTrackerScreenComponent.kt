@@ -10,14 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,8 +54,21 @@ fun MedicationTrackerScreenComponent(
                 SharedComponents().HalfCircleTop(title = "Toma diaria de medicación")
             }
             item {
-                Box(modifier = Modifier.padding(top = 8.dp)) {
-                    SharedComponents().CompanionTextBalloon("¡Hola! ¿Cómo estás hoy?")
+                LargeFloatingActionButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(10.dp),
+                    containerColor = mainColor,
+                    modifier = Modifier.padding(8.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 7.dp
+                    )
+                ) {
+                    SharedComponents().fabCompanion(
+                        listOf(
+                            "¡Hola! ¿Cómo estás hoy?",
+                            "Clickeame para esconder mi diálogo"
+                        )
+                    )
                 }
             }
         }

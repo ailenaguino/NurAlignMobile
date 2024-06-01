@@ -4,14 +4,16 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -22,14 +24,17 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MoodTrackerViewModel @Inject constructor(
-    private val moodTrackerRepository: MoodTrackerRepository,
-    private val authRepository: AuthRepository
+    private val moodTrackerProvider: MoodTrackerProvider,
+    private val authRepository: AuthRepository,
+    private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
 ) : ViewModel() {
 
     val isSaved = MutableLiveData(false)
 
-    val effectiveDate = MutableLiveData<LocalDate>()
+    private val _route = MutableLiveData("")
+    var route: LiveData<String> = _route
 
+    val effectiveDate = MutableLiveData<LocalDate>()
 
     val highestValue = mutableIntStateOf(-1)
     val highestNote = mutableStateOf("")
@@ -55,7 +60,7 @@ class MoodTrackerViewModel @Inject constructor(
                     val patientId =
                         14 // ************************(AUNMENTAR CADA VEZ QUE AGREGES EN LA BASE DE DATOS)******************
                     val date = getDate()
-                    val info = moodTrackerRepository.getMoodTrackerInfo(patientId)
+                    val info = moodTrackerProvider.getMoodTrackerInfo(patientId)
                     if (info != null) {
                         highestValue.intValue = info.highestValue.toInt()
                         highestNote.value = info.highestNote
@@ -81,9 +86,9 @@ class MoodTrackerViewModel @Inject constructor(
 
     fun saveData() {
         viewModelScope.launch {
-            moodTrackerRepository.saveMoodTrackerInfo(
+            moodTrackerProvider.saveMoodTrackerInfo(
                 MoodTrackerInfo(
-                    patientId = getPatentId(),
+                    patientId = patientId(),
                     effectiveDate = getDate(),
                     highestValue = highestValue.intValue.toString(),
                     lowestValue = lowestValue.intValue.toString(),
@@ -107,7 +112,7 @@ class MoodTrackerViewModel @Inject constructor(
     }
 
 
-    private suspend fun getPatentId(): Short {
+    private suspend fun patientId(): Short {
         val idResult: Short
         val uid = authRepository.currentUser!!.uid
         val doc = Firebase.firestore.collection("users").document(uid)
@@ -117,6 +122,12 @@ class MoodTrackerViewModel @Inject constructor(
 
     private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
+    }
+
+    fun checkNextTracker(){
+        viewModelScope.launch {
+            _route.value = checkNextTrackerToBeCompletedUseCase(patientId().toInt())
+        }
     }
 
 }

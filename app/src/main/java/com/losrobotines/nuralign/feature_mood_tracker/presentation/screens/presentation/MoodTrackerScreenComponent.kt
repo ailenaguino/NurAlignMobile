@@ -29,6 +29,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -53,7 +55,6 @@ import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -64,15 +65,35 @@ fun MoodTrackerScreenComponent(
     val context = LocalContext.current.applicationContext
     var isVisibleSelectedAnimos by remember { mutableStateOf(false) }
     val isSaved by moodTrackerViewModel.isSaved.observeAsState(false)
+    val route by moodTrackerViewModel.route.observeAsState("")
+    var isVisible by remember { mutableStateOf(false) }
+
 
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
             SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
         }
+        item{
+            LargeFloatingActionButton(
+                onClick = {},
+                shape = RoundedCornerShape(10.dp),
+                containerColor = mainColor,
+                modifier = Modifier.padding(8.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 7.dp
+                )
+            ) {
+                SharedComponents().fabCompanion(
+                    listOf(
+                        "¿Cómo te sentiste hoy?",
+                        "Clickeame para esconder mi diálogo"
+                    )
+                )
+            }
+        }
         item {
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(modifier = Modifier.height(10.dp))
-                SharedComponents().CompanionTextBalloon("¿Cómo te sentiste hoy?")
                 Linea()
                 Spacer(modifier = Modifier.height(10.dp))
             }
@@ -81,13 +102,28 @@ fun MoodTrackerScreenComponent(
         item { AnimoElevado(moodTrackerViewModel, isSaved) }
         item { AnimoIrritable(moodTrackerViewModel, isSaved) }
         item { AnimoAnsioso(moodTrackerViewModel, isSaved) }
-        item { saveButtom(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved) }
+        item { saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved) }
+        item{
+            Button(onClick = {
+                //verificacion de que se guardó la info
+                isVisible = true
+                moodTrackerViewModel.checkNextTracker()
+            }) {}
+        }
     }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) { goToNextTracker(navController, route) }
+}
+
+fun goToNextTracker(navController: NavController, route: String){
+    if(route == ""){
+        //loading circle visible
+    }
+    navController.navigate(route)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun saveButtom(
+private fun saveButton(
     moodTrackerViewModel: MoodTrackerViewModel,
     context: Context?,
     isVisibleSelectedAnimos: Boolean,

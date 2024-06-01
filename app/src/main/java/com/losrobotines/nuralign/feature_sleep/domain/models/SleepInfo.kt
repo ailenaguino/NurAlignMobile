@@ -4,7 +4,7 @@ data class SleepInfo(
     val patientId: Short,
     val effectiveDate: String,
     val sleepHours: Short,
-    val bedTime: Short,
+    val bedTime: String,
     val negativeThoughtsFlag: String,
     val anxiousFlag: String,
     val sleepStraightFlag: String,
