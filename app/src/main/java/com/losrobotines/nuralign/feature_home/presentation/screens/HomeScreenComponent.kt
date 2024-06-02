@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_home.presentation.screens
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,12 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_home.presentation.utils.HomeItemData
 import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 
@@ -45,56 +48,67 @@ fun HomeScreenComponent(navController: NavController) {
         HomeItemData.Achievement,
         HomeItemData.Routine
     )
-
+    val context = LocalContext.current
     var isVisible by remember { mutableStateOf(false) }
+    val preferencesManager = remember { PreferencesManager(context) }
 
-    Column() {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1)
-        ) {
-            item {
-                SharedComponents().HalfCircleTop(title = "Bienvenido Carlos")
-            }
-            item {
-                LargeFloatingActionButton(
-                    onClick = {},
-                    shape = RoundedCornerShape(10.dp),
-                    containerColor = mainColor,
-                    modifier = Modifier.padding(8.dp),
-                    elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 7.dp
-                    )
-                ) {
-                    SharedComponents().fabCompanion(
-                        listOf(
-                            "¡Hola! ¿Cómo estás hoy?",
-                            "Clickeame para esconder mi diálogo"
+    if (preferencesManager.getBoolean("first_time", true)) {
+        context.startActivity(Intent(context, FirstTimeActivity::class.java))
+        //preferencesManager.saveBooleanData("first_time", false)
+    } else {
+        Column() {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1)
+            ) {
+                item {
+                    SharedComponents().HalfCircleTop(title = "Bienvenido Carlos")
+                }
+                item {
+                    LargeFloatingActionButton(
+                        onClick = {},
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = mainColor,
+                        modifier = Modifier.padding(8.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 7.dp
                         )
-                    )
+                    ) {
+                        SharedComponents().fabCompanion(
+                            listOf(
+                                "¡Hola! ¿Cómo estás hoy?",
+                                "Clickeame para esconder mi diálogo"
+                            )
+                        )
+                    }
                 }
             }
-        }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.padding(16.dp)
-        ) {
-            items(homeItemsList.size) { item ->
-                HomeCardItem(homeItemsList[item], navController)
-            }
-            item{
-                Button(onClick = {isVisible = true}) {
-                    
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                items(homeItemsList.size) { item ->
+                    HomeCardItem(homeItemsList[item], navController)
                 }
-            }
-        }
+                item {
+                    Button(onClick = { isVisible = true }) {
 
+                    }
+                }
+            }
+
+        }
     }
-    SharedComponents().CompanionCongratulation(isVisible = isVisible) { goToNextTracker(navController, Routes.MoodTrackerScreen.route) }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+        goToNextTracker(
+            navController,
+            Routes.MoodTrackerScreen.route
+        )
+    }
 }
 
-fun goToNextTracker(navController: NavController, route: String){
+fun goToNextTracker(navController: NavController, route: String) {
     navController.navigate(route)
 }
 
@@ -147,7 +161,12 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                     .size(60.dp)
                     .padding(4.dp)
             )
-            Text(text = homeItemData.name, color = mainColor, textAlign = TextAlign.Center, fontSize = 14.sp)
+            Text(
+                text = homeItemData.name,
+                color = mainColor,
+                textAlign = TextAlign.Center,
+                fontSize = 14.sp
+            )
         }
 
     }

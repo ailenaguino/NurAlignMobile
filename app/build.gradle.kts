@@ -66,6 +66,9 @@ android {
 
     packagingOptions {
         exclude("")
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 
 
@@ -122,6 +125,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
+    //shared preferences
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
 
     implementation("androidx.core:core-ktx:1.12.0")
