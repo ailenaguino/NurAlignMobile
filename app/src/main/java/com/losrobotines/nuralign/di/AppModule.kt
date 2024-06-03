@@ -7,6 +7,9 @@ import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
+import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
+import com.losrobotines.nuralign.feature_medication.data.providers.MedicationProviderImpl
+import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationRepository
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
@@ -101,5 +104,12 @@ object AppModule {
         return GetSleepDataUseCase(sleepRepository)
     }
 
-
+    @Provides
+    fun provideMedicationApiService(retrofit: Retrofit): MedicationApiService{
+        return retrofit.create(MedicationApiService::class.java)
+    }
+    @Provides
+    fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationRepository{
+        return MedicationProviderImpl(medicationApiService)
+    }
 }

@@ -28,7 +28,6 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginV
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
-import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
@@ -36,6 +35,8 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewMod
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationTrackerScreenComponent
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationViewModel
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
@@ -115,7 +116,8 @@ class MainActivity : ComponentActivity() {
                                     MoodTrackerScreenComponent(navController, moodTrackerViewModel)
                                 }
                                 composable(Routes.AddMedicationScreen.route) {
-                                    AddMedicationScreenComponent(navController)
+                                    val medicationViewModel by viewModels<MedicationViewModel>()
+                                    MedicationTrackerScreenComponent(navController, medicationViewModel)
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {
                                     val sleepViewModel by viewModels<SleepViewModel>()
