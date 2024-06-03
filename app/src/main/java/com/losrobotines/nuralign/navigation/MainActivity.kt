@@ -1,18 +1,11 @@
 package com.losrobotines.nuralign.navigation
 
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
@@ -21,12 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -49,58 +38,50 @@ import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTra
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
+import com.losrobotines.nuralign.notification.Notification
+import com.losrobotines.nuralign.notification.NotificationHelper
+import com.losrobotines.nuralign.notification.PermissionManager
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel by viewModels<LoginViewModel>()
+    private lateinit var permissionManager: PermissionManager
 
     @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter", "InlinedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize PermissionManager
+        permissionManager = PermissionManager(this)
+        NotificationHelper.createNotificationChannel(this)
+
+
         setContent {
-            var permissionStatus by remember { mutableStateOf("Permiso no solicitado") }
-
-            val permissionLauncher =
-                rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { granted ->
-                    permissionStatus = if (granted) "Permiso concedido" else "Permiso denegado"
-                }
-
-            val exactAlarmLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                // Verificar si el permiso ha sido concedido después de la solicitud
-                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                permissionStatus = if (alarmManager.canScheduleExactAlarms()) {
-                    "Permiso de alarma exacta concedido"
-                } else {
-                    "Permiso de alarma exacta denegado"
-                }
-            }
-
-            LaunchedEffect(Unit) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    if (!alarmManager.canScheduleExactAlarms()) {
-                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                        exactAlarmLauncher.launch(intent)
-                    }
-                }
-            }
-
             NurAlignTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     val navController: NavHostController = rememberNavController()
                     val loginState by loginViewModel.loginFlow.collectAsState(null)
                     val isAuthenticated = loginState is LoginState.Success
+
+
+
+                    val notification = Notification()
+
+                    // Supongamos que obtienes estos valores de la configuración del usuario
+                    val notificationHour = 12 // Reemplazar con la hora deseada
+                    val notificationMinute = 50 // Reemplazar con los minutos deseados
+
+                    NotificationHelper.createNotificationChannel(this)
+
 
                     val startDestination = when (loginState) {
                         is LoginState.Success -> Routes.HomeScreen.route
@@ -155,11 +136,18 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.PersonalInformationScreen.route) {
                                     PersonalInformationScreenComponent(navController)
                                 }
+                                composable(Routes.RoutineScreen.route) {
+                                    val routineViewModel by viewModels<RoutineViewModel>()
+                                    RoutineScreenComponent(navController,routineViewModel)
+                                }
                             }
                         }
                     }
+                    if(isAuthenticated) permissionManager.requestPermissions()
                 }
             }
         }
     }
+
+
 }

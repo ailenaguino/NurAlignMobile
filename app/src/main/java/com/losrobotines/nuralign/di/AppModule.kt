@@ -16,6 +16,7 @@ import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
+import com.losrobotines.nuralign.notification.Notification
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -76,6 +77,11 @@ object AppModule {
     @Provides
     fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerProvider {
         return MoodTrackerProviderImpl(moodTrackerApiService)
+    }
+
+    @Provides
+    fun provideNotification(): Notification {
+        return Notification()
     }
 
 

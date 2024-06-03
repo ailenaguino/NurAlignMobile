@@ -1,4 +1,5 @@
 package com.losrobotines.nuralign.feature_home.presentation.screens
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +34,7 @@ import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.notification.Notification
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
+
 @Composable
 fun HomeScreenComponent(navController: NavController) {
     val homeItemsList = listOf(
@@ -91,8 +93,8 @@ fun HomeScreenComponent(navController: NavController) {
                 }
             }
         }
-        Button(onClick = { notification.notificacionProgramada(context) }) {
-            Text(text = "Mostrar Notificación")
+        Button(onClick = { navController.navigate(Routes.RoutineScreen.route) }) {
+            Text(text = "Rutina")
         }
     }
     SharedComponents().CompanionCongratulation(isVisible = isVisible) {
@@ -102,6 +104,7 @@ fun HomeScreenComponent(navController: NavController) {
         )
     }
 }
+
 fun goToNextTracker(navController: NavController, route: String) {
     navController.navigate(route)
 }
