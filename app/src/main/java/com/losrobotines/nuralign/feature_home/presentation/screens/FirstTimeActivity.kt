@@ -1,11 +1,13 @@
 package com.losrobotines.nuralign.feature_home.presentation.screens
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,79 +69,83 @@ class FirstTimeActivity : ComponentActivity() {
     }
 }
 
+
+@Preview
 @Composable
 private fun FirstTimeScreen() {
 
     var isFirstTimeVisible by remember { mutableStateOf(true) }
-    var isTutorialVisible by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(mainColor)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        AnimatedVisibility(visible = isFirstTimeVisible, enter = scaleIn(tween(2000))) {
-            Box(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .clip(shape = CircleShape)
-                    .background(secondaryColor)
-                    .size(300.dp)
-                    .wrapContentSize(Alignment.Center)
-            ) {
-                Image(
-                    painterResource(id = R.drawable.robotin_bebe_contento),
-                    contentDescription = "Robotín",
+    AnimatedContent(
+        targetState = isFirstTimeVisible,
+        modifier = Modifier.fillMaxSize(),
+        transitionSpec = { slideInHorizontally { it } togetherWith slideOutHorizontally (targetOffsetX = { -it }) },
+        content = {it ->
+            if(it){
+                Column(
                     modifier = Modifier
-                        .size(200.dp)
-                        .padding(4.dp)
-                )
+                        .fillMaxSize()
+                        .background(mainColor)
+                        .wrapContentSize(Alignment.Center)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(bottom = 24.dp)
+                            .clip(shape = CircleShape)
+                            .background(secondaryColor)
+                            .size(300.dp)
+                            .wrapContentSize(Alignment.Center)
+                    ) {
+                        Image(
+                            painterResource(id = R.drawable.robotin_bebe_contento),
+                            contentDescription = "Robotín",
+                            modifier = Modifier
+                                .size(200.dp)
+                                .padding(4.dp)
+                        )
+                    }
+                    ElevatedCard(
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 10.dp
+                        ),
+                        modifier = Modifier
+                            .height(150.dp)
+                            .width(300.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .wrapContentSize(Alignment.Center),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .weight(0.6f)
+                        ) {
+                            SharedComponents().TypewriterText(
+                                texts = listOf(
+                                    "¡Hola, gracias por instalar NurAlign! Yo soy Robotín \uD83E\uDD16",
+                                    "Vamos a dar un tour por mi casa (la aplicación \uD83D\uDE0B), acompañame."
+                                ), 70
+                            )
+                        }
+                        Button(
+                            onClick = { isFirstTimeVisible = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(text = "Seguir a Robotín")
+                        }
+                    }
+                }
+            } else {
+                Tutorial()
             }
-        }
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp
-            ),
-            modifier = Modifier
-                .height(150.dp)
-                .width(300.dp)
-                .align(Alignment.CenterHorizontally)
-                .wrapContentSize(Alignment.Center),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .weight(0.6f)
-            ) {
-                SharedComponents().TypewriterText(
-                    texts = listOf(
-                        "¡Hola, gracias por instalar NurAlign! Yo soy Robotín \uD83E\uDD16",
-                        "Vamos a dar un tour por mi casa (la aplicación \uD83D\uDE0B), acompañame."
-                    ), 70
-                )
-            }
-            Button(
-                onClick = {
-                    isFirstTimeVisible = false
-                    isTutorialVisible = true
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-                modifier = Modifier
-                    .weight(0.4f)
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(text = "Seguir a Robotín")
-            }
-        }
-        AnimatedVisibility(visible = isTutorialVisible, enter = scaleIn(tween(2000))) {
-            Tutorial()
-        }
-    }
+        }, label = ""
+    )
 }
 
 @Preview
@@ -147,7 +154,7 @@ fun Tutorial() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(mainColor)
+            .background(mainColor).wrapContentSize(Alignment.Center)
     ) {
 
         Row(
@@ -188,19 +195,22 @@ fun Tutorial() {
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    SharedComponents().TypewriterText(
-                        texts = listOf("En la pantalla de 'Inicio' vas a ver íconos como este para ir a distintas partes de la aplicación"),
-                        50
+                    Text(
+                        text = "En la pantalla de 'Inicio' vas a ver íconos como este para ir a distintas partes de la aplicación.",
+                        fontSize = 20.sp,
+                        color = Color.Black
                     )
                 }
             }
         }
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .align(Alignment.CenterHorizontally),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             CardToShowFirst()
             ButtonOk()
         }
@@ -244,7 +254,8 @@ fun CardToShowFirst() {
 
 @Composable
 fun ButtonOk() {
-    Button(onClick = { }, colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)) {
+    val context = LocalContext.current
+    Button(onClick = { context.startActivity(Intent(context, TutorialActivity::class.java)) }, colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)) {
         Text(text = "¡Ok! Entendí, sigamos.", fontSize = 18.sp)
     }
 }

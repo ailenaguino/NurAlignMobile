@@ -17,6 +17,11 @@
         android:theme="@style/Theme.NurAlign"
         tools:targetApi="31">
         <activity
+            android:name=".feature_home.presentation.screens.TutorialActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tutorial"
+            android:theme="@style/Theme.NurAlign" />
+        <activity
             android:name=".feature_home.presentation.screens.FirstTimeActivity"
             android:exported="false"
             android:label="@string/title_activity_first_time"

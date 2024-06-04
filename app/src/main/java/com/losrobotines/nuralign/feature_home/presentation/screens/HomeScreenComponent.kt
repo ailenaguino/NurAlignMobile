@@ -2,6 +2,7 @@ package com.losrobotines.nuralign.feature_home.presentation.screens
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -27,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -35,14 +38,19 @@ import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
+import com.losrobotines.nuralign.ui.theme.secondaryColor
 
+private const val FIRST_TIME = "first_time"
 @Composable
 fun HomeScreenComponent(navController: NavController) {
-    val homeItemsList = listOf(
+    val homeItemsListTrackers = listOf(
         HomeItemData.Mood,
         HomeItemData.Medication,
         HomeItemData.Sleep,
-        HomeItemData.Therapy,
+        HomeItemData.Therapy
+    )
+
+    val homeItemsListOthers = listOf(
         HomeItemData.WeeklySummary,
         HomeItemData.Companion,
         HomeItemData.Achievement,
@@ -52,9 +60,9 @@ fun HomeScreenComponent(navController: NavController) {
     var isVisible by remember { mutableStateOf(false) }
     val preferencesManager = remember { PreferencesManager(context) }
 
-    if (preferencesManager.getBoolean("first_time", true)) {
+    if (preferencesManager.getBoolean(FIRST_TIME, true)) {
+        preferencesManager.saveBooleanData(FIRST_TIME, false)
         context.startActivity(Intent(context, FirstTimeActivity::class.java))
-        //preferencesManager.saveBooleanData("first_time", false)
     } else {
         Column() {
             LazyVerticalGrid(
@@ -88,8 +96,13 @@ fun HomeScreenComponent(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
-                items(homeItemsList.size) { item ->
-                    HomeCardItem(homeItemsList[item], navController)
+                items(1){ Title(title = "Seguimientos:") }
+                items(homeItemsListTrackers.size) { item ->
+                    HomeCardItem(homeItemsListTrackers[item], navController)
+                }
+                items(1){ Title(title = "Otros:") }
+                items(homeItemsListOthers.size) { item ->
+                    HomeCardItem(homeItemsListOthers[item], navController)
                 }
                 item {
                     Button(onClick = { isVisible = true }) {
@@ -110,6 +123,14 @@ fun HomeScreenComponent(navController: NavController) {
 
 fun goToNextTracker(navController: NavController, route: String) {
     navController.navigate(route)
+}
+
+@Composable
+fun Title(title:String){
+    Column(Modifier.padding(8.dp)){
+        Text(text = title, fontSize = 24.sp, color = secondaryColor, modifier = Modifier.padding(4.dp))
+        Divider(thickness = 4.dp, color = secondaryColor)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,14 +177,14 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
             Icon(
                 imageVector = homeItemData.image,
                 contentDescription = "Seguimiento del ánimo",
-                tint = mainColor,
+                tint = homeItemData.color,
                 modifier = Modifier
                     .size(60.dp)
                     .padding(4.dp)
             )
             Text(
                 text = homeItemData.name,
-                color = mainColor,
+                color = homeItemData.color,
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp
             )
