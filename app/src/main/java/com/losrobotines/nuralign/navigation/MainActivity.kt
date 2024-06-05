@@ -4,6 +4,7 @@ package com.losrobotines.nuralign.navigation
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -41,11 +43,12 @@ import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.prese
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
-import com.losrobotines.nuralign.notification.Notification
-import com.losrobotines.nuralign.notification.NotificationHelper
-import com.losrobotines.nuralign.notification.PermissionManager
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
+import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -61,28 +64,17 @@ class MainActivity : ComponentActivity() {
         permissionManager = PermissionManager(this)
         NotificationHelper.createNotificationChannel(this)
 
-
         setContent {
             NurAlignTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
                     val navController: NavHostController = rememberNavController()
                     val loginState by loginViewModel.loginFlow.collectAsState(null)
                     val isAuthenticated = loginState is LoginState.Success
 
-
-
-                    val notification = Notification()
-
-                    // Supongamos que obtienes estos valores de la configuración del usuario
-                    val notificationHour = 12 // Reemplazar con la hora deseada
-                    val notificationMinute = 50 // Reemplazar con los minutos deseados
-
                     NotificationHelper.createNotificationChannel(this)
-
 
                     val startDestination = when (loginState) {
                         is LoginState.Success -> Routes.HomeScreen.route
@@ -140,16 +132,25 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable(Routes.RoutineScreen.route) {
                                     val routineViewModel by viewModels<RoutineViewModel>()
-                                    RoutineScreenComponent(navController,routineViewModel)
+                                    RoutineScreenComponent(navController, routineViewModel)
+                                }
+                            }
+                            LaunchedEffect(navController, loginState) {
+                                val currentIntent = intent
+                                val destination = currentIntent?.getStringExtra("destination")
+                                if (destination != null && isAuthenticated) {
+                                    when (destination) {
+                                        "SleepTrackerScreen" -> {
+                                            navController.navigate(Routes.SleepTrackerScreen.route)
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                    if(isAuthenticated) permissionManager.requestPermissions()
+                    if (isAuthenticated) permissionManager.requestPermissions()
                 }
             }
         }
     }
-
-
 }

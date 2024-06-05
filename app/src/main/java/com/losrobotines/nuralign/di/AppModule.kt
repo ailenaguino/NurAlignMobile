@@ -19,7 +19,7 @@ import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
-import com.losrobotines.nuralign.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

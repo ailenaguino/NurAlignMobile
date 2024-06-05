@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.notification
+package com.losrobotines.nuralign.feature_routine.domain.notification
 
 import android.provider.Settings
 import android.Manifest

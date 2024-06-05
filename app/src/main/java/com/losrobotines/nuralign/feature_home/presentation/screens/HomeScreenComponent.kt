@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_home.presentation.utils.HomeItemData
 import com.losrobotines.nuralign.navigation.Routes
-import com.losrobotines.nuralign.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 
@@ -142,6 +142,10 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
 
                 6 -> {
                     navController.navigate(Routes.AchievementsScreen.route)
+                }
+
+                7 -> {
+                    navController.navigate(Routes.RoutineScreen.route)
                 }
             }
         }
