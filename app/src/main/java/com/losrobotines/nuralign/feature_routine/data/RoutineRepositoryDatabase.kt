@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class RoutineRepositoryDatabase @Inject constructor(private val dao: RoutineDao) {
 
-    fun addRoutine(routine: RoutineEntity) {
+    suspend fun addRoutine(routine: RoutineEntity) {
         dao.insert(routine)
     }
 
@@ -14,17 +14,17 @@ class RoutineRepositoryDatabase @Inject constructor(private val dao: RoutineDao)
         return dao.getAll()
     }
 
-    fun getRoutine(): RoutineEntity {
+    suspend fun getRoutine(): RoutineEntity {
         val response: List<RoutineEntity> = dao.getAll()
         return if (response.isNotEmpty()) {
             response[0]
         } else {
-
             RoutineEntity(
                 id = 0,
                 sleepTime = "",
                 activity = "",
-                activityTime = ""
+                activityTime = "",
+                activityDays = emptyList()
             )
         }
     }

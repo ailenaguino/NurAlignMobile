@@ -15,8 +15,7 @@ import java.time.LocalTime
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
-class Notification @Inject constructor(){
-
+class Notification @Inject constructor() {
     @SuppressLint("ScheduleExactAlarm", "NewApi", "LaunchActivityFromNotification")
     fun notificacionProgramada(
         context: Context,
@@ -24,40 +23,93 @@ class Notification @Inject constructor(){
         title: String,
         content: String,
         destination: String,
-        channelId: String,
-        notificationId: Int
+        notificationId: Int,
+        selectedDays: List<String>? = null
     ) {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, selectedTime.hour)
-            set(Calendar.MINUTE, selectedTime.minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+        NotificationHelper.createNotificationChannel(context)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-            // Si la hora seleccionada ya pasó para hoy, programa para el día siguiente
-            if (before(Calendar.getInstance())) {
-                add(Calendar.DAY_OF_MONTH, 1)
+        if (selectedDays.isNullOrEmpty()) {
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, selectedTime.hour)
+                set(Calendar.MINUTE, selectedTime.minute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+
+                if (before(Calendar.getInstance())) {
+                    add(Calendar.DAY_OF_MONTH, 1)
+                }
+            }
+
+            val intent = Intent(context, ScheduledNotification::class.java).apply {
+                putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
+                putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
+                putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
+                putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId)
+                putExtra(ScheduledNotification.NOTIFICATION_REPEAT, true) // Indicar que debe repetirse
+            }
+
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            alarmManager.cancel(pendingIntent)
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
+        } else {
+            val daysOfWeek = mapOf(
+                "Lu" to Calendar.MONDAY,
+                "Ma" to Calendar.TUESDAY,
+                "Mi" to Calendar.WEDNESDAY,
+                "Ju" to Calendar.THURSDAY,
+                "Vi" to Calendar.FRIDAY,
+                "Sa" to Calendar.SATURDAY,
+                "Do" to Calendar.SUNDAY
+            )
+
+            for (day in selectedDays) {
+                val calendar = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, selectedTime.hour)
+                    set(Calendar.MINUTE, selectedTime.minute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                    daysOfWeek[day]?.let { set(Calendar.DAY_OF_WEEK, it) }
+
+                    if (before(Calendar.getInstance())) {
+                        Log.d("Notification", "El día seleccionado ya pasó para esta semana. Programando para la próxima semana.")
+                        add(Calendar.WEEK_OF_YEAR, 1)
+                    }
+                }
+
+                val intent = Intent(context, ScheduledNotification::class.java).apply {
+                    putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
+                    putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
+                    putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
+                    putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId + daysOfWeek[day]!!)
+                }
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    notificationId + daysOfWeek[day]!!,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+                alarmManager.cancel(pendingIntent)
+
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
             }
         }
-
-        val intent = Intent(context, ScheduledNotification::class.java).apply {
-            putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
-            putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
-            putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
-            putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId) // Pasar el ID único
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            notificationId, // Usar el ID único para la notificación
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
     }
 }

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.runBlocking
 
 class PermissionManager(private val activity: ComponentActivity) {
 
@@ -22,18 +23,21 @@ class PermissionManager(private val activity: ComponentActivity) {
         val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
-    fun requestPermissions() {
-        requestNotificationPermission()
-        requestExactAlarmPermission()
+    suspend fun requestPermissions() {
+        runBlocking {
+            requestNotificationPermission()
+
+            requestExactAlarmPermission()
+        }
     }
 
-    private fun requestNotificationPermission() {
+    private suspend fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
-    private fun requestExactAlarmPermission() {
+    private suspend fun requestExactAlarmPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             if (!alarmManager.canScheduleExactAlarms()) {

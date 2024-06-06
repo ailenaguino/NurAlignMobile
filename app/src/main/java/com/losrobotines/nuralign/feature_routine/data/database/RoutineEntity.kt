@@ -10,12 +10,13 @@ data class RoutineEntity(
     val id: Int = 0,
     @ColumnInfo(name = "sleep_time")
     val sleepTime: String,
-    @ColumnInfo(name ="activity")
+    @ColumnInfo(name = "activity")
     val activity: String,
-    @ColumnInfo("activity_time")
-    val activityTime: String
+    @ColumnInfo(name = "activity_time")
+    val activityTime: String,
+    @ColumnInfo(name = "activity_days")
+    val activityDays: List<String>
 )
-
 
 
 

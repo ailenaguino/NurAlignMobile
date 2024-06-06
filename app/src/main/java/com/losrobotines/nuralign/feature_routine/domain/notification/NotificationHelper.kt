@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.navigation.MainActivity
@@ -21,10 +22,13 @@ object NotificationHelper {
             }
             val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+            Log.d("NotificationHelper", "Canal de notificación creado correctamente.")
         }
     }
 
     fun showNotification(context: Context, title: String, contentText: String, destination: String, notificationId: Int) {
+        Log.d("NotificationHelper", "Mostrando notificación: $title - $contentText")
+
         val intent = Intent(context, MainActivity::class.java).apply {
             putExtra("destination", destination)
         }
@@ -47,7 +51,11 @@ object NotificationHelper {
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(notificationId, notification)
+        if (notificationManager != null) {
+            notificationManager.notify(notificationId, notification)
+            Log.d("NotificationHelper", "Notificación mostrada correctamente")
+        } else {
+            Log.e("NotificationHelper", "Error al mostrar la notificación: notificationManager es nulo")
+        }
     }
 }
-

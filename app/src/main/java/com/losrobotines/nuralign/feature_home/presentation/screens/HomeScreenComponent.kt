@@ -93,9 +93,6 @@ fun HomeScreenComponent(navController: NavController) {
                 }
             }
         }
-        Button(onClick = { navController.navigate(Routes.RoutineScreen.route) }) {
-            Text(text = "Rutina")
-        }
     }
     SharedComponents().CompanionCongratulation(isVisible = isVisible) {
         goToNextTracker(

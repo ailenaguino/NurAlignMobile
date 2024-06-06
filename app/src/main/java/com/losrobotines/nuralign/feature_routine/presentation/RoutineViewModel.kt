@@ -4,15 +4,20 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_routine.data.RoutineRepositoryDatabase
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
+import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RoutineViewModel @Inject constructor(
-    private val routineRepository: RoutineRepositoryDatabase,
+    private val loadRoutineUseCase: LoadRoutineUseCase,
+    private val saveRoutineUseCase: SaveRoutineUseCase,
     val notification: Notification
 ) : ViewModel() {
 
@@ -41,14 +46,17 @@ class RoutineViewModel @Inject constructor(
     val activityRoutineTime: LiveData<String> = _activityRoutineTime
 
     init {
-        loadInitialRoutine()
+        viewModelScope.launch {
+            loadInitialRoutine()
+        }
     }
 
-    private fun loadInitialRoutine() {
-        val initialRoutine = routineRepository.getRoutine()
+    suspend fun loadInitialRoutine() {
+        val initialRoutine = loadRoutineUseCase.execute()
         _activityRoutineTime.value = initialRoutine.activityTime
         _bedTimeRoutine.value = initialRoutine.sleepTime
         _activity.value = initialRoutine.activity
+        selectedDays.addAll(initialRoutine.activityDays)
         if (_bedTimeRoutine.value != "") {
             setIsSavedRoutine(true)
         }
@@ -70,14 +78,16 @@ class RoutineViewModel @Inject constructor(
         _isSaved.value = value
     }
 
-    fun saveRoutine() {
+    suspend fun saveRoutine() {
         val routine = RoutineEntity(
             id = 0, // Ajusta según tu lógica de identificación
             sleepTime = _bedTimeRoutine.value ?: "",
             activity = _activity.value ?: "",
-            activityTime = _activityRoutineTime.value ?: "00:00"
+            activityTime = _activityRoutineTime.value ?: "00:00",
+            activityDays = selectedDays.toList() ?: emptyList()
+
         )
-        routineRepository.addRoutine(routine)
+        saveRoutineUseCase.execute(routine)
         _isSaved.value = true
     }
 }

@@ -48,6 +48,8 @@ import com.losrobotines.nuralign.feature_routine.domain.notification.Notificatio
 import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -109,7 +111,10 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable(Routes.AddMedicationScreen.route) {
                                     val medicationViewModel by viewModels<MedicationViewModel>()
-                                    MedicationTrackerScreenComponent(navController, medicationViewModel)
+                                    MedicationTrackerScreenComponent(
+                                        navController,
+                                        medicationViewModel
+                                    )
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {
                                     val sleepViewModel by viewModels<SleepViewModel>()
@@ -148,8 +153,12 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                    if (isAuthenticated) permissionManager.requestPermissions()
-                }
+                    runBlocking {
+                        if (isAuthenticated) {
+                            delay(2000) // Agrega un retraso de 2 segundos
+                            permissionManager.requestPermissions()
+                        }
+                    }                }
             }
         }
     }

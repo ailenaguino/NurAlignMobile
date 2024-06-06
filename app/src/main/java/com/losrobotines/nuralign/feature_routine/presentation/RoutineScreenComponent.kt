@@ -98,6 +98,7 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                 Button(onClick = {
                     val bedTime = routineViewModel.bedTimeRoutine.value
                     val activityTime = routineViewModel.activityRoutineTime.value
+                    val selectedDays = routineViewModel.selectedDays
 
                     if (bedTime.isNullOrEmpty()) {
                         Toast.makeText(
@@ -123,10 +124,9 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                         context,
                         selectedBedTime,
                         title = "Robotin",
-                        content = "Buenos días, ¿cómo dormiste anoche?",
+                        content = "¡Buenos días! ☀️ ¿Cómo amaneciste? 😊 Completa tu SleepTracker para empezar el día con energía 💪.",
                         destination = "SleepTrackerScreen",
-                        channelId = "bedtime_channel",
-                        notificationId = 1 // ID único para la notificación de la hora de dormir
+                        notificationId = 1
                     )
 
                     if (!activityTime.isNullOrEmpty()) {
@@ -150,12 +150,14 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                             title = "Robotin",
                             content = "Buenos días, Te falta poco para ir a ${routineViewModel.activity.value}",
                             destination = "HomeScreen",
-                            channelId = "activity_channel",
-                            notificationId = 2 // ID único para la notificación de la actividad
+                            notificationId = 2,
+                            selectedDays = selectedDays
                         )
                     }
 
-                    routineViewModel.saveRoutine()
+                    runBlocking {
+                        routineViewModel.saveRoutine()
+                    }
                     routineViewModel.setIsSavedRoutine(true)
                 }, enabled = !isSaved) {
                     Text("Guardar")
