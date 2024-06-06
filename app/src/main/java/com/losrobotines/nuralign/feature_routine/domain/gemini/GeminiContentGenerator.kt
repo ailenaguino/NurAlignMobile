@@ -1,13 +1,15 @@
-package com.losrobotines.nuralign.feature_routine.domain.notification.gemini
+package com.losrobotines.nuralign.feature_routine.domain.gemini
 
 import com.google.ai.client.generativeai.GenerativeModel
+
+private const val GEMINI_KEY = "AIzaSyBJT-pFK_lSZpP3CAs2CGAqKzoiGJC2Uls"
 
 class GeminiContentGenerator  {
 
     private fun createGenerativeModel(): GenerativeModel {
         return GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey ="AIzaSyBbsws2zdhgtwuh16ltff6p19YwELV85E0"
+            apiKey = GEMINI_KEY
         )
     }
 

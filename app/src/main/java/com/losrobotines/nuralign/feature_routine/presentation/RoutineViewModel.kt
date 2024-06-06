@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_routine.data.RoutineRepositoryDatabase
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.gemini.GeminiContentGenerator
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,20 +19,11 @@ import javax.inject.Inject
 class RoutineViewModel @Inject constructor(
     private val loadRoutineUseCase: LoadRoutineUseCase,
     private val saveRoutineUseCase: SaveRoutineUseCase,
+    private val geminiContentGenerator: GeminiContentGenerator,
     val notification: Notification
 ) : ViewModel() {
 
     val selectedDays = mutableStateListOf<String>()
-
-    fun addSelectedDay(day: String) {
-        if (!selectedDays.contains(day)) {
-            selectedDays.add(day)
-        }
-    }
-
-    fun removeSelectedDay(day: String) {
-        selectedDays.remove(day)
-    }
 
     private val _isSaved = MutableLiveData(false)
     val isSaved: LiveData<Boolean> = _isSaved
@@ -62,6 +54,24 @@ class RoutineViewModel @Inject constructor(
         }
     }
 
+    suspend fun saveRoutine() {
+        val routine = RoutineEntity(
+            id = 0,
+            sleepTime = _bedTimeRoutine.value ?: "",
+            activity = _activity.value ?: "",
+            activityTime = _activityRoutineTime.value ?: "00:00",
+            activityDays = selectedDays.toList() ?: emptyList()
+
+        )
+        saveRoutineUseCase.execute(routine)
+        _isSaved.value = true
+    }
+
+    suspend fun generateNotificationMessage(prompt: String): String? {
+        return geminiContentGenerator.generateContent(prompt)
+
+    }
+
     fun setSleepTimeRoutine(time: String) {
         _bedTimeRoutine.value = time
     }
@@ -77,17 +87,13 @@ class RoutineViewModel @Inject constructor(
     fun setIsSavedRoutine(value: Boolean) {
         _isSaved.value = value
     }
+    fun addSelectedDay(day: String) {
+        if (!selectedDays.contains(day)) {
+            selectedDays.add(day)
+        }
+    }
 
-    suspend fun saveRoutine() {
-        val routine = RoutineEntity(
-            id = 0, // Ajusta según tu lógica de identificación
-            sleepTime = _bedTimeRoutine.value ?: "",
-            activity = _activity.value ?: "",
-            activityTime = _activityRoutineTime.value ?: "00:00",
-            activityDays = selectedDays.toList() ?: emptyList()
-
-        )
-        saveRoutineUseCase.execute(routine)
-        _isSaved.value = true
+    fun removeSelectedDay(day: String) {
+        selectedDays.remove(day)
     }
 }

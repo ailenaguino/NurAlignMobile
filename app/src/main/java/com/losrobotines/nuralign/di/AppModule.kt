@@ -20,6 +20,7 @@ import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -105,11 +106,18 @@ object AppModule {
     }
 
     @Provides
-    fun provideMedicationApiService(retrofit: Retrofit): MedicationApiService{
+    fun provideMedicationApiService(retrofit: Retrofit): MedicationApiService {
         return retrofit.create(MedicationApiService::class.java)
     }
+
     @Provides
-    fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationRepository{
+    fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationRepository {
         return MedicationProviderImpl(medicationApiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeminiContentGenerator(): GeminiContentGenerator {
+        return GeminiContentGenerator()
     }
 }
