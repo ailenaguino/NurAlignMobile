@@ -2,6 +2,7 @@ package com.losrobotines.nuralign.feature_medication.domain.usecases
 
 import android.util.Log
 import com.losrobotines.nuralign.feature_home.domain.usecases.GetPatientIdUseCase
+import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import javax.inject.Inject
 
 class EditExistingMedicationInListUseCase @Inject constructor(
@@ -9,23 +10,25 @@ class EditExistingMedicationInListUseCase @Inject constructor(
     private val getPatientIdUseCase: GetPatientIdUseCase
 ) {
     suspend operator fun invoke(
-        medicationName: String,
-        medicationGrammage: Int
-    ) {
+        newMedicationName: String,
+        newMedicationGrammage: Int,
+        newMedicationFlag: String,
+        oldMedicationInfo: MedicationInfo
+    ): MedicationInfo? {
         val medicationList = getMedicationInfoFromDatabaseUseCase(getPatientIdUseCase())
-        for (med in medicationList) {
-            med!!.let {
-                if (it.medicationName == medicationName
-                    && it.medicationGrammage == medicationGrammage
-                ) {
-                    //editar dicha medicación
-                } else {
-                    Log.d(
-                        "EditExistingMedicationInListUseCase",
-                        "$medicationName - $medicationGrammage doesn't exists in list"
-                    )
-                }
-            }
+
+        if (oldMedicationInfo in medicationList) {
+            oldMedicationInfo.medicationName = newMedicationName
+            oldMedicationInfo.medicationGrammage = newMedicationGrammage
+            oldMedicationInfo.medicationOptionalFlag = newMedicationFlag
+
+            return oldMedicationInfo
+        } else {
+            Log.d(
+                "EditExistingMedicationInListUseCase",
+                "${oldMedicationInfo.medicationName} - ${oldMedicationInfo.medicationGrammage} doesn't exists in list"
+            )
+            return null
         }
     }
 }

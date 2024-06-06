@@ -9,22 +9,18 @@ class PrepareMedicationDataToSaveItIntoDatabaseUseCase @Inject constructor(
     private val getPatientIdUseCase: GetPatientIdUseCase
 ) {
     private lateinit var oldMedicationList: MutableList<MedicationInfo?>
-    private lateinit var newMedicationList: MutableList<MedicationInfo>
+    private lateinit var newMedicationList: MutableList<MedicationInfo?>
 
-    suspend operator fun invoke(medicationList: MutableList<MedicationInfo>): MutableList<MedicationInfo> {
+    suspend operator fun invoke(medicationList: MutableList<MedicationInfo?>): MutableList<MedicationInfo?> {
         oldMedicationList = getMedicationInfoFromDatabaseUseCase(getPatientIdUseCase())
         newMedicationList = medicationList
 
-        oldMedicationList.let {
-            for (oldMed in oldMedicationList) {
-                for (newMed in newMedicationList) {
-                    if (newMed.medicationName == oldMed!!.medicationName
-                        && newMed.medicationGrammage == oldMed.medicationGrammage) {
-                        newMedicationList.remove(newMed)
-                    }
-                }
-            }
+        newMedicationList.removeIf {
+            it in oldMedicationList
         }
-        return newMedicationList
+
+        oldMedicationList.addAll(newMedicationList)
+
+        return oldMedicationList
     }
 }

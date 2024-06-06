@@ -7,8 +7,8 @@ import javax.inject.Inject
 class SaveMedicationInfoToMedicationListUseCase @Inject constructor() {
     operator fun invoke(
         medicationInfo: MedicationInfo,
-        medicationList: MutableList<MedicationInfo>
-    ): MutableList<MedicationInfo> {
+        medicationList: MutableList<MedicationInfo?>
+    ): MutableList<MedicationInfo?> {
         if (medicationInfo !in medicationList) {
             medicationList.add(medicationInfo)
         } else {

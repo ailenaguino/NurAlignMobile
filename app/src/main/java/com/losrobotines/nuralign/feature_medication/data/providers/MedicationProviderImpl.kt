@@ -10,10 +10,10 @@ import javax.inject.Inject
 class MedicationProviderImpl @Inject constructor(private val apiService: MedicationApiService) :
     MedicationRepository {
 
-    override suspend fun saveMedicationInfo(medicationInfo: List<MedicationInfo>) {
+    override suspend fun saveMedicationInfo(medicationInfo: List<MedicationInfo?>) {
         try {
             for (med in medicationInfo) {
-                val dto = mapDomainToData(med)
+                val dto = mapDomainToData(med!!)
                 Log.d("MedicationRepository", "DtO Generado: $dto")
                 apiService.insertMedicationInfoIntoDatabase(dto)
                 Log.d("MedicationRepository", "$dto inserta")

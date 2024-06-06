@@ -10,7 +10,7 @@ import javax.inject.Inject
 class SaveMedicationInfoToDatabaseUseCase @Inject constructor(
     private val medicationRepository: MedicationRepository
 ) {
-    suspend operator fun invoke(medicationInfo: List<MedicationInfo>) {
+    suspend operator fun invoke(medicationInfo: MutableList<MedicationInfo?>) {
         medicationRepository.saveMedicationInfo(medicationInfo)
     }
 }
