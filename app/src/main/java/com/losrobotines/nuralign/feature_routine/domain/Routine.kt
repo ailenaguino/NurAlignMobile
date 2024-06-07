@@ -1,7 +1,5 @@
 package com.losrobotines.nuralign.feature_routine.domain
 
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 
 data class Routine(

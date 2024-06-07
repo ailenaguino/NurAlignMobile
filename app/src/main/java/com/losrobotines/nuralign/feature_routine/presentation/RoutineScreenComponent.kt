@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication.AddMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationViewModel
+import com.losrobotines.nuralign.feature_routine.domain.NotificationPrompts
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.CustomTimePickerDialog
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.QuestionGoToSleep
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
@@ -151,9 +152,7 @@ private fun saveRoutine(
         val bedTimeMinute = bedTimeParts[1].toInt()
         val selectedBedTime = LocalTime.of(bedTimeHour, bedTimeMinute)
 
-        val prompt = """
-            Genera un mensaje para la notificación que contiene un mensaje motivacional para empezar el día y recomendarle que complete el SleepTracker para saber cómo durmió. Máximo 40 palabras.
-        """.trimIndent()
+        val prompt=NotificationPrompts.MOTIVATIONAL_MESSAGE
 
         scope.launch {
             routineViewModel.generateNotificationMessage(prompt)?.let {
@@ -182,11 +181,10 @@ private fun saveRoutine(
                 val activityMinute = activityTimeParts[1].toInt()
                 val selectedActivityTime = LocalTime.of(activityHour, activityMinute)
 
-                val promptActivity = """
-                    Genera un mensaje de aliento para la actividad que el usuario está por hacer, la actividad es ${routineViewModel.activity.value}, de máximo 40 palabras.
-                """.trimIndent()
 
-                routineViewModel.generateNotificationMessage(promptActivity)?.let {
+                val activityMessage = NotificationPrompts.getActivityMessage(routineViewModel.activity.value ?: "")
+
+                routineViewModel.generateNotificationMessage(activityMessage)?.let {
                     routineViewModel.notification.notificacionProgramada(
                         context,
                         selectedActivityTime,
