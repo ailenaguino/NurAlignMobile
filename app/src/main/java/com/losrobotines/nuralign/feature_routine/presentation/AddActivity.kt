@@ -184,17 +184,13 @@ fun ActivityElement(routineViewModel: RoutineViewModel) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActivityRow(routineViewModel: RoutineViewModel) {
-    // Obtener los días seleccionados del ViewModel
     val selectedDays = routineViewModel.selectedDays
-
-    // Array de días
     val days = arrayOf("Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do")
 
     Column {
-        ActivityElement(routineViewModel) // Agregado aquí
+        ActivityElement(routineViewModel)
         Spacer(modifier = Modifier.height(6.dp))
 
-        // Mostrar los nombres de los días
         Row(horizontalArrangement = Arrangement.Center) {
             for (day in days) {
                 Text(
@@ -206,8 +202,6 @@ fun ActivityRow(routineViewModel: RoutineViewModel) {
                 )
             }
         }
-
-        // Mostrar los botones de los días y guardar/eliminar los seleccionados en el ViewModel
         Row(horizontalArrangement = Arrangement.Center) {
             for (day in days) {
                 val isSelected = selectedDays.contains(day)
@@ -227,7 +221,7 @@ fun ActivityRow(routineViewModel: RoutineViewModel) {
                         .padding(horizontal = 1.dp)
                         .defaultMinSize(12.dp)
                 ) {
-                    Text(text = " ") // Este texto se puede cambiar si deseas mostrar algo diferente en los botones
+                    Text(text = " ")
                 }
             }
         }

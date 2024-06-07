@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.losrobotines.nuralign.feature_routine.data.RoutineRepositoryDatabase
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
+import com.losrobotines.nuralign.feature_routine.domain.Routine
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
-import com.losrobotines.nuralign.feature_routine.domain.gemini.GeminiContentGenerator
+import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,13 +20,13 @@ class RoutineViewModel @Inject constructor(
     private val loadRoutineUseCase: LoadRoutineUseCase,
     private val saveRoutineUseCase: SaveRoutineUseCase,
     private val geminiContentGenerator: GeminiContentGenerator,
+    //  private val updateRoutineUseCase: UpdateRoutineUseCase,
     val notification: Notification
 ) : ViewModel() {
-
     val selectedDays = mutableStateListOf<String>()
 
-    private val _isSaved = MutableLiveData(false)
-    val isSaved: LiveData<Boolean> = _isSaved
+    private var _isSaved = MutableLiveData(false)
+    var isSaved: LiveData<Boolean> = _isSaved
 
     private val _bedTimeRoutine = MutableLiveData("")
     val bedTimeRoutine: LiveData<String> = _bedTimeRoutine
@@ -37,14 +37,35 @@ class RoutineViewModel @Inject constructor(
     private val _activityRoutineTime = MutableLiveData("")
     val activityRoutineTime: LiveData<String> = _activityRoutineTime
 
+
     init {
         viewModelScope.launch {
             loadInitialRoutine()
         }
     }
 
+    suspend fun saveRoutine() {
+        _bedTimeRoutine.value?.let { bedTimeRoutine ->
+            _activity.value?.let { activity ->
+                _activityRoutineTime.value?.let { activityRoutineTime ->
+                    Routine(
+                        0,
+                        bedTimeRoutine,
+                        activity,
+                        activityRoutineTime,
+                        selectedDays.toList()
+                    )
+                }
+            }
+        }?.let { routine ->
+            saveRoutineUseCase(
+                routine
+            )
+        }
+    }
+
     suspend fun loadInitialRoutine() {
-        val initialRoutine = loadRoutineUseCase.execute()
+        val initialRoutine = loadRoutineUseCase.invoke()
         _activityRoutineTime.value = initialRoutine.activityTime
         _bedTimeRoutine.value = initialRoutine.sleepTime
         _activity.value = initialRoutine.activity
@@ -54,18 +75,6 @@ class RoutineViewModel @Inject constructor(
         }
     }
 
-    suspend fun saveRoutine() {
-        val routine = RoutineEntity(
-            id = 0,
-            sleepTime = _bedTimeRoutine.value ?: "",
-            activity = _activity.value ?: "",
-            activityTime = _activityRoutineTime.value ?: "00:00",
-            activityDays = selectedDays.toList() ?: emptyList()
-
-        )
-        saveRoutineUseCase.execute(routine)
-        _isSaved.value = true
-    }
 
     suspend fun generateNotificationMessage(prompt: String): String? {
         return geminiContentGenerator.generateContent(prompt)
@@ -87,6 +96,7 @@ class RoutineViewModel @Inject constructor(
     fun setIsSavedRoutine(value: Boolean) {
         _isSaved.value = value
     }
+
     fun addSelectedDay(day: String) {
         if (!selectedDays.contains(day)) {
             selectedDays.add(day)
@@ -96,4 +106,26 @@ class RoutineViewModel @Inject constructor(
     fun removeSelectedDay(day: String) {
         selectedDays.remove(day)
     }
+
+    fun clearSelectedDays() {
+        selectedDays.clear()
+    }
+
+    /*
+    private suspend fun loadInitialRoutine(): RoutineEntity {
+        return loadRoutineUseCase()
+    }
+
+
+
+    suspend fun updateRoutine(
+        bedTime: String,
+        activity: String,
+        activityDays: List<String>,
+        activityTime: String
+    ) {
+        updateRoutineUseCase(bedTime, activity, activityDays, activityTime)
+    }
+
+     */
 }

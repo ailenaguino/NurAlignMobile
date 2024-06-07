@@ -13,6 +13,7 @@ import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationR
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_routine.data.RoutineRepositoryDatabase
 import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
@@ -20,10 +21,14 @@ import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
-import com.losrobotines.nuralign.feature_routine.domain.gemini.GeminiContentGenerator
+import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
+import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
+import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -120,4 +125,5 @@ object AppModule {
     fun provideGeminiContentGenerator(): GeminiContentGenerator {
         return GeminiContentGenerator()
     }
+
 }

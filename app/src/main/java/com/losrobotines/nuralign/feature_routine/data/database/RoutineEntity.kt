@@ -7,15 +7,15 @@ import androidx.room.PrimaryKey
 @Entity(tableName="routine_table")
 data class RoutineEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    var id: Int = 0,
     @ColumnInfo(name = "sleep_time")
-    val sleepTime: String,
+    var sleepTime: String,
     @ColumnInfo(name = "activity")
-    val activity: String,
+    var activity: String,
     @ColumnInfo(name = "activity_time")
-    val activityTime: String,
+    var activityTime: String,
     @ColumnInfo(name = "activity_days")
-    val activityDays: List<String>
+    var activityDays: List<String>
 )
 
 

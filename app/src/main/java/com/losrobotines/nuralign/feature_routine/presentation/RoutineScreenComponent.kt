@@ -58,6 +58,7 @@ import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RoutineScreenComponent(navController: NavHostController, routineViewModel: RoutineViewModel) {
@@ -80,7 +81,7 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                 addActivity(routineViewModel)
             }
             item {
-                Spacer(modifier = Modifier.height(32.dp))  // Ajusta la altura según tus necesidades
+                Spacer(modifier = Modifier.height(32.dp))
             }
             item {
                 saveRoutine(routineViewModel, context, scope, isSaved)
@@ -146,12 +147,6 @@ private fun saveRoutine(
         }
 
         val bedTimeParts = bedTime.split(":")
-        if (bedTimeParts.size != 2) {
-            Toast.makeText(context, "La hora de dormir es inválida", Toast.LENGTH_SHORT)
-                .show()
-            return@Button
-        }
-
         val bedTimeHour = bedTimeParts[0].toInt()
         val bedTimeMinute = bedTimeParts[1].toInt()
         val selectedBedTime = LocalTime.of(bedTimeHour, bedTimeMinute)

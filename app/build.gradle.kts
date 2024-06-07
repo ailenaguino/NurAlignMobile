@@ -22,7 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "API_URL", "\"http://77.37.69.38:8081/api/\"")
+        buildConfigField("String","API_URL", "\"http://77.37.69.38:8081/api/\"")
+
+        buildConfigField("String","API_KEY","\"AIzaSyBJT-pFK_lSZpP3CAs2CGAqKzoiGJC2Uls\"")
     }
 
     buildTypes {
@@ -65,6 +67,10 @@ android {
 
     packagingOptions {
         exclude("")
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 
 

@@ -46,7 +46,7 @@ class Notification @Inject constructor() {
                 putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
                 putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
                 putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId)
-                putExtra(ScheduledNotification.NOTIFICATION_REPEAT, true) // Indicar que debe repetirse
+                putExtra(ScheduledNotification.NOTIFICATION_REPEAT, true)
             }
 
             val pendingIntent = PendingIntent.getBroadcast(
@@ -83,7 +83,6 @@ class Notification @Inject constructor() {
                     daysOfWeek[day]?.let { set(Calendar.DAY_OF_WEEK, it) }
 
                     if (before(Calendar.getInstance())) {
-                        Log.d("Notification", "El día seleccionado ya pasó para esta semana. Programando para la próxima semana.")
                         add(Calendar.WEEK_OF_YEAR, 1)
                     }
                 }
@@ -101,7 +100,6 @@ class Notification @Inject constructor() {
                     intent,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
-
                 alarmManager.cancel(pendingIntent)
 
                 alarmManager.setExactAndAllowWhileIdle(

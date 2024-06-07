@@ -15,6 +15,7 @@ import com.losrobotines.nuralign.R
 import java.util.Calendar
 
 class ScheduledNotification : BroadcastReceiver() {
+
     @SuppressLint("ServiceCast", "ScheduleExactAlarm")
     override fun onReceive(context: Context, intent: Intent) {
         val title = intent.getStringExtra(NOTIFICATION_TITLE) ?: "No title"
@@ -26,7 +27,6 @@ class ScheduledNotification : BroadcastReceiver() {
         NotificationHelper.showNotification(context, title, content, destination, notificationId)
 
         if (repeat) {
-            // Reprogramar la notificación para el día siguiente
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val calendar = Calendar.getInstance().apply {
                 timeInMillis = System.currentTimeMillis()
@@ -57,8 +57,6 @@ class ScheduledNotification : BroadcastReceiver() {
                 calendar.timeInMillis,
                 pendingIntent
             )
-
-            Log.d("ScheduledNotification", "Notificación reprogramada para: ${calendar.time}")
         }
     }
 

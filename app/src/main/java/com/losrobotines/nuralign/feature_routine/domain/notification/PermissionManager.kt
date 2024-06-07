@@ -47,3 +47,4 @@ class PermissionManager(private val activity: ComponentActivity) {
         }
     }
 }
+

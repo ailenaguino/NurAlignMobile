@@ -2,22 +2,20 @@ package com.losrobotines.nuralign.feature_routine.data
 
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
+import com.losrobotines.nuralign.feature_routine.domain.Routine
+import com.losrobotines.nuralign.feature_routine.domain.toDatabase
+import com.losrobotines.nuralign.feature_routine.domain.toDomain
 import javax.inject.Inject
 
 class RoutineRepositoryDatabase @Inject constructor(private val dao: RoutineDao) {
 
-    suspend fun addRoutine(routine: RoutineEntity) {
-        dao.insert(routine)
+    suspend fun addRoutine(routine: Routine) {
+        dao.insert(routine.toDatabase())
     }
-
-    fun getRoutines(): List<RoutineEntity> {
-        return dao.getAll()
-    }
-
-    suspend fun getRoutine(): RoutineEntity {
+    suspend fun getRoutine(): Routine {
         val response: List<RoutineEntity> = dao.getAll()
         return if (response.isNotEmpty()) {
-            response[0]
+            response[0].toDomain()
         } else {
             RoutineEntity(
                 id = 0,
@@ -25,7 +23,7 @@ class RoutineRepositoryDatabase @Inject constructor(private val dao: RoutineDao)
                 activity = "",
                 activityTime = "",
                 activityDays = emptyList()
-            )
+            ).toDomain()
         }
     }
 }
