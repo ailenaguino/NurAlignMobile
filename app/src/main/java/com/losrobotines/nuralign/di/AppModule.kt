@@ -86,8 +86,11 @@ object AppModule {
     }
 
     @Provides
-    fun provideSaveSleepDataUseCase(sleepTrackerProvider: SleepTrackerProvider): SaveSleepTrackerInfoUseCase {
-        return SaveSleepTrackerInfoUseCase(sleepTrackerProvider)
+    fun provideSaveSleepDataUseCase(
+        sleepTrackerProvider: SleepTrackerProvider, authRepository: AuthRepository,
+        formatTimeUseCase: FormatTimeUseCase,
+    ): SaveSleepTrackerInfoUseCase {
+        return SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase,sleepTrackerProvider)
     }
 
     @Provides
