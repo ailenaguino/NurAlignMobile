@@ -45,87 +45,77 @@ class RoutineViewModel @Inject constructor(
     }
 
     suspend fun saveRoutine() {
-        _bedTimeRoutine.value?.let { bedTimeRoutine ->
-            _activity.value?.let { activity ->
-                _activityRoutineTime.value?.let { activityRoutineTime ->
-                    Routine(
-                        0,
-                        bedTimeRoutine,
-                        activity,
-                        activityRoutineTime,
-                        selectedDays.toList()
-                    )
-                }
-            }
-        }?.let { routine ->
-            saveRoutineUseCase(
-                routine
-            )
-        }
-    }
-
-    suspend fun loadInitialRoutine() {
-        val initialRoutine = loadRoutineUseCase.invoke()
-        _activityRoutineTime.value = initialRoutine.activityTime
-        _bedTimeRoutine.value = initialRoutine.sleepTime
-        _activity.value = initialRoutine.activity
-        selectedDays.addAll(initialRoutine.activityDays)
-        if (_bedTimeRoutine.value != "") {
-            setIsSavedRoutine(true)
-        }
+        saveRoutineUseCase.invoke(
+            _bedTimeRoutine.value ?: "",
+            _activity.value ?: "",
+            _activityRoutineTime.value ?: "",
+            selectedDays.toList()
+        )
     }
 
 
-    suspend fun generateNotificationMessage(prompt: String): String? {
-        return geminiContentGenerator.generateContent(prompt)
-
+suspend fun loadInitialRoutine() {
+    val initialRoutine = loadRoutineUseCase.invoke()
+    _activityRoutineTime.value = initialRoutine.activityTime
+    _bedTimeRoutine.value = initialRoutine.sleepTime
+    _activity.value = initialRoutine.activity
+    selectedDays.addAll(initialRoutine.activityDays)
+    if (_bedTimeRoutine.value != "") {
+        setIsSavedRoutine(true)
     }
+}
 
-    fun setSleepTimeRoutine(time: String) {
-        _bedTimeRoutine.value = time
+
+suspend fun generateNotificationMessage(prompt: String): String? {
+    return geminiContentGenerator.generateContent(prompt)
+
+}
+
+fun setSleepTimeRoutine(time: String) {
+    _bedTimeRoutine.value = time
+}
+
+fun setActivity(activity: String) {
+    _activity.value = activity
+}
+
+fun setActivityRoutine(activity: String) {
+    _activityRoutineTime.value = activity
+}
+
+fun setIsSavedRoutine(value: Boolean) {
+    _isSaved.value = value
+}
+
+fun addSelectedDay(day: String) {
+    if (!selectedDays.contains(day)) {
+        selectedDays.add(day)
     }
+}
 
-    fun setActivity(activity: String) {
-        _activity.value = activity
-    }
+fun removeSelectedDay(day: String) {
+    selectedDays.remove(day)
+}
 
-    fun setActivityRoutine(activity: String) {
-        _activityRoutineTime.value = activity
-    }
+fun clearSelectedDays() {
+    selectedDays.clear()
+}
 
-    fun setIsSavedRoutine(value: Boolean) {
-        _isSaved.value = value
-    }
-
-    fun addSelectedDay(day: String) {
-        if (!selectedDays.contains(day)) {
-            selectedDays.add(day)
-        }
-    }
-
-    fun removeSelectedDay(day: String) {
-        selectedDays.remove(day)
-    }
-
-    fun clearSelectedDays() {
-        selectedDays.clear()
-    }
-
-    /*
-    private suspend fun loadInitialRoutine(): RoutineEntity {
-        return loadRoutineUseCase()
-    }
+/*
+private suspend fun loadInitialRoutine(): RoutineEntity {
+    return loadRoutineUseCase()
+}
 
 
 
-    suspend fun updateRoutine(
-        bedTime: String,
-        activity: String,
-        activityDays: List<String>,
-        activityTime: String
-    ) {
-        updateRoutineUseCase(bedTime, activity, activityDays, activityTime)
-    }
+suspend fun updateRoutine(
+    bedTime: String,
+    activity: String,
+    activityDays: List<String>,
+    activityTime: String
+) {
+    updateRoutineUseCase(bedTime, activity, activityDays, activityTime)
+}
 
-     */
+ */
 }
