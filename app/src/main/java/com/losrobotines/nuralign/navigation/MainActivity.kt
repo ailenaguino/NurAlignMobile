@@ -147,12 +147,14 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }
-                            runBlocking {
+                         /*   runBlocking {
                                 if (isAuthenticated) {
                                     delay(2000)
                                     permissionManager.requestPermissions()
                                 }
                             }
+
+                          */
                         }
                     }
                 }

@@ -44,7 +44,7 @@ object AppModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://77.37.69.38:8081/api/")
+            .baseUrl(BuildConfig.API_URL)
             .build()
     }
 
