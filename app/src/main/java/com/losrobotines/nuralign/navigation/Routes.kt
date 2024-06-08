@@ -12,6 +12,7 @@ sealed class Routes(val route: String) {
     data object AchievementsScreen : Routes("AchievementsScreen")
     data object SettingsScreen : Routes("SettingsScreen")
     data object PersonalInformationScreen : Routes("PersonalInformation")
+    data object RoutineScreen : Routes("RoutineScreen")
 
 
 }

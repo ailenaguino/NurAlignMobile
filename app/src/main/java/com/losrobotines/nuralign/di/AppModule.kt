@@ -10,12 +10,14 @@ import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.feature_sleep.data.SleepTrackerProviderImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
+import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,7 +44,7 @@ object AppModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BuildConfig.API_URL)
+            .baseUrl("http://77.37.69.38:8081/api/")
             .build()
     }
 
@@ -96,6 +98,17 @@ object AppModule {
     @Provides
     fun provideGetSleepDataUseCase(sleepTrackerProvider: SleepTrackerProvider): GetSleepDataUseCase {
         return GetSleepDataUseCase(sleepTrackerProvider)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGeminiContentGenerator(): GeminiContentGenerator {
+        return GeminiContentGenerator()
+    }
+    @Provides
+    fun provideNotification(): Notification {
+        return Notification()
     }
 
 

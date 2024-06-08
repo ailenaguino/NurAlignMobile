@@ -31,6 +31,7 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.signup.FEMEN
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.MASCULINO
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.USER_NAME
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.USER_SEX
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents
@@ -54,6 +55,7 @@ fun HomeScreenComponent(navController: NavController) {
         HomeItemData.Routine
     )
     val context = LocalContext.current
+    val notification = Notification()
     val preferencesManager = remember { PreferencesManager(context) }
 
     if (preferencesManager.getBoolean(FIRST_TIME, true)) {
@@ -151,6 +153,10 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
 
                 6 -> {
                     navController.navigate(Routes.AchievementsScreen.route)
+                }
+
+                7 -> {
+                    navController.navigate(Routes.RoutineScreen.route)
                 }
             }
         }
