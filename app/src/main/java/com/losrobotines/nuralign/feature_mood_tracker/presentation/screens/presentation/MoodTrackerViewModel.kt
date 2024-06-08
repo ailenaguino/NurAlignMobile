@@ -34,6 +34,9 @@ class MoodTrackerViewModel @Inject constructor(
     private val _route = MutableLiveData("")
     var route: LiveData<String> = _route
 
+    private val _isVisible = MutableLiveData(false)
+    var isVisible: LiveData<Boolean> = _isVisible
+
     val effectiveDate = MutableLiveData<LocalDate>()
 
     val highestValue = mutableIntStateOf(-1)
@@ -57,10 +60,9 @@ class MoodTrackerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (currentUserExists()) {
-                    val patientId =
-                        14 // ************************(AUNMENTAR CADA VEZ QUE AGREGES EN LA BASE DE DATOS)******************
+                    val patientId = patientId()
                     val date = getDate()
-                    val info = moodTrackerProvider.getMoodTrackerInfo(patientId)
+                    val info = moodTrackerProvider.getMoodTrackerInfo(patientId.toInt())
                     if (info != null) {
                         highestValue.intValue = info.highestValue.toInt()
                         highestNote.value = info.highestNote
@@ -128,6 +130,10 @@ class MoodTrackerViewModel @Inject constructor(
         viewModelScope.launch {
             _route.value = checkNextTrackerToBeCompletedUseCase(patientId().toInt())
         }
+    }
+
+    fun setIsVisible(value: Boolean) {
+        _isVisible.value = value
     }
 
 }

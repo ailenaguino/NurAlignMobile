@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
@@ -29,8 +29,15 @@ class SleepViewModel @Inject constructor(
     private val saveSleepDataUseCase: SaveSleepTrackerInfoUseCase,
     private val getSleepDataUseCase: GetSleepDataUseCase,
     private val formatTimeUseCase: FormatTimeUseCase,
+    private val checkNextTrackerUseCase: CheckNextTrackerToBeCompletedUseCase
 ) :
     ViewModel() {
+
+    private val _route = MutableLiveData("")
+    var route: LiveData<String> = _route
+
+    private val _isVisible = MutableLiveData(false)
+    var isVisible: LiveData<Boolean> = _isVisible
 
     private val _isSaved = MutableLiveData(false)
     val isSaved = _isSaved
@@ -56,58 +63,22 @@ class SleepViewModel @Inject constructor(
     private val _bedTime = MutableLiveData("")
     val bedTime = _bedTime
 
-    fun setIsSaved(value: Boolean) {
-        _isSaved.value = value
-    }
-
-    fun setSleepTime(time: String) {
-        _bedTime.value = time
-    }
-
-    fun setAdditionalNotes(notes: String) {
-        _additionalNotes.value = notes
-    }
-
-    fun setNegativeThoughts(value: Boolean) {
-        _negativeThoughts.value = value
-    }
-
-    fun setAnxiousBeforeSleep(value: Boolean) {
-        _anxiousBeforeSleep.value = value
-    }
-
-    fun setSleptThroughNight(value: Boolean) {
-        _sleptThroughNight.value = value
-    }
-
-    fun setSleepTime(time: Int) {
-        _sleepHours.intValue = time
-    }
-
-    fun onSliderChanged(sliderValue: Float) {
-        _sliderPosition.value = sliderValue
-    }
 
     fun saveData() {
         if (currentUserExists()) {
             viewModelScope.launch {
-                _bedTime.value?.let {
-                    val formattedBedTime = formatTimeUseCase.removeColonFromTime(_bedTime.value!!)
-                    _additionalNotes.value?.let { aditionalNote ->
-                        SleepInfo(
-                            getPatentId(),
-                            getDate(),
-                            _sleepHours.intValue.toShort(),
-                            formattedBedTime,
-                            _negativeThoughts.value.toString()[0].uppercase(),
-                            _anxiousBeforeSleep.value.toString()[0].uppercase(),
-                            _sleptThroughNight.value.toString()[0].uppercase(),
-                            aditionalNote
-                        )
-                    }
-                }?.let {
-                    saveSleepDataUseCase.execute(it)
-                }
+                val id = getPatientId()
+                val currentDate = getDate()
+                saveSleepDataUseCase(
+                    id.toShort(),
+                    currentDate,
+                    _sleepHours.intValue,
+                    _bedTime.value ?: "",
+                    _negativeThoughts.value ?: false,
+                    _anxiousBeforeSleep.value ?: false,
+                    _sleptThroughNight.value ?: false,
+                    _additionalNotes.value ?: ""
+                )
             }
         }
     }
@@ -157,6 +128,41 @@ class SleepViewModel @Inject constructor(
         }
 
      */
+    fun setIsVisible(value: Boolean) {
+        _isVisible.value = value
+    }
+
+    fun setIsSaved(value: Boolean) {
+        _isSaved.value = value
+    }
+
+    fun setSleepTime(time: String) {
+        _bedTime.value = time
+    }
+
+    fun setAdditionalNotes(notes: String) {
+        _additionalNotes.value = notes
+    }
+
+    fun setNegativeThoughts(value: Boolean) {
+        _negativeThoughts.value = value
+    }
+
+    fun setAnxiousBeforeSleep(value: Boolean) {
+        _anxiousBeforeSleep.value = value
+    }
+
+    fun setSleptThroughNight(value: Boolean) {
+        _sleptThroughNight.value = value
+    }
+
+    fun setSleepTime(time: Int) {
+        _sleepHours.intValue = time
+    }
+
+    fun onSliderChanged(sliderValue: Float) {
+        _sliderPosition.value = sliderValue
+    }
 
 
     private fun getDate(): String {
@@ -165,7 +171,7 @@ class SleepViewModel @Inject constructor(
         return formatter.format(date)
     }
 
-    private suspend fun getPatentId(): Short {
+    private suspend fun getPatientId(): Short {
         val idResult: Short
         val uid = authRepository.currentUser!!.uid
         val doc = Firebase.firestore.collection("users").document(uid)
@@ -175,6 +181,12 @@ class SleepViewModel @Inject constructor(
 
     private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
+    }
+
+    fun checkNextTracker() {
+        viewModelScope.launch {
+            _route.value = checkNextTrackerUseCase(getPatientId().toInt())
+        }
     }
 
 }

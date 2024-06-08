@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -76,6 +75,8 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
     val additionalNotes: String by sleepViewModel.additionalNotes.observeAsState("")
     val time: String by sleepViewModel.bedTime.observeAsState("")
     val isSaved by sleepViewModel.isSaved.observeAsState(false)
+    val route by sleepViewModel.route.observeAsState("")
+    val isVisible by sleepViewModel.isVisible.observeAsState(false)
 
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
@@ -150,6 +151,16 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
             }
         }
     }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+        goToNextTracker(navController, route, sleepViewModel)
+    }
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun goToNextTracker(navController: NavController, route: String, sleepViewModel: SleepViewModel){
+    sleepViewModel.setIsVisible(false)
+    navController.navigate(route)
 }
 
 @Composable
@@ -246,12 +257,14 @@ fun SaveButton(sleepViewModel: SleepViewModel, sliderPosition: Float, isSaved: B
     val context = LocalContext.current.applicationContext
     Button(
         onClick = {
-            if (sliderPosition.toInt() == 0 || sleepViewModel.bedTime.value == "") {
+            if (sleepViewModel.bedTime.value == "") {
                 Toast.makeText(context, "Complete todos los campos", Toast.LENGTH_SHORT).show()
             } else {
                 sleepViewModel.setSleepTime(sliderPosition.toInt())
                 sleepViewModel.saveData()
                 sleepViewModel.setIsSaved(true)
+                sleepViewModel.checkNextTracker()
+                sleepViewModel.setIsVisible(true)
             }
 
         },

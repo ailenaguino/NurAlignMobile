@@ -1,15 +1,15 @@
 package com.losrobotines.nuralign.feature_sleep.data
 
-import android.util.Log
 import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
-import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
+import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
+import retrofit2.HttpException
 import javax.inject.Inject
 
 
-class SleepRepositoryImpl @Inject constructor(private val apiService: SleepApiService) :
-    SleepRepository {
+class SleepTrackerProviderImpl @Inject constructor(private val apiService: SleepApiService) :
+    SleepTrackerProvider {
 
     override suspend fun saveSleepData(sleepInfo: SleepInfo) {
         try {
@@ -22,11 +22,18 @@ class SleepRepositoryImpl @Inject constructor(private val apiService: SleepApiSe
 
     override suspend fun getSleepData(patientId: Int): SleepInfo? {
         val dto = apiService.getSleepInfo(patientId)
-        Log.d("MoodTrackerRepository", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
     }
 
-
+    override suspend fun getTodaysTracker(patientId: Int, date: String): SleepInfo? {
+        try {
+            //val response = apiService.getTodaysTracker(patientId,date)
+            val response = null
+            return mapDataToDomain(response)
+        } catch (e: HttpException) {
+            return null
+        }
+    }
 
 
     private fun mapDataToDomain(dto: SleepTrackerDto?): SleepInfo? {
