@@ -26,9 +26,9 @@ class SaveSleepTrackerInfoUseCase @Inject constructor(
             currentDate,
             sleepHours.toShort(),
             formattedBedTime ?: "",
-            if (negativeThoughts) "T" else "F",
-            if (anxiousBeforeSleep) "T" else "F",
-            if (sleptThroughNight) "T" else "F",
+            if (negativeThoughts) "Y" else "N",
+            if (anxiousBeforeSleep) "Y" else "N",
+            if (sleptThroughNight) "Y" else "N",
             additionalNotes ?: ""
         )
         sleepTrackerProvider.saveSleepData(sleepInfo)

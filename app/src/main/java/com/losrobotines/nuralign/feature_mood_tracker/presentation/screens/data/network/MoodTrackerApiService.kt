@@ -1,6 +1,7 @@
 package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network
 
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -12,7 +13,7 @@ interface MoodTrackerApiService {
 
     @Headers("Content-Type: application/json")
     @POST("moodTracker")
-    suspend fun insertMoodTrackerInfoIntoDatabase(@Body body: MoodTrackerDto)
+    suspend fun insertMoodTrackerInfoIntoDatabase(@Body body: MoodTrackerDto) : Response<MoodTrackerDto>
 
 
     @GET("moodTracker/{patientId}")
@@ -24,5 +25,5 @@ interface MoodTrackerApiService {
     suspend fun getTodaysTracker(
         @Query("patientId") patientId: Int,
         @Query("date") date: String,
-    ): MoodTrackerDto?
+    ): Array<MoodTrackerDto>?
 }

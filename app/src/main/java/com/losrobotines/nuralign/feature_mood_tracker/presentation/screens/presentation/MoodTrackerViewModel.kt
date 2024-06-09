@@ -14,6 +14,8 @@ import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerTo
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.GetMoodTrackerInfoByDateUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.SaveMoodTrackerDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -24,12 +26,14 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MoodTrackerViewModel @Inject constructor(
-    private val moodTrackerProvider: MoodTrackerProvider,
+    private val saveMoodTrackerDataUseCase: SaveMoodTrackerDataUseCase,
+    private val getMoodTrackerInfoByDateUseCase: GetMoodTrackerInfoByDateUseCase,
     private val authRepository: AuthRepository,
     private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
 ) : ViewModel() {
 
-    val isSaved = MutableLiveData(false)
+    private val _isSaved = MutableLiveData(false)
+    var isSaved: LiveData<Boolean> = _isSaved
 
     private val _route = MutableLiveData("")
     var route: LiveData<String> = _route
@@ -52,17 +56,17 @@ class MoodTrackerViewModel @Inject constructor(
     val anxiousNote = mutableStateOf("")
 
     init {
-        loadMoodTrackerInfoToDatabase()
+        loadMoodTrackerInfo()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun loadMoodTrackerInfoToDatabase() {
+    fun loadMoodTrackerInfo() {
         viewModelScope.launch {
             try {
                 if (currentUserExists()) {
                     val patientId = patientId()
                     val date = getDate()
-                    val info = moodTrackerProvider.getMoodTrackerInfo(patientId.toInt())
+                    val info = getMoodTrackerInfoByDateUseCase(patientId.toInt(), date)
                     if (info != null) {
                         highestValue.intValue = info.highestValue.toInt()
                         highestNote.value = info.highestNote
@@ -73,14 +77,10 @@ class MoodTrackerViewModel @Inject constructor(
                         anxiousValue.intValue = info.anxiousValue.toInt()
                         anxiousNote.value = info.anxiousNote
                         effectiveDate.value = LocalDate.parse(info.effectiveDate)
-                        isSaved.value = true
-                    } else {
-                        isSaved.value = false
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                isSaved.value = false
             }
         }
     }
@@ -88,22 +88,20 @@ class MoodTrackerViewModel @Inject constructor(
 
     fun saveData() {
         viewModelScope.launch {
-            moodTrackerProvider.saveMoodTrackerInfo(
+            saveMoodTrackerDataUseCase.invoke(
                 MoodTrackerInfo(
-                    patientId = patientId(),
-                    effectiveDate = getDate(),
-                    highestValue = highestValue.intValue.toString(),
-                    lowestValue = lowestValue.intValue.toString(),
-                    highestNote = highestNote.value,
-                    lowestNote = lowestNote.value,
-                    irritableValue = irritableValue.intValue.toString(),
-                    irritableNote = irritableNote.value,
-                    anxiousValue = anxiousValue.intValue.toString(),
-                    anxiousNote = anxiousNote.value
-                )
-            )
+                patientId = patientId(),
+                effectiveDate = getDate(),
+                highestValue = highestValue.intValue.toString(),
+                lowestValue = lowestValue.intValue.toString(),
+                highestNote = highestNote.value,
+                lowestNote = lowestNote.value,
+                irritableValue = irritableValue.intValue.toString(),
+                irritableNote = irritableNote.value,
+                anxiousValue = anxiousValue.intValue.toString(),
+                anxiousNote = anxiousNote.value
+            ))
         }
-        //}
     }
 
 

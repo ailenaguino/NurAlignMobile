@@ -179,7 +179,7 @@ fun QuestionGeneral(
             Switch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                enabled = !isSaved,
+                enabled = true,
                 thumbContent = if (checked) {
                     {
                         Icon(
@@ -247,7 +247,7 @@ fun AdditionalNotes(sleepViewModel: SleepViewModel, isSaved: Boolean) {
             disabledBorderColor = secondaryColor,
             disabledTextColor = Color.Gray
         ),
-        enabled = !isSaved
+        enabled = true
     )
 }
 
@@ -262,7 +262,7 @@ fun SaveButton(sleepViewModel: SleepViewModel, sliderPosition: Float, isSaved: B
             } else {
                 sleepViewModel.setSleepTime(sliderPosition.toInt())
                 sleepViewModel.saveData()
-                sleepViewModel.setIsSaved(true)
+                //sleepViewModel.setIsSaved(true)
                 sleepViewModel.checkNextTracker()
                 sleepViewModel.setIsVisible(true)
             }
@@ -273,7 +273,7 @@ fun SaveButton(sleepViewModel: SleepViewModel, sliderPosition: Float, isSaved: B
             disabledContainerColor = secondaryColor,
             disabledContentColor = Color.White
         ),
-        enabled = !isSaved
+        enabled = true
     ) {
         Text(text = "Guardar")
     }
@@ -324,7 +324,7 @@ fun SliderHour(sliderPosition: Float, isSaved: Boolean, onSliderChanged: (Float)
                 value = sliderPosition,
                 onValueChange = { onSliderChanged(it.roundToInt().toFloat()) },
                 steps = 24,
-                enabled = !isSaved,
+                enabled = true,
                 valueRange = 0f..24f,
                 colors = SliderDefaults.colors(
                     thumbColor = mainColor,
@@ -355,7 +355,7 @@ fun QuestionGoToSleep(sleepViewModel: SleepViewModel, time: String, isSaved: Boo
             .fillMaxWidth()
             .padding(start = 40.dp, end = 2.dp)
             .weight(0.4f)
-            .clickable(enabled = !isSaved) { isOpen.value = true }
+            .clickable(enabled = true) { isOpen.value = true }
         ) {
             OutlinedTextField(
                 value = time,

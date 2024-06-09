@@ -14,6 +14,7 @@ import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepTrackerInfoByDateUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,8 +28,7 @@ import javax.inject.Inject
 class SleepViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val saveSleepDataUseCase: SaveSleepTrackerInfoUseCase,
-    private val getSleepDataUseCase: GetSleepDataUseCase,
-    private val formatTimeUseCase: FormatTimeUseCase,
+    private val getSleepTrackerInfoByDateUseCase: GetSleepTrackerInfoByDateUseCase,
     private val checkNextTrackerUseCase: CheckNextTrackerToBeCompletedUseCase
 ) :
     ViewModel() {
@@ -70,7 +70,7 @@ class SleepViewModel @Inject constructor(
                 val id = getPatientId()
                 val currentDate = getDate()
                 saveSleepDataUseCase(
-                    id.toShort(),
+                    id,
                     currentDate,
                     _sleepHours.intValue,
                     _bedTime.value ?: "",
@@ -84,7 +84,6 @@ class SleepViewModel @Inject constructor(
     }
 
 
-    /*
         init {
             loadMoodTrackerInfoToDatabase()
         }
@@ -94,40 +93,36 @@ class SleepViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     if (currentUserExists()) {
-                        val patientId = getPatentId()
+                        val patientId = getPatientId()
                         val date = getDate()
-                        val info = sleepRepository.getSleepData(patientId.toInt())
+                        val info = getSleepTrackerInfoByDateUseCase(patientId.toInt(), date)
                         if (info != null) {
                             sleepHours.intValue = info.sleepHours.toInt()
                             bedTime.value = info.bedTime.toString()
                             additionalNotes.value = info.sleepNotes
-                            if (info.negativeThoughtsFlag == "F"){
+                            if (info.negativeThoughtsFlag == "N") {
                                 setNegativeThoughts(false)
                             } else {
                                 setNegativeThoughts(true)
                             }
-                            if (info.anxiousFlag == "F"){
+                            if (info.anxiousFlag == "N") {
                                 setAnxiousBeforeSleep(false)
                             } else {
                                 setAnxiousBeforeSleep(true)
                             }
-                            if(info.sleepStraightFlag=="F"){
+                            if (info.sleepStraightFlag == "N") {
                                 setSleptThroughNight(false)
-                            }else{
+                            } else {
                                 setSleptThroughNight(true)
                             }
-                        } else {
-                            isSaved.value = false
                         }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    isSaved.value = false
                 }
             }
         }
 
-     */
     fun setIsVisible(value: Boolean) {
         _isVisible.value = value
     }

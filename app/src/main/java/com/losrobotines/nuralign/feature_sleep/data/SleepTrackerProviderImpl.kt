@@ -1,22 +1,25 @@
 package com.losrobotines.nuralign.feature_sleep.data
 
+import android.util.Log
 import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import retrofit2.HttpException
+import retrofit2.Response
 import javax.inject.Inject
 
 
 class SleepTrackerProviderImpl @Inject constructor(private val apiService: SleepApiService) :
     SleepTrackerProvider {
 
-    override suspend fun saveSleepData(sleepInfo: SleepInfo) {
+    override suspend fun saveSleepData(sleepInfo: SleepInfo): Boolean {
         try {
             val dto = mapDomainToData(sleepInfo)
-            apiService.insertSleepTrackerInfoIntoDatabase(dto)
+            val result = apiService.insertSleepTrackerInfoIntoDatabase(dto)
+            return result.isSuccessful
         } catch (e: Exception) {
-            e.printStackTrace()
+            return false
         }
     }
 
@@ -27,9 +30,8 @@ class SleepTrackerProviderImpl @Inject constructor(private val apiService: Sleep
 
     override suspend fun getTodaysTracker(patientId: Int, date: String): SleepInfo? {
         try {
-            //val response = apiService.getTodaysTracker(patientId,date)
-            val response = null
-            return mapDataToDomain(response)
+            val response = apiService.getTodaysTracker(patientId,date)
+            return mapDataToDomain(response?.last())
         } catch (e: HttpException) {
             return null
         }
@@ -52,7 +54,7 @@ class SleepTrackerProviderImpl @Inject constructor(private val apiService: Sleep
     }
 
 
-    private fun mapDomainToData(sleepInfo: SleepInfo): SleepTrackerDto {
+    fun mapDomainToData(sleepInfo: SleepInfo): SleepTrackerDto {
         return SleepTrackerDto(
             patientId = sleepInfo.patientId,
             sleepHours = sleepInfo.sleepHours,

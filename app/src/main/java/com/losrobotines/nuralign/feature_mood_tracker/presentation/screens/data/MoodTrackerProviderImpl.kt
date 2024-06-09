@@ -10,15 +10,13 @@ import javax.inject.Inject
 
 class MoodTrackerProviderImpl @Inject constructor(private val apiService: MoodTrackerApiService) :
     MoodTrackerProvider {
-    override suspend fun saveMoodTrackerInfo(moodTrackerInfo: MoodTrackerInfo) {
+    override suspend fun saveMoodTrackerInfo(moodTrackerInfo: MoodTrackerInfo):Boolean {
         try {
             val dto = mapDomainToData(moodTrackerInfo)
-            Log.d("MoodTrackerRepository", "DtO Generado: $dto")
-            apiService.insertMoodTrackerInfoIntoDatabase(dto)
-            Log.d("MoodTrackerRepository", "Successfully saved MoodTrackerInfo")
+            val result = apiService.insertMoodTrackerInfoIntoDatabase(dto)
+            return result.isSuccessful
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("MoodTrackerRepository", "Error saving MoodTrackerInfo", e)
+            return false
         }
     }
 
@@ -31,9 +29,8 @@ class MoodTrackerProviderImpl @Inject constructor(private val apiService: MoodTr
 
     override suspend fun getTodaysTracker(patientId: Int, date: String): MoodTrackerInfo? {
         try {
-            //val response = apiService.getTodaysTracker(patientId,date)
-            val response = null
-            return mapDataToDomain(response)
+            val response = apiService.getTodaysTracker(patientId,date)
+            return mapDataToDomain(response?.last())
         } catch (e: HttpException) {
             return null
         }

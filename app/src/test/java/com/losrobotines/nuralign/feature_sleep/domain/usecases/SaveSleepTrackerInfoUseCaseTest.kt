@@ -3,6 +3,7 @@ package com.losrobotines.nuralign.feature_sleep.domain.usecases
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
+import io.mockk.Awaits
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -54,7 +55,7 @@ class SaveSleepTrackerInfoUseCaseTest {
             additionalNotes
         )
 
-        coEvery { sleepTrackerProvider.saveSleepData(expectedSleepInfo) } just Runs
+        coEvery { sleepTrackerProvider.saveSleepData(expectedSleepInfo) } just Awaits
 
         // When
         saveSleepTrackerInfoUseCase(
