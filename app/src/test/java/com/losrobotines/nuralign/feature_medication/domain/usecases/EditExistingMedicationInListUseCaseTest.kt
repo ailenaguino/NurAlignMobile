@@ -1,17 +1,14 @@
 package com.losrobotines.nuralign.feature_medication.domain.usecases
 
-import android.util.Log
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions.*
-
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -30,7 +27,7 @@ class EditExistingMedicationInListUseCaseTest {
     @BeforeEach
     fun setUp() {
         userService = mockk(relaxed = true)
-        editMedUseCase = EditExistingMedicationInListUseCase(userService)
+        editMedUseCase = EditExistingMedicationInListUseCase()
         listFromDB = mutableListOf(MEDICATION_A)
     }
 
@@ -42,37 +39,25 @@ class EditExistingMedicationInListUseCaseTest {
     @Test
     fun `when old medication exists in medication list then change the old med with the new variables`() =
         runBlocking {
-            givenOldMedicationHas(MEDICATION_A)
-            val newMedication = editMedUseCase.invoke(NAME_B, DOSE_100, OPTIONAL_N, MEDICATION_A)
+            coEvery { userService.getMedicationList(userService.getPatientId()) } returns listFromDB
+            val newList = editMedUseCase.invoke(
+                NAME_B,
+                DOSE_100,
+                OPTIONAL_N,
+                MEDICATION_A,
+                listFromDB
+            ).getOrNull()
 
-            newMedication!!.has(NAME_B, DOSE_100, OPTIONAL_N)
+            assertEquals(true, newList!!.contains(MEDICATION_B))
         }
 
     @Test
     fun `when old medication doesn't exists in medication list, then return null`() {
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
         runBlocking {
             coEvery { userService.getMedicationList(userService.getPatientId()) } returns listFromDB
-            val result = editMedUseCase.invoke("C", 300, "Y", MEDICATION_B)
+            val result = editMedUseCase.invoke("C", 300, "Y", MEDICATION_B, listFromDB)
 
-            assertEquals(null, result)
+            assertTrue(result.isFailure)
         }
-    }
-
-    private fun givenOldMedicationHas(medication: MedicationInfo) {
-        coEvery {
-            userService.getMedicationList(userService.getPatientId())
-        } returns mutableListOf(medication)
-    }
-
-    private fun MedicationInfo.has(
-        medicationName: String,
-        medicationGrammage: Int,
-        medicationOptionalFlag: String
-    ) {
-        assertEquals(this.medicationName, medicationName)
-        assertEquals(this.medicationGrammage, medicationGrammage)
-        assertEquals(this.medicationOptionalFlag, medicationOptionalFlag)
     }
 }

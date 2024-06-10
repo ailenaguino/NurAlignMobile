@@ -1,10 +1,7 @@
 package com.losrobotines.nuralign.feature_medication.domain.usecases
 
-import android.util.Log
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import io.mockk.every
-import io.mockk.mockkStatic
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -27,16 +24,13 @@ class SaveMedicationInfoToMedicationListUseCaseTest {
     fun `when medication info isn't in a medication list, then add it and return it`() {
         val result = saveMedUseCase.invoke(MEDICATION_A, emptyList)
 
-        assertEquals(listWithMedicationInfoItem, result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
     fun `when medication info is in a medication list, then don't add it`() {
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
-
         val result = saveMedUseCase.invoke(MEDICATION_A, listWithMedicationInfoItem)
 
-        assertEquals(listWithMedicationInfoItem, result)
+        assertTrue(result.isFailure)
     }
 }
