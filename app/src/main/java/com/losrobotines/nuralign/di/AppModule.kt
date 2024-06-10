@@ -13,12 +13,14 @@ import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationP
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
-import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_sleep.data.SleepTrackerProviderImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
-import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
+import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
+import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -67,8 +69,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideSleepRepository(sleepApiService: SleepApiService): SleepRepository {
-        return SleepRepositoryImpl(sleepApiService)
+    fun provideSleepRepository(sleepApiService: SleepApiService): SleepTrackerProvider {
+        return SleepTrackerProviderImpl(sleepApiService)
     }
 
     @Provides
@@ -89,13 +91,27 @@ object AppModule {
     }
 
     @Provides
-    fun provideSaveSleepDataUseCase(sleepRepository: SleepRepository): SaveSleepTrackerInfoUseCase {
-        return SaveSleepTrackerInfoUseCase(sleepRepository)
+    fun provideSaveSleepDataUseCase(
+        sleepTrackerProvider: SleepTrackerProvider, authRepository: AuthRepository,
+        formatTimeUseCase: FormatTimeUseCase,
+    ): SaveSleepTrackerInfoUseCase {
+        return SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase,sleepTrackerProvider)
     }
 
     @Provides
-    fun provideGetSleepDataUseCase(sleepRepository: SleepRepository): GetSleepDataUseCase {
-        return GetSleepDataUseCase(sleepRepository)
+    fun provideGetSleepDataUseCase(sleepTrackerProvider: SleepTrackerProvider): GetSleepDataUseCase {
+        return GetSleepDataUseCase(sleepTrackerProvider)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGeminiContentGenerator(): GeminiContentGenerator {
+        return GeminiContentGenerator()
+    }
+    @Provides
+    fun provideNotification(): Notification {
+        return Notification()
     }
 
     @Provides

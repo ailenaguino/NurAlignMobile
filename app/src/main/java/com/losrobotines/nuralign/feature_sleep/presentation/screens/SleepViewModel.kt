@@ -9,11 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepTrackerInfoByDateUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,10 +28,16 @@ import javax.inject.Inject
 class SleepViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val saveSleepDataUseCase: SaveSleepTrackerInfoUseCase,
-    private val getSleepDataUseCase: GetSleepDataUseCase,
-    private val formatTimeUseCase: FormatTimeUseCase,
+    private val getSleepTrackerInfoByDateUseCase: GetSleepTrackerInfoByDateUseCase,
+    private val checkNextTrackerUseCase: CheckNextTrackerToBeCompletedUseCase
 ) :
     ViewModel() {
+
+    private val _route = MutableLiveData("")
+    var route: LiveData<String> = _route
+
+    private val _isVisible = MutableLiveData(false)
+    var isVisible: LiveData<Boolean> = _isVisible
 
     private val _isSaved = MutableLiveData(false)
     val isSaved = _isSaved
@@ -55,6 +62,70 @@ class SleepViewModel @Inject constructor(
 
     private val _bedTime = MutableLiveData("")
     val bedTime = _bedTime
+
+
+    fun saveData() {
+        if (currentUserExists()) {
+            viewModelScope.launch {
+                val id = getPatientId()
+                val currentDate = getDate()
+                saveSleepDataUseCase(
+                    id,
+                    currentDate,
+                    _sleepHours.intValue,
+                    _bedTime.value ?: "",
+                    _negativeThoughts.value ?: false,
+                    _anxiousBeforeSleep.value ?: false,
+                    _sleptThroughNight.value ?: false,
+                    _additionalNotes.value ?: ""
+                )
+            }
+        }
+    }
+
+
+        init {
+            loadMoodTrackerInfoToDatabase()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun loadMoodTrackerInfoToDatabase() {
+            viewModelScope.launch {
+                try {
+                    if (currentUserExists()) {
+                        val patientId = getPatientId()
+                        val date = getDate()
+                        val info = getSleepTrackerInfoByDateUseCase(patientId.toInt(), date)
+                        if (info != null) {
+                            sleepHours.intValue = info.sleepHours.toInt()
+                            bedTime.value = info.bedTime.toString()
+                            additionalNotes.value = info.sleepNotes
+                            if (info.negativeThoughtsFlag == "N") {
+                                setNegativeThoughts(false)
+                            } else {
+                                setNegativeThoughts(true)
+                            }
+                            if (info.anxiousFlag == "N") {
+                                setAnxiousBeforeSleep(false)
+                            } else {
+                                setAnxiousBeforeSleep(true)
+                            }
+                            if (info.sleepStraightFlag == "N") {
+                                setSleptThroughNight(false)
+                            } else {
+                                setSleptThroughNight(true)
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+    fun setIsVisible(value: Boolean) {
+        _isVisible.value = value
+    }
 
     fun setIsSaved(value: Boolean) {
         _isSaved.value = value
@@ -88,76 +159,6 @@ class SleepViewModel @Inject constructor(
         _sliderPosition.value = sliderValue
     }
 
-    fun saveData() {
-        if (currentUserExists()) {
-            viewModelScope.launch {
-                _bedTime.value?.let {
-                    val formattedBedTime = formatTimeUseCase.removeColonFromTime(_bedTime.value!!)
-                    _additionalNotes.value?.let { aditionalNote ->
-                        SleepInfo(
-                            getPatentId(),
-                            getDate(),
-                            _sleepHours.intValue.toShort(),
-                            formattedBedTime,
-                            _negativeThoughts.value.toString()[0].uppercase(),
-                            _anxiousBeforeSleep.value.toString()[0].uppercase(),
-                            _sleptThroughNight.value.toString()[0].uppercase(),
-                            aditionalNote
-                        )
-                    }
-                }?.let {
-                    saveSleepDataUseCase.execute(it)
-                }
-            }
-        }
-    }
-
-
-    /*
-        init {
-            loadMoodTrackerInfoToDatabase()
-        }
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun loadMoodTrackerInfoToDatabase() {
-            viewModelScope.launch {
-                try {
-                    if (currentUserExists()) {
-                        val patientId = getPatentId()
-                        val date = getDate()
-                        val info = sleepRepository.getSleepData(patientId.toInt())
-                        if (info != null) {
-                            sleepHours.intValue = info.sleepHours.toInt()
-                            bedTime.value = info.bedTime.toString()
-                            additionalNotes.value = info.sleepNotes
-                            if (info.negativeThoughtsFlag == "F"){
-                                setNegativeThoughts(false)
-                            } else {
-                                setNegativeThoughts(true)
-                            }
-                            if (info.anxiousFlag == "F"){
-                                setAnxiousBeforeSleep(false)
-                            } else {
-                                setAnxiousBeforeSleep(true)
-                            }
-                            if(info.sleepStraightFlag=="F"){
-                                setSleptThroughNight(false)
-                            }else{
-                                setSleptThroughNight(true)
-                            }
-                        } else {
-                            isSaved.value = false
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    isSaved.value = false
-                }
-            }
-        }
-
-     */
-
 
     private fun getDate(): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
@@ -165,7 +166,7 @@ class SleepViewModel @Inject constructor(
         return formatter.format(date)
     }
 
-    private suspend fun getPatentId(): Short {
+    private suspend fun getPatientId(): Short {
         val idResult: Short
         val uid = authRepository.currentUser!!.uid
         val doc = Firebase.firestore.collection("users").document(uid)
@@ -175,6 +176,12 @@ class SleepViewModel @Inject constructor(
 
     private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
+    }
+
+    fun checkNextTracker() {
+        viewModelScope.launch {
+            _route.value = checkNextTrackerUseCase(getPatientId().toInt())
+        }
     }
 
 }

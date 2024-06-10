@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,18 +39,29 @@ import com.losrobotines.nuralign.feature_medication.presentation.screens.medicat
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationViewModel
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
+import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
+import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel by viewModels<LoginViewModel>()
+    private lateinit var permissionManager: PermissionManager
 
-    @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter")
+    @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter", "InlinedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        permissionManager = PermissionManager(this)
+        NotificationHelper.createNotificationChannel(this)
+
         setContent {
             NurAlignTheme {
                 Surface(
@@ -61,6 +73,8 @@ class MainActivity : ComponentActivity() {
                     val loginState by loginViewModel.loginFlow.collectAsState(null)
 
                     val isAuthenticated = loginState is LoginState.Success
+
+                    NotificationHelper.createNotificationChannel(this)
 
                     val startDestination = when (loginState) {
                         is LoginState.Success -> Routes.HomeScreen.route
@@ -117,10 +131,32 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.PersonalInformationScreen.route) {
                                     PersonalInformationScreenComponent(navController)
                                 }
+                                composable(Routes.RoutineScreen.route) {
+                                    val routineViewModel by viewModels<RoutineViewModel>()
+                                    RoutineScreenComponent(navController, routineViewModel)
+                                }
                             }
+                            LaunchedEffect(navController, loginState) {
+                                val currentIntent = intent
+                                val destination = currentIntent?.getStringExtra("destination")
+                                if (destination != null && isAuthenticated) {
+                                    when (destination) {
+                                        "SleepTrackerScreen" -> {
+                                            navController.navigate(Routes.SleepTrackerScreen.route)
+                                        }
+                                    }
+                                }
+                            }
+                         /*   runBlocking {
+                                if (isAuthenticated) {
+                                    delay(2000)
+                                    permissionManager.requestPermissions()
+                                }
+                            }
+
+                          */
                         }
                     }
-
                 }
             }
         }

@@ -2,26 +2,32 @@ package com.losrobotines.nuralign.ui.bottom_bar
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -30,30 +36,34 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 sealed class Destinations(
     val route: String,
     val title: String,
-    val icon: Int
+    val icon: ImageVector,
+    val color: Color
 ) {
     data object Asistencia : Destinations(
         route = "",
         title = "Asistencia",
-        icon = R.drawable.call_icon
+        icon = Icons.Rounded.Call,
+        color = Color(0xFF620000)
     )
 
     data object Home : Destinations(
         route = Routes.HomeScreen.route,
         title = "Home",
-        icon = R.drawable.icon_home
+        icon = Icons.Rounded.Home,
+        color = Color.White
     )
 
     data object Configuracion : Destinations(
         route = Routes.SettingsScreen.route,
-        title = "Configuracion",
-        icon = R.drawable.settings_icon
+        title = "Configuración",
+        icon = Icons.Rounded.Settings,
+        color = Color.White
     )
 
     @Composable
     fun BottomBarNavigation(
         navController: NavHostController,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
     ) {
         val context = LocalContext.current
 
@@ -62,33 +72,33 @@ sealed class Destinations(
         )
 
         NavigationBar(
-            modifier = modifier,
+            modifier = Modifier
+                .height(65.dp)
+                .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
             containerColor = mainColor,
+            tonalElevation = 20.dp
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
-
             screens.forEach { screen ->
+                val selected = currentRoute == screen.route
                 NavigationBarItem(
                     icon = {
-                        Image(
-                            painter = painterResource(id = screen.icon),
-                            contentDescription = screen.title,
-                            modifier = Modifier
-                                .size(45.dp)
-                                .padding(end = 5.dp)
-                                .align(Alignment.CenterVertically)
-                                .background(Color.Transparent)
-                        )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = "Inicio",
+                                tint = if (selected) secondaryColor else screen.color,
+                                modifier = Modifier
+                                    .size(35.dp)
+                            )
+                            Text(
+                                text = screen.title,
+                                fontSize = 16.sp,
+                                color = if (selected) secondaryColor else screen.color
+                            )
+                        }
                     },
-                    /*label = {
-                        Text(
-                            text = screen.title,
-                            modifier = Modifier.padding(top = 69.dp, end = 5.dp)
-                        )
-                    },
-
-                     */
                     selected = currentRoute == screen.route,
                     onClick = {
                         if (screen == Destinations.Asistencia) {
@@ -109,9 +119,8 @@ sealed class Destinations(
 
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = secondaryColor,
-                        selectedIconColor = Color.White,
-                        unselectedTextColor = Color.White
+                        selectedIconColor = secondaryColor,
+                        indicatorColor = mainColor
                     ),
 
                     )
