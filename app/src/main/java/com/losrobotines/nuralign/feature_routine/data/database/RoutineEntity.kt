@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName="routine_table")
 data class RoutineEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     var id: Int = 0,
     @ColumnInfo(name = "sleep_time")
     var sleepTime: String,

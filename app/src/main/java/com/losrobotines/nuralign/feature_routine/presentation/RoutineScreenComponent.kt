@@ -20,8 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -58,6 +62,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RoutineScreenComponent(navController: NavHostController, routineViewModel: RoutineViewModel) {
@@ -74,7 +79,7 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                 SharedComponents().HalfCircleTop(title = "Mi rutina")
             }
             item {
-                questionGoToSleep(isSaved, time, routineViewModel)
+                isSaved?.let { questionGoToSleep(it, time, routineViewModel) }
             }
             item {
                 addActivity(routineViewModel)
@@ -150,7 +155,7 @@ private fun saveRoutine(
         val bedTimeMinute = bedTimeParts[1].toInt()
         val selectedBedTime = LocalTime.of(bedTimeHour, bedTimeMinute)
 
-        val prompt=NotificationPrompts.MOTIVATIONAL_MESSAGE
+        val prompt = NotificationPrompts.MOTIVATIONAL_MESSAGE
 
         scope.launch {
             routineViewModel.generateNotificationMessage(prompt)?.let {
@@ -249,6 +254,11 @@ private fun questionGoToSleep(
                     disabledTextColor = secondaryColor
                 )
             )
+        }
+        if (isSaved) {
+            IconButton(onClick = { routineViewModel.setIsSavedRoutine(false) }) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit")
+            }
         }
     }
 

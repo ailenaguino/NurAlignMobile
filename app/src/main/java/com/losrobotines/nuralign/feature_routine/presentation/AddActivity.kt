@@ -102,7 +102,7 @@ fun AddActivityAlertDialog(
 fun ActivityElement(routineViewModel: RoutineViewModel) {
     val activity by routineViewModel.activity.observeAsState("")
     val time: String by routineViewModel.activityRoutineTime.observeAsState("")
-    val isSaved by routineViewModel.isSaved.observeAsState(false)
+      val isSaved by routineViewModel.isSaved.observeAsState(false)
 
     val isOpen = remember { mutableStateOf(false) }
 
@@ -121,7 +121,7 @@ fun ActivityElement(routineViewModel: RoutineViewModel) {
                     .height(80.dp)
                     .width(250.dp),
                 shape = RoundedCornerShape(20.dp),
-                enabled = !isSaved,
+                 enabled = !isSaved,
                 singleLine = true,
                 label = { Text("Actividad", color = secondaryColor) },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -138,7 +138,7 @@ fun ActivityElement(routineViewModel: RoutineViewModel) {
             modifier = Modifier
                 .padding(start = 40.dp, end = 2.dp)
                 .size(90.dp)
-                .clickable(enabled = !isSaved) { isOpen.value = true }
+                .clickable(enabled = !isSaved ) { isOpen.value = true }
         ) {
             OutlinedTextField(
                 value = time,
@@ -184,6 +184,7 @@ fun ActivityElement(routineViewModel: RoutineViewModel) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActivityRow(routineViewModel: RoutineViewModel) {
+    val isSaved by routineViewModel.isSaved.observeAsState(false)
     val selectedDays = routineViewModel.selectedDays
     val days = arrayOf("Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do")
 
@@ -219,7 +220,8 @@ fun ActivityRow(routineViewModel: RoutineViewModel) {
                         .weight(1.4f)
                         .height(24.dp)
                         .padding(horizontal = 1.dp)
-                        .defaultMinSize(12.dp)
+                        .defaultMinSize(12.dp),
+                    enabled = !isSaved
                 ) {
                     Text(text = " ")
                 }

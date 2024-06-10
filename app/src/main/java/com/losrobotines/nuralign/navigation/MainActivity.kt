@@ -77,9 +77,11 @@ class MainActivity : ComponentActivity() {
 
                     NotificationHelper.createNotificationChannel(this)
 
-                    val startDestination = when (loginState) {
-                        is LoginState.Success -> Routes.HomeScreen.route
-                        else -> Routes.LoginScreen.route
+                    val startDestination = remember(loginState) {
+                        when (loginState) {
+                            is LoginState.Success -> Routes.HomeScreen.route
+                            else -> Routes.LoginScreen.route
+                        }
                     }
 
                     Scaffold(
@@ -136,25 +138,22 @@ class MainActivity : ComponentActivity() {
                                     RoutineScreenComponent(navController, routineViewModel)
                                 }
                             }
+
                             LaunchedEffect(navController, loginState) {
-                                val currentIntent = intent
-                                val destination = currentIntent?.getStringExtra("destination")
-                                if (destination != null && isAuthenticated) {
-                                    when (destination) {
-                                        "SleepTrackerScreen" -> {
-                                            navController.navigate(Routes.SleepTrackerScreen.route)
+                                // Verifica el estado de autenticación y solicita permisos si es necesario
+                                if (isAuthenticated) {
+                                    permissionManager.requestPermissions()
+                                    val currentIntent = intent
+                                    val destination = currentIntent?.getStringExtra("destination")
+                                    if (destination != null) {
+                                        when (destination) {
+                                            "SleepTrackerScreen" -> {
+                                                navController.navigate(Routes.SleepTrackerScreen.route)
+                                            }
                                         }
                                     }
                                 }
                             }
-                         /*   runBlocking {
-                                if (isAuthenticated) {
-                                    delay(2000)
-                                    permissionManager.requestPermissions()
-                                }
-                            }
-
-                          */
                         }
                     }
                 }

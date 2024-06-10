@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class RoutineViewModel @Inject constructor(
     private val loadRoutineUseCase: LoadRoutineUseCase,
@@ -102,17 +103,5 @@ class RoutineViewModel @Inject constructor(
         selectedDays.clear()
     }
 
-    /*
-    private suspend fun loadInitialRoutine(): RoutineEntity {
-        return loadRoutineUseCase()
-    }
-    suspend fun updateRoutine(
-        bedTime: String,
-        activity: String,
-        activityDays: List<String>,
-        activityTime: String
-    ) {
-        updateRoutineUseCase(bedTime, activity, activityDays, activityTime)
-    }
-     */
+
 }
