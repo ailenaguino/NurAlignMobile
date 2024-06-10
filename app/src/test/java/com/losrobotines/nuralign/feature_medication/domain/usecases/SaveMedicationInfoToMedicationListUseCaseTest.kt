@@ -12,20 +12,20 @@ private val MEDICATION_A = MedicationInfo(9, "A", 200, "Y")
 
 class SaveMedicationInfoToMedicationListUseCaseTest {
 
-    private lateinit var useCase: SaveMedicationInfoToMedicationListUseCase
+    private lateinit var saveMedUseCase: AddNewMedicationToListUseCase
     private lateinit var emptyList: MutableList<MedicationInfo?>
     private lateinit var listWithMedicationInfoItem: MutableList<MedicationInfo?>
 
     @BeforeEach
     fun setUp() {
-        useCase = SaveMedicationInfoToMedicationListUseCase()
+        saveMedUseCase = AddNewMedicationToListUseCase()
         emptyList = mutableListOf()
         listWithMedicationInfoItem = mutableListOf(MEDICATION_A)
     }
 
     @Test
     fun `when medication info isn't in a medication list, then add it and return it`() {
-        val result = useCase.invoke(MEDICATION_A, emptyList)
+        val result = saveMedUseCase.invoke(MEDICATION_A, emptyList)
 
         assertEquals(listWithMedicationInfoItem, result)
     }
@@ -35,7 +35,7 @@ class SaveMedicationInfoToMedicationListUseCaseTest {
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
 
-        val result = useCase.invoke(MEDICATION_A, listWithMedicationInfoItem)
+        val result = saveMedUseCase.invoke(MEDICATION_A, listWithMedicationInfoItem)
 
         assertEquals(listWithMedicationInfoItem, result)
     }

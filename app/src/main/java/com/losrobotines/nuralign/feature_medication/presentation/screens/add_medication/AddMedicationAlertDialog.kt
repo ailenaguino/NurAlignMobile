@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +15,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -28,11 +25,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,16 +33,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationViewModel
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddMedicationAlertDialog(
     onDismissRequest: () -> Unit,
-    confirmButton: () -> Unit
+    confirmButton: () -> Unit,
+    medicationViewModel: MedicationViewModel
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val newMedication = MedicationInfo(
+        medicationViewModel.getCurrentPatientId(),
+        medicationViewModel.medicationName.value,
+        medicationViewModel.medicationGrammage.intValue,
+        medicationViewModel.medicationOptionalFlag.value
+    )
+
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(horizontal = 15.dp),
         title = {
@@ -64,11 +68,16 @@ fun AddMedicationAlertDialog(
             }
         },
         text = {
-            MedicationRow()
+            NewMedicationRow(medicationViewModel)
         },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
-            Button(onClick = { confirmButton()  }) {
+            Button(onClick = {
+                coroutineScope.launch {
+                    medicationViewModel.addNewMedicationToList(newMedication)
+                }
+                confirmButton()
+            }) {
                 Text("Guardar")
             }
         },
@@ -81,47 +90,21 @@ fun AddMedicationAlertDialog(
 }
 
 @Composable
-fun EditMedicationAlertDialog(
-    onDismissRequest: () -> Unit,
-    confirmButton: () -> Unit,
-    medicationName: String,
-    medicationGrammage: Int
-) {
-    AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.padding(horizontal = 15.dp),
-        title = {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "$medicationName - $medicationGrammage",
-                    textAlign = TextAlign.Center
-                )
-            }
-        },
-        text = {
-            MedicationRow()
-        },
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            Button(onClick = { confirmButton() }) {
-                Text("Guardar cambios")
-            }
-        },
-        dismissButton = {
-            Button(onClick = { onDismissRequest() }) {
-                Text("Cancelar")
-            }
-        }
-    )
+fun NewMedicationRow(medicationViewModel: MedicationViewModel) {
+    Column {
+        NewMedicationElement(medicationViewModel)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SharedComponents().SelectDayButtons()
+        Spacer(modifier = Modifier.height(8.dp))
+
+        NewOptional(medicationViewModel)
+        Divider(color = secondaryColor, thickness = 2.dp)
+    }
 }
 
 @Composable
-fun MedicationElement() {
-    var medicationName by remember { mutableStateOf("") }
-    var medicationGrammage by remember { mutableIntStateOf(0) }
-
+fun NewMedicationElement(medicationViewModel: MedicationViewModel) {
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
 
         Box(
@@ -131,8 +114,8 @@ fun MedicationElement() {
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
-                value = medicationName,
-                onValueChange = { medicationName = it },
+                value = medicationViewModel.medicationName.value,
+                onValueChange = { medicationViewModel.medicationName.value = it },
                 modifier = Modifier
                     .height(80.dp)
                     .width(250.dp),
@@ -152,8 +135,10 @@ fun MedicationElement() {
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
-                value = medicationGrammage.toString(),
-                onValueChange = { medicationGrammage = it.toInt() },
+                value = medicationViewModel.medicationGrammage.intValue.toString(),
+                onValueChange = {
+                    medicationViewModel.medicationGrammage.intValue = it.toIntOrNull() ?: 0
+                },
                 modifier = Modifier
                     .height(80.dp)
                     .width(250.dp),
@@ -171,9 +156,8 @@ fun MedicationElement() {
 }
 
 @Composable
-fun Optional() {
-    var checked by remember { mutableStateOf(false) }
-    var checkedValue by remember { mutableStateOf("N") }
+fun NewOptional(medicationViewModel: MedicationViewModel) {
+    val checkedValue = (medicationViewModel.medicationOptionalFlag.value == "Y")
 
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -185,11 +169,11 @@ fun Optional() {
 
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
             Switch(
-                checked = checked,
+                checked = checkedValue,
                 onCheckedChange = {
-                    checked = it
+                    medicationViewModel.medicationOptionalFlag.value = if (it) "Y" else "N"
                 },
-                thumbContent = if (checked) {
+                thumbContent = if (checkedValue) {
                     {
                         Icon(
                             imageVector = Icons.Filled.Check,
@@ -212,45 +196,5 @@ fun Optional() {
                 )
             )
         }
-    }
-}
-
-@Composable
-fun MedicationRow() {
-    Column {
-        MedicationElement()
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SharedComponents().SelectDayButtons()
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Optional()
-        Divider(color = secondaryColor, thickness = 2.dp)
-    }
-}
-
-@Composable
-fun SaveButton(addMedicationViewModel: MedicationViewModel) {
-    Button(
-        onClick = { /*addMedicationViewModel.saveData()*/ },
-        colors = ButtonDefaults.buttonColors(containerColor = mainColor)
-    ) {
-        Text(text = "Guardar")
-    }
-}
-
-@Composable
-fun RemoveIcon(onClick: () -> Unit = {}) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            Icons.Filled.Remove,
-            tint = secondaryColor,
-            contentDescription = "quitar",
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .align(Alignment.TopCenter)
-                .clickable { onClick() }
-        )
     }
 }

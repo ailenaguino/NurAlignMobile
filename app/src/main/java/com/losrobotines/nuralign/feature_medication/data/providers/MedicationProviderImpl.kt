@@ -4,30 +4,27 @@ import android.util.Log
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationRepository
+import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
 import javax.inject.Inject
 
 class MedicationProviderImpl @Inject constructor(private val apiService: MedicationApiService) :
-    MedicationRepository {
+    MedicationProvider {
 
-    override suspend fun saveMedicationInfo(medicationInfo: List<MedicationInfo?>) {
+    override suspend fun saveMedicationList(medicationList: List<MedicationInfo?>): Boolean {
         try {
-            for (med in medicationInfo) {
+            for (med in medicationList) {
                 val dto = mapDomainToData(med!!)
-                Log.d("MedicationRepository", "DtO Generado: $dto")
                 apiService.insertMedicationInfoIntoDatabase(dto)
-                Log.d("MedicationRepository", "$dto inserta")
             }
-            Log.d("MedicationRepository", "Successfully saved MoodTrackerInfo")
+            return true
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("MedicationRepository", "Error saving MedicationInfo", e)
+            return false
         }
     }
 
-    override suspend fun getMedicationList(patientId: Short): MutableList<MedicationInfo?> {
+    override suspend fun getMedicationList(patientId: Short): List<MedicationInfo?> {
         val dto = apiService.getMedicationList(patientId)
-        Log.d("MedicationRepository", "DtO Obtenido: $dto")
+        Log.d("MedicationProvider", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
     }
 
@@ -41,7 +38,7 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         )
     }
 
-    private fun mapDataToDomain(dto: List<MedicationDto?>): MutableList<MedicationInfo?> {
+    private fun mapDataToDomain(dto: List<MedicationDto?>): List<MedicationInfo?> {
         val list = mutableListOf<MedicationInfo?>()
         dto.let {
             for (med in it) {

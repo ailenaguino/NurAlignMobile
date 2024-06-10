@@ -4,6 +4,8 @@ import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 
 interface MedicationProvider {
 
-    suspend fun saveMedicationData(medicationInfo: MedicationInfo)
+    suspend fun saveMedicationList(medicationList: List<MedicationInfo?>): Boolean
+
+    suspend fun getMedicationList(patientId: Short): List<MedicationInfo?>
 
 }
