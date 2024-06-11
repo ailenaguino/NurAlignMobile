@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -33,8 +33,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -103,6 +109,13 @@ fun EditMedicationRow(medicationViewModel: MedicationViewModel, medicationElemen
 
         EditOptional(medicationViewModel, medicationElement)
         Divider(color = secondaryColor, thickness = 2.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        RemoveMedication(medicationElement, medicationViewModel)
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Divider(color = secondaryColor, thickness = 2.dp)
+
     }
 }
 
@@ -217,17 +230,65 @@ fun EditOptional(
 }
 
 @Composable
-fun RemoveMedication(onClick: () -> Unit = {}) {
+fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: MedicationViewModel) {
+    val showDialog = remember { mutableStateOf(false) }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            Icons.Filled.Remove,
-            tint = secondaryColor,
-            contentDescription = "quitar",
+        ClickableText(
+            AnnotatedString("Eliminar medicación."),
+            onClick = { showDialog.value = true },
             modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .align(Alignment.TopCenter)
-                .clickable { onClick() }
+                .fillMaxWidth(),
+            style = TextStyle(
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                textDecoration = TextDecoration.Underline,
+                color = Color.Red,
+                fontSize = 24.sp
+            )
         )
+
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            "Confirmar Eliminación",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                },
+                text = {
+                    Text(
+                        "¿Estás seguro de eliminar esta medicación?",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            medicationViewModel.removeMedicationFromList(medicationElement)
+                            showDialog.value = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Eliminar")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDialog.value = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
     }
 }
