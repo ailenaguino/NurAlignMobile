@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_medication.presentation.screens.add_medication
+package com.losrobotines.nuralign.feature_medication.presentation.screens.add_edit_medication
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -240,8 +240,6 @@ fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: Med
                 .fillMaxWidth(),
             style = TextStyle(
                 textAlign = TextAlign.Center,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
                 textDecoration = TextDecoration.Underline,
                 color = Color.Red,
                 fontSize = 24.sp

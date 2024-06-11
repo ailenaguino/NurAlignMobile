@@ -8,8 +8,11 @@ import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImp
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
+import com.losrobotines.nuralign.feature_medication.data.network.MedicationTrackerApiService
 import com.losrobotines.nuralign.feature_medication.data.providers.MedicationProviderImpl
+import com.losrobotines.nuralign.feature_medication.data.providers.MedicationTrackerProviderImpl
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
+import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
@@ -121,5 +124,15 @@ object AppModule {
     @Provides
     fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationProvider{
         return MedicationProviderImpl(medicationApiService)
+    }
+
+    @Provides
+    fun provideMedicationTrackerApiService(retrofit: Retrofit): MedicationTrackerApiService{
+        return retrofit.create(MedicationTrackerApiService::class.java)
+    }
+
+    @Provides
+    fun provideMedicationTrackerProvider(medicationTrackerApiService: MedicationTrackerApiService): MedicationTrackerProvider {
+        return MedicationTrackerProviderImpl(medicationTrackerApiService)
     }
 }

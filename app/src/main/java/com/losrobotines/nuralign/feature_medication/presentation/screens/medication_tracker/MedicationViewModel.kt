@@ -6,10 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.usecases.EditExistingMedicationInListUseCase
 import com.losrobotines.nuralign.feature_medication.domain.usecases.AddNewMedicationToListUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.RemoveMedicationFromListUseCase
 import com.losrobotines.nuralign.feature_medication.domain.usecases.SaveMedicationListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,7 +22,9 @@ class MedicationViewModel @Inject constructor(
     private val userService: UserService,
     private val saveMedicationListUseCase: SaveMedicationListUseCase,
     private val addNewMedicationToListUseCase: AddNewMedicationToListUseCase,
-    private val editExistingMedicationInListUseCase: EditExistingMedicationInListUseCase
+    private val editExistingMedicationInListUseCase: EditExistingMedicationInListUseCase,
+    private val removeMedicationFromListUseCase: RemoveMedicationFromListUseCase,
+    private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
 ) : ViewModel() {
     private val _medicationList = MutableLiveData<List<MedicationInfo?>>()
     val medicationList: LiveData<List<MedicationInfo?>> = _medicationList
@@ -34,6 +38,9 @@ class MedicationViewModel @Inject constructor(
 
     private val _saveStatus = MutableLiveData<Result<Unit>>()
     val saveStatus: LiveData<Result<Unit>> = _saveStatus
+
+    private val _route = MutableLiveData("")
+    var route: LiveData<String> = _route
 
     init {
         loadMedicationList()
@@ -110,5 +117,23 @@ class MedicationViewModel @Inject constructor(
         medicationName.value = ""
         medicationGrammage.intValue = 0
         medicationOptionalFlag.value = "N"
+    }
+
+    fun removeMedicationFromList(medicationElement: MedicationInfo) {
+        viewModelScope.launch {
+            val removeResult = removeMedicationFromListUseCase(medicationElement, _medicationList.value!!)
+
+            if (removeResult.isSuccess) {
+                _medicationList.value = removeResult.getOrNull()!!
+            } else {
+                val errorMessage = removeResult.exceptionOrNull()?.message ?: "Error removing medication"
+            }
+        }
+    }
+
+    fun checkNextTracker(){
+        viewModelScope.launch {
+            _route.value = checkNextTrackerToBeCompletedUseCase(userService.getPatientId().toInt())
+        }
     }
 }

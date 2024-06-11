@@ -45,8 +45,6 @@ import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenCompo
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -108,7 +106,7 @@ class MainActivity : ComponentActivity() {
                                     val moodTrackerViewModel by viewModels<MoodTrackerViewModel>()
                                     MoodTrackerScreenComponent(navController, moodTrackerViewModel)
                                 }
-                                composable(Routes.AddMedicationScreen.route) {
+                                composable(Routes.MedicationTrackerScreen.route) {
                                     val medicationViewModel by viewModels<MedicationViewModel>()
                                     MedicationTrackerScreenComponent(navController, medicationViewModel)
                                 }

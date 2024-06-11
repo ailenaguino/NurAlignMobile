@@ -140,7 +140,7 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                 }
 
                 1 -> {
-                    navController.navigate(Routes.AddMedicationScreen.route)
+                    navController.navigate(Routes.MedicationTrackerScreen.route)
                 }
 
                 2 -> {
