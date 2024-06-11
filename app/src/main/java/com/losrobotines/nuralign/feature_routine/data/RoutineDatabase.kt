@@ -8,7 +8,7 @@ import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 
 
-@Database(entities = [RoutineEntity::class], version = 1)
+@Database(entities = [RoutineEntity::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class RoutineDatabase : RoomDatabase() {
 

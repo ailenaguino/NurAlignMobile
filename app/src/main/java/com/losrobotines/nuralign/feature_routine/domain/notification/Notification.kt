@@ -2,23 +2,16 @@ package com.losrobotines.nuralign.feature_routine.domain.notification
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.util.Log
-import androidx.core.app.NotificationCompat
-import com.losrobotines.nuralign.R
-import com.losrobotines.nuralign.feature_routine.domain.ScheduledNotification
 import java.time.LocalTime
 import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
+
 class Notification @Inject constructor() {
     @SuppressLint("ScheduleExactAlarm", "NewApi", "LaunchActivityFromNotification")
-    fun notificacionProgramada(
+    fun scheduledNotification(
         context: Context,
         selectedTime: LocalTime,
         title: String,
@@ -101,7 +94,10 @@ class Notification @Inject constructor() {
                     putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
                     putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
                     putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
-                    putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId + daysOfWeek[day]!!)
+                    putExtra(
+                        ScheduledNotification.NOTIFICATION_ID,
+                        notificationId + daysOfWeek[day]!!
+                    )
                 }
 
 

@@ -1,12 +1,10 @@
 package com.losrobotines.nuralign.feature_routine.presentation
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,9 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,22 +43,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.losrobotines.nuralign.feature_login.presentation.screens.signup.USER_NAME
 import com.losrobotines.nuralign.feature_routine.domain.NotificationPrompts
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.CustomTimePickerDialog
-import com.losrobotines.nuralign.feature_sleep.presentation.screens.QuestionGoToSleep
-import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
-import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents
-import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -70,6 +60,11 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
     val isSaved by routineViewModel.isSaved.observeAsState(false)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    var isSecondActivityEnabled by remember { mutableStateOf(false) }
+    var isActivityEnabled by remember { mutableStateOf(false) }
+
+    val preferencesManager = remember { PreferencesManager(context) }
+    val name = preferencesManager.getString(USER_NAME, "Usuario")
 
     Column() {
         LazyVerticalGrid(
@@ -79,49 +74,74 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                 SharedComponents().HalfCircleTop(title = "Mi rutina")
             }
             item {
-                isSaved?.let { questionGoToSleep(it, time, routineViewModel) }
+                Spacer(modifier = Modifier.height(15.dp))
+            }
+
+            item {
+                questionGoToSleep(isSaved, time, routineViewModel)
             }
             item {
-                addActivity(routineViewModel)
+                Spacer(modifier = Modifier.height(15.dp))
+            }
+            item {
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Agregar actividad",
+                            fontSize = 16.sp,
+                            color = secondaryColor,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Switch(
+                            checked = isActivityEnabled,
+                            onCheckedChange = { isActivityEnabled = it },
+                        )
+                    }
+                    if (isActivityEnabled) {
+                        ActivityRow(routineViewModel)
+                    }
+                }
             }
             item {
                 Spacer(modifier = Modifier.height(32.dp))
             }
             item {
-                saveRoutine(routineViewModel, context, scope, isSaved)
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Agregar segunda actividad",
+                            fontSize = 16.sp,
+                            color = secondaryColor,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Switch(
+                            checked = isSecondActivityEnabled,
+                            onCheckedChange = { isSecondActivityEnabled = it }
+                        )
+                    }
+                    if (isSecondActivityEnabled) {
+                        SecondActivityRow(routineViewModel)
+                    }
+                }
             }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-private fun addActivity(routineViewModel: RoutineViewModel) {
-    var openAlertDialog by remember { mutableStateOf(false) }
-
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Row {
-            Text(
-                text = "¿Qué actividad haces en tu semana?",
-                fontSize = 16.sp,
-                color = secondaryColor,
-                modifier = Modifier
-                    .weight(0.6f)
-                    .padding(start = 5.dp, top = 8.dp)
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            Button(
-                modifier = Modifier.padding(end = 5.dp),
-                onClick = { openAlertDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = secondaryColor)
-            ) {
-                Text(text = "Agregar")
+            item {
+                Spacer(modifier = Modifier.height(70.dp))
             }
-            if (openAlertDialog) {
-                AddActivityAlertDialog(
-                    onDismissRequest = { openAlertDialog = false },
-                    confirmButton = { openAlertDialog = false },
-                    routineViewModel = routineViewModel,
+            item {
+                saveRoutine(
+                    routineViewModel,
+                    context,
+                    scope,
+                    isSaved,
+                    isActivityEnabled,
+                    isSecondActivityEnabled,
+                    name
                 )
             }
         }
@@ -134,79 +154,121 @@ private fun saveRoutine(
     routineViewModel: RoutineViewModel,
     context: Context,
     scope: CoroutineScope,
-    isSaved: Boolean
+    isSaved: Boolean,
+    isActivityEnabled: Boolean,
+    isSecondActivityEnabled: Boolean,
+    name: String
 ) {
-    Button(onClick = {
-        val bedTime = routineViewModel.bedTimeRoutine.value
-        val activityTime = routineViewModel.activityRoutineTime.value
-        val selectedDays = routineViewModel.selectedDays
+    Button(
+        onClick = {
+            val bedTime = routineViewModel.bedTimeRoutine.value
+            val activityTime = routineViewModel.activityRoutineTime.value
+            val activityTime2 = routineViewModel.activityRoutineTime2.value
+            val selectedDays = routineViewModel.selectedDays
+            val selectedDays2 = routineViewModel.selectedDays2
 
-        if (bedTime.isNullOrEmpty()) {
-            Toast.makeText(
-                context,
-                "Por favor, seleccione una hora para dormir",
-                Toast.LENGTH_SHORT
-            ).show()
-            return@Button
-        }
-
-        val bedTimeParts = bedTime.split(":")
-        val bedTimeHour = bedTimeParts[0].toInt()
-        val bedTimeMinute = bedTimeParts[1].toInt()
-        val selectedBedTime = LocalTime.of(bedTimeHour, bedTimeMinute)
-
-        val prompt = NotificationPrompts.MOTIVATIONAL_MESSAGE
-
-        scope.launch {
-            routineViewModel.generateNotificationMessage(prompt)?.let {
-                routineViewModel.notification.notificacionProgramada(
+            if (bedTime.isNullOrEmpty()) {
+                Toast.makeText(
                     context,
-                    selectedBedTime,
-                    title = "Robotin",
-                    content = it,
-                    destination = "SleepTrackerScreen",
-                    notificationId = 1
-                )
+                    "Por favor, seleccione una hora para dormir",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@Button
             }
 
-            if (!activityTime.isNullOrEmpty()) {
-                val activityTimeParts = activityTime.split(":")
-                if (activityTimeParts.size != 2) {
-                    Toast.makeText(
+            val selectedBedTime = routineViewModel.parseTime(bedTime)
+            if (selectedBedTime == null) {
+                Toast.makeText(
+                    context,
+                    "La hora de dormir es inválida",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@Button
+            }
+
+            val prompt = NotificationPrompts.getMotivationalMessage(name)
+
+            scope.launch {
+                routineViewModel.generateNotificationMessage(prompt)?.let {
+                    routineViewModel.notification.scheduledNotification(
                         context,
-                        "La hora de la actividad es inválida",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@launch
-                }
-
-                val activityHour = activityTimeParts[0].toInt()
-                val activityMinute = activityTimeParts[1].toInt()
-                val selectedActivityTime = LocalTime.of(activityHour, activityMinute)
-
-
-                val activityMessage = NotificationPrompts.getActivityMessage(routineViewModel.activity.value ?: "")
-
-                routineViewModel.generateNotificationMessage(activityMessage)?.let {
-                    routineViewModel.notification.notificacionProgramada(
-                        context,
-                        selectedActivityTime,
+                        selectedBedTime,
                         title = "Robotin",
                         content = it,
-                        destination = "HomeScreen",
-                        notificationId = 2,
-                        selectedDays = selectedDays
+                        destination = "SleepTrackerScreen",
+                        notificationId = 1
                     )
                 }
-            }
 
-            routineViewModel.saveRoutine()
-            routineViewModel.setIsSavedRoutine(true)
-        }
-    }, enabled = !isSaved) {
+                if (isActivityEnabled && !activityTime.isNullOrEmpty()) {
+                    val selectedActivityTime = routineViewModel.parseTime(activityTime)
+                    if (selectedActivityTime == null) {
+                        Toast.makeText(
+                            context,
+                            "La hora de la actividad es inválida",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@launch
+                    }
+
+                    val activityMessage =
+                        NotificationPrompts.getActivityMessage(
+                            routineViewModel.activity.value ?: "", name
+                        )
+                    routineViewModel.generateNotificationMessage(activityMessage)?.let {
+                        routineViewModel.notification.scheduledNotification(
+                            context,
+                            selectedActivityTime,
+                            title = "Robotin",
+                            content = it,
+                            destination = "HomeScreen",
+                            notificationId = 2,
+                            selectedDays = selectedDays
+                        )
+                    }
+                }
+
+                if (isSecondActivityEnabled && !activityTime2.isNullOrEmpty()) {
+                    val selectedActivityTime2 = routineViewModel.parseTime(activityTime2)
+                    if (selectedActivityTime2 == null) {
+                        Toast.makeText(
+                            context,
+                            "La hora de la segunda actividad es inválida",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@launch
+                    }
+
+                    val activity2Message =
+                        NotificationPrompts.getActivityMessage(
+                            routineViewModel.activity2.value ?: "", name
+                        )
+                    routineViewModel.generateNotificationMessage(activity2Message)?.let {
+                        routineViewModel.notification.scheduledNotification(
+                            context,
+                            selectedActivityTime2,
+                            title = "Robotin",
+                            content = it,
+                            destination = "HomeScreen",
+                            notificationId = 3,
+                            selectedDays = selectedDays2
+                        )
+                    }
+                }
+
+                routineViewModel.saveRoutine()
+                routineViewModel.setIsSavedRoutine(true)
+            }
+        }, modifier = Modifier.padding(end = 16.dp,start=260.dp), colors = ButtonDefaults.buttonColors(
+            containerColor = secondaryColor,
+            disabledContainerColor = Color.Gray,
+            disabledContentColor = Color.White
+        ), enabled = !isSaved
+    ) {
         Text("Guardar")
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -256,7 +318,9 @@ private fun questionGoToSleep(
             )
         }
         if (isSaved) {
-            IconButton(onClick = { routineViewModel.setIsSavedRoutine(false) }) {
+            IconButton(onClick = {
+                routineViewModel.setIsSavedRoutine(false)
+            }) {
                 Icon(Icons.Default.Edit, contentDescription = "Edit")
             }
         }

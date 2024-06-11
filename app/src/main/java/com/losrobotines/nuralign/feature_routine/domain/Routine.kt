@@ -7,7 +7,10 @@ data class Routine(
     var sleepTime: String,
     var activity: String,
     var activityTime: String,
-    var activityDays: List<String>
+    var activityDays: List<String>,
+    var activity2: String,
+    var activityTime2: String,
+    var activityDays2: List<String>,
 )
 
 fun Routine.toDatabase(): RoutineEntity {
@@ -16,7 +19,10 @@ fun Routine.toDatabase(): RoutineEntity {
         sleepTime = sleepTime,
         activity = activity,
         activityTime = activityTime,
-        activityDays = activityDays
+        activityDays = activityDays,
+        activity2 = activity2,
+        activityTime2 = activityTime2,
+        activityDays2 = activityDays2
     )
 }
 
@@ -26,6 +32,9 @@ fun RoutineEntity.toDomain(): Routine {
         sleepTime = sleepTime,
         activity = activity,
         activityTime = activityTime,
-        activityDays = activityDays
+        activityDays = activityDays,
+        activity2 = activity2,
+        activityTime2 = activityTime2,
+        activityDays2 = activityDays2
     )
 }

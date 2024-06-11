@@ -22,7 +22,10 @@ class RoutineRepositoryDatabase @Inject constructor(private val dao: RoutineDao)
                 sleepTime = "",
                 activity = "",
                 activityTime = "",
-                activityDays = emptyList()
+                activityDays = emptyList(),
+                activity2 = "",
+                activityTime2 = "",
+                activityDays2 = emptyList()
             ).toDomain()
         }
     }

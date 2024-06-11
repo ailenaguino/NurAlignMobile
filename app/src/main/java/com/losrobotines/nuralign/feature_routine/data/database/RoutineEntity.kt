@@ -15,5 +15,11 @@ data class RoutineEntity(
     @ColumnInfo(name = "activity_time")
     var activityTime: String,
     @ColumnInfo(name = "activity_days")
-    var activityDays: List<String>
+    var activityDays: List<String>,
+    @ColumnInfo(name = "activity2")
+    var activity2: String,
+    @ColumnInfo(name = "activity_time2")
+    var activityTime2: String,
+    @ColumnInfo(name = "activity_days2")
+    var activityDays2: List<String>,
 )
