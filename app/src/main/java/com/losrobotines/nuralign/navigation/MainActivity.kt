@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -18,6 +19,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -55,7 +58,7 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<LoginViewModel>()
     private lateinit var permissionManager: PermissionManager
 
-    @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter", "InlinedApi")
+    @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter", "InlinedApi", "StateFlowValueCalledInComposition")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,34 +72,32 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController: NavHostController = rememberNavController()
+                    val navController = rememberNavController()
 
-                    val loginState by loginViewModel.loginFlow.collectAsState(null)
+                    val startDestination = remember { mutableStateOf(Routes.LoadingScreen.route) }
 
-                    val isAuthenticated = loginState is LoginState.Success
-
-                    NotificationHelper.createNotificationChannel(this)
-
-                    val startDestination = remember(loginState) {
-                        when (loginState) {
-                            is LoginState.Success -> Routes.HomeScreen.route
-                            else -> Routes.LoginScreen.route
+                    LaunchedEffect(Unit) {
+                        delay(500)
+                        val isAuthenticated = loginViewModel.loginFlow.value is LoginState.Success
+                        startDestination.value = if (isAuthenticated) {
+                            Routes.HomeScreen.route
+                        } else {
+                            Routes.LoginScreen.route
                         }
                     }
 
                     Scaffold(
                         bottomBar = {
-                            if (isAuthenticated) {
+                            if (startDestination.value !in listOf(Routes.LoadingScreen.route, Routes.LoginScreen.route, Routes.SignUpScreen.route)) {
                                 BottomBarNavigation(
                                     navController = navController,
                                     modifier = Modifier
                                 )
                             }
                         }
-                    ) { innerPadding ->
-                        Box(modifier = Modifier.padding(innerPadding)) {
-                            NavHost(navController, startDestination = startDestination) {
-
+                    ) {
+                        Box(modifier = Modifier.padding(it)) {
+                            NavHost(navController, startDestination = startDestination.value) {
                                 composable(Routes.SignUpScreen.route) {
                                     val signUpViewModel by viewModels<SignUpViewModel>()
                                     SignUpScreenComponent(navController, signUpViewModel)
@@ -137,10 +138,18 @@ class MainActivity : ComponentActivity() {
                                     val routineViewModel by viewModels<RoutineViewModel>()
                                     RoutineScreenComponent(navController, routineViewModel)
                                 }
+                                composable(Routes.LoadingScreen.route) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                }
                             }
 
-                            LaunchedEffect(navController, loginState) {
-                                // Verifica el estado de autenticación y solicita permisos si es necesario
+                            LaunchedEffect(navController) {
+                                val isAuthenticated = loginViewModel.loginFlow.value is LoginState.Success
                                 if (isAuthenticated) {
                                     permissionManager.requestPermissions()
                                     val currentIntent = intent
