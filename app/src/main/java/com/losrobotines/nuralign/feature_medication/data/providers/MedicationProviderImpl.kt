@@ -26,25 +26,24 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         return mapDataToDomain(dto)
     }
 
-    override suspend fun updateMedicationInfo(medicationInfo: MedicationInfo?): Boolean {
+    override suspend fun updateMedicationInfo(newMedicationInfo: MedicationInfo?): Boolean {
         try {
-            val dto = mapDomainToData(medicationInfo!!)
-            //apiService.updateMedicationInfo(dto.patientMedicationId)
+            val dto = mapDomainToData(newMedicationInfo!!)
+            apiService.updateMedicationInfo(dto.patientMedicationId!!, dto)
             return true
         } catch (e: Exception) {
             return false
         }
     }
 
-    /*
     override suspend fun deleteMedicationInfo(patientMedicationId: Short): Boolean {
         try {
             apiService.deleteMedicationInfo(patientMedicationId)
             return true
         } catch (e: Exception) {
             return false
+        }
     }
-     */
 
     private fun mapDomainToData(medicationInfo: MedicationInfo): MedicationDto {
         return MedicationDto(

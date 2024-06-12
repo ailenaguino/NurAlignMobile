@@ -268,7 +268,7 @@ fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: Med
                 confirmButton = {
                     Button(
                         onClick = {
-                            //medicationViewModel.removeMedicationFromList(medicationElement)
+                            medicationViewModel.removeMedicationFromList(medicationElement)
                             showDialog.value = false
                         },
                         colors = ButtonDefaults.buttonColors(

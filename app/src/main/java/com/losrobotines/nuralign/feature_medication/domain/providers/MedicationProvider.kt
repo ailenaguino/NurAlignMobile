@@ -8,8 +8,8 @@ interface MedicationProvider {
 
     suspend fun getMedicationList(patientId: Short): List<MedicationInfo?>
 
-    suspend fun updateMedicationInfo(medicationInfo: MedicationInfo?): Boolean
+    suspend fun updateMedicationInfo(newMedicationInfo: MedicationInfo?): Boolean
 
-    //suspend fun deleteMedicationInfo(medicationPatientId: Short): Boolean
+    suspend fun deleteMedicationInfo(patientMedicationId: Short): Boolean
 
 }

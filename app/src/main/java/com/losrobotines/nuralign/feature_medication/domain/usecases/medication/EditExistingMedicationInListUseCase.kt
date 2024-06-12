@@ -30,7 +30,7 @@ class EditExistingMedicationInListUseCase @Inject constructor(
             )
 
             if (updatedMedication != null) {
-                //medicationProvider.updateMedicationInfo(updatedMedication)
+                medicationProvider.updateMedicationInfo(updatedMedication)
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Medication not found in list"))

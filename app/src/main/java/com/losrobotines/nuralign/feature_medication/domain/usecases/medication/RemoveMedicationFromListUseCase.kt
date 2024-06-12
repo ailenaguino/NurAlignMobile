@@ -7,11 +7,11 @@ import javax.inject.Inject
 class RemoveMedicationFromListUseCase @Inject constructor(
     private val medicationProvider: MedicationProvider
 ) {
-    operator fun invoke(
+    suspend operator fun invoke(
         medicationInfo: MedicationInfo
     ): Result<Unit> {
         return try {
-            //medicationProvider.deleteMedicationInfo(medicationInfo)
+            medicationProvider.deleteMedicationInfo(medicationInfo.patientMedicationId!!)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

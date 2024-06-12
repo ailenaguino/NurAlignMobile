@@ -103,6 +103,7 @@ class MedicationViewModel @Inject constructor(
 
             if (removeResult.isSuccess) {
                 loadMedicationList()
+                clearMedicationState()
             } else {
                 val errorMessage =
                     removeResult.exceptionOrNull()?.message ?: "Error removing medication"
