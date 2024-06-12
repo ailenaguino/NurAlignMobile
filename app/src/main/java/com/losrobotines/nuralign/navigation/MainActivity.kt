@@ -35,8 +35,9 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewMod
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
-import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationTrackerScreenComponent
-import com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker.MedicationViewModel
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerScreenComponent
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
 import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
@@ -108,7 +109,8 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable(Routes.MedicationTrackerScreen.route) {
                                     val medicationViewModel by viewModels<MedicationViewModel>()
-                                    MedicationTrackerScreenComponent(navController, medicationViewModel)
+                                    val medicationTrackerViewModel by viewModels<MedicationTrackerViewModel>()
+                                    MedicationTrackerScreenComponent(navController, medicationViewModel, medicationTrackerViewModel)
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {
                                     val sleepViewModel by viewModels<SleepViewModel>()

@@ -1,18 +1,17 @@
-package com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker
+package com.losrobotines.nuralign.feature_medication.presentation.screens.medication
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.feature_medication.domain.usecases.EditExistingMedicationInListUseCase
-import com.losrobotines.nuralign.feature_medication.domain.usecases.AddNewMedicationToListUseCase
-import com.losrobotines.nuralign.feature_medication.domain.usecases.RemoveMedicationFromListUseCase
-import com.losrobotines.nuralign.feature_medication.domain.usecases.SaveMedicationListUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.EditExistingMedicationInListUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.RemoveMedicationFromListUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.SaveMedicationInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,18 +19,19 @@ import javax.inject.Inject
 @HiltViewModel
 class MedicationViewModel @Inject constructor(
     private val userService: UserService,
-    private val saveMedicationListUseCase: SaveMedicationListUseCase,
-    private val addNewMedicationToListUseCase: AddNewMedicationToListUseCase,
+    private val saveMedicationInfoUseCase: SaveMedicationInfoUseCase,
     private val editExistingMedicationInListUseCase: EditExistingMedicationInListUseCase,
-    private val removeMedicationFromListUseCase: RemoveMedicationFromListUseCase,
-    private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
+    private val removeMedicationFromListUseCase: RemoveMedicationFromListUseCase
 ) : ViewModel() {
+    private val _patientId = mutableStateOf<Short>(0)
+    val patientId: State<Short> = _patientId
+
     private val _medicationList = MutableLiveData<List<MedicationInfo?>>()
     val medicationList: LiveData<List<MedicationInfo?>> = _medicationList
 
     var medicationName = mutableStateOf("")
     val medicationGrammage = mutableIntStateOf(0)
-    val medicationOptionalFlag = mutableStateOf("")
+    val medicationOptionalFlag = mutableStateOf("N")
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -39,10 +39,8 @@ class MedicationViewModel @Inject constructor(
     private val _saveStatus = MutableLiveData<Result<Unit>>()
     val saveStatus: LiveData<Result<Unit>> = _saveStatus
 
-    private val _route = MutableLiveData("")
-    var route: LiveData<String> = _route
-
     init {
+        getCurrentPatientId()
         loadMedicationList()
     }
 
@@ -58,29 +56,11 @@ class MedicationViewModel @Inject constructor(
         }
     }
 
-    fun saveData() {
+    fun saveData(medicationInfo: MedicationInfo) {
         viewModelScope.launch {
             try {
-                _medicationList.value?.let { saveMedicationListUseCase(it) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun addNewMedicationToList(medicationElement: MedicationInfo) {
-        viewModelScope.launch {
-            try {
-                val result = _medicationList.value?.let {
-                    addNewMedicationToListUseCase(medicationElement, it)
-                }
-                if (result?.isSuccess == true) {
-                    _medicationList.value = result.getOrNull()!!.toList()
-                    clearMedicationState()
-                } else {
-                    val errorMessage =
-                        result?.exceptionOrNull()?.message ?: "Error adding medication"
-                }
+                saveMedicationInfoUseCase(medicationInfo)
+                loadMedicationList()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -98,7 +78,7 @@ class MedicationViewModel @Inject constructor(
             )
 
             if (editResult.isSuccess) {
-                _medicationList.value = editResult.getOrNull()!!
+                loadMedicationList()
                 _saveStatus.value = Result.success(Unit)
                 clearMedicationState()
             } else {
@@ -107,33 +87,26 @@ class MedicationViewModel @Inject constructor(
         }
     }
 
-    fun getCurrentPatientId(): Short {
-        var id = 0.toShort()
-        viewModelScope.launch { id = userService.getPatientId() }
-        return id
+    private fun getCurrentPatientId() {
+        viewModelScope.launch { _patientId.value = userService.getPatientId() }
     }
 
     fun clearMedicationState() {
         medicationName.value = ""
         medicationGrammage.intValue = 0
-        medicationOptionalFlag.value = "N"
+        medicationOptionalFlag.value = ""
     }
 
     fun removeMedicationFromList(medicationElement: MedicationInfo) {
         viewModelScope.launch {
-            val removeResult = removeMedicationFromListUseCase(medicationElement, _medicationList.value!!)
+            val removeResult = removeMedicationFromListUseCase(medicationElement)
 
             if (removeResult.isSuccess) {
-                _medicationList.value = removeResult.getOrNull()!!
+                loadMedicationList()
             } else {
-                val errorMessage = removeResult.exceptionOrNull()?.message ?: "Error removing medication"
+                val errorMessage =
+                    removeResult.exceptionOrNull()?.message ?: "Error removing medication"
             }
-        }
-    }
-
-    fun checkNextTracker(){
-        viewModelScope.launch {
-            _route.value = checkNextTrackerToBeCompletedUseCase(userService.getPatientId().toInt())
         }
     }
 }

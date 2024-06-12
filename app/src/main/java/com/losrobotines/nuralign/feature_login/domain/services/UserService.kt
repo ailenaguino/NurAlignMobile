@@ -8,6 +8,8 @@ import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrac
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 private const val USER = "users"
@@ -27,19 +29,39 @@ class UserService @Inject constructor(
         }
     }
 
+    fun getCurrentDate(): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val date = Date()
+        return formatter.format(date)
+    }
+
     suspend fun getMedicationList(id: Short): List<MedicationInfo?> {
         return medicationProvider.getMedicationList(id)
     }
 
-    suspend fun saveMedicationList(medicationInfo: List<MedicationInfo?>): Boolean {
-        return medicationProvider.saveMedicationList(medicationInfo)
+    suspend fun saveMedicationInfo(medicationInfo: MedicationInfo): Boolean {
+        return medicationProvider.saveMedicationInfo(medicationInfo)
     }
 
-    suspend fun getMedicationTrackerData(id: Short): MedicationTrackerInfo? {
-        return medicationTrackerProvider.getMedicationTrackerData(id)
+    suspend fun updateMedicationInfo(medicationInfo: MedicationInfo): Boolean {
+        return medicationProvider.updateMedicationInfo(medicationInfo)
+    }
+
+    /*
+    suspend fun deleteMedicationInfo(medicationInfo: MedicationInfo): Boolean {
+        return medicationProvider.deleteMedicationInfo(medicationInfo)
+    }
+     */
+
+    suspend fun getMedicationTrackerData(id: Short, effectiveDate: String): MedicationTrackerInfo? {
+        return medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate)
     }
 
     suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
         return medicationTrackerProvider.saveMedicationTrackerData(medicationTrackerInfo)
+    }
+
+    suspend fun updateMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
+        return medicationTrackerProvider.updateMedicationTrackerData(medicationTrackerInfo)
     }
 }

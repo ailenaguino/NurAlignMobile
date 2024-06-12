@@ -13,6 +13,8 @@ import com.losrobotines.nuralign.feature_medication.data.providers.MedicationPro
 import com.losrobotines.nuralign.feature_medication.data.providers.MedicationTrackerProviderImpl
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
+import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.SaveMedicationTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.UpdateMedicationTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
@@ -98,7 +100,7 @@ object AppModule {
         sleepTrackerProvider: SleepTrackerProvider, authRepository: AuthRepository,
         formatTimeUseCase: FormatTimeUseCase,
     ): SaveSleepTrackerInfoUseCase {
-        return SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase,sleepTrackerProvider)
+        return SaveSleepTrackerInfoUseCase(authRepository, formatTimeUseCase, sleepTrackerProvider)
     }
 
     @Provides
@@ -112,27 +114,39 @@ object AppModule {
     fun provideGeminiContentGenerator(): GeminiContentGenerator {
         return GeminiContentGenerator()
     }
+
     @Provides
     fun provideNotification(): Notification {
         return Notification()
     }
 
     @Provides
-    fun provideMedicationApiService(retrofit: Retrofit): MedicationApiService{
+    fun provideMedicationApiService(retrofit: Retrofit): MedicationApiService {
         return retrofit.create(MedicationApiService::class.java)
     }
+
     @Provides
-    fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationProvider{
+    fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationProvider {
         return MedicationProviderImpl(medicationApiService)
     }
 
     @Provides
-    fun provideMedicationTrackerApiService(retrofit: Retrofit): MedicationTrackerApiService{
+    fun provideMedicationTrackerApiService(retrofit: Retrofit): MedicationTrackerApiService {
         return retrofit.create(MedicationTrackerApiService::class.java)
     }
 
     @Provides
     fun provideMedicationTrackerProvider(medicationTrackerApiService: MedicationTrackerApiService): MedicationTrackerProvider {
         return MedicationTrackerProviderImpl(medicationTrackerApiService)
+    }
+
+    @Provides
+    fun provideSaveMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): SaveMedicationTrackerInfoUseCase {
+        return SaveMedicationTrackerInfoUseCase(medicationTrackerProvider)
+    }
+
+    @Provides
+    fun provideUpdateMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): UpdateMedicationTrackerInfoUseCase {
+        return UpdateMedicationTrackerInfoUseCase(medicationTrackerProvider)
     }
 }

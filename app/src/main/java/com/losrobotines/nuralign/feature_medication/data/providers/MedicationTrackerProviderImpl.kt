@@ -15,18 +15,36 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
     MedicationTrackerProvider {
 
     override suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
-        try {
+        return try {
             val dto = mapDomainToData(medicationTrackerInfo)
             val result = apiService.insertMedicationTrackerInfo(dto)
-            return result.isSuccessful
+            result.isSuccessful
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 
-    override suspend fun getMedicationTrackerData(patientId: Short): MedicationTrackerInfo? {
-        val dto = apiService.getMedicationTrackerInfo(patientId)
-        return mapDataToDomain(dto)
+    override suspend fun getMedicationTrackerData(
+        patientId: Short,
+        effectiveDate: String
+    ): MedicationTrackerInfo? {
+        val dto = apiService.getMedicationTrackerInfo(patientId, effectiveDate)
+        return if (dto.isSuccessful) {
+            mapDataToDomain(dto.body()!!)
+        } else {
+            throw Exception("Failed to get data")
+        }
+    }
+
+    override suspend fun updateMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
+        return try {
+            val dto = mapDomainToData(medicationTrackerInfo)
+            val result =
+                apiService.updateMedicationTrackerInfo(dto.patientMedicationId, dto.effectiveDate)
+            result!!.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

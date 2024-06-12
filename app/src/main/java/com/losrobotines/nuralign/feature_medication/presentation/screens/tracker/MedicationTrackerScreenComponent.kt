@@ -1,5 +1,8 @@
-package com.losrobotines.nuralign.feature_medication.presentation.screens.medication_tracker
+package com.losrobotines.nuralign.feature_medication.presentation.screens.tracker
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -32,24 +36,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.feature_medication.presentation.screens.add_edit_medication.AddMedicationAlertDialog
-import com.losrobotines.nuralign.feature_medication.presentation.screens.add_edit_medication.EditMedicationAlertDialog
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.AddMedicationAlertDialog
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.EditMedicationAlertDialog
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MedicationTrackerScreenComponent(
     navController: NavController,
-    medicationViewModel: MedicationViewModel
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel
 ) {
     val medicationList by medicationViewModel.medicationList.observeAsState()
     val isLoading by medicationViewModel.isLoading.observeAsState(initial = false)
+    val route by medicationTrackerViewModel.route.observeAsState("")
+    val isVisible by medicationTrackerViewModel.isVisible.observeAsState(false)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -74,6 +88,11 @@ fun MedicationTrackerScreenComponent(
                             )
                         )
                     }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    CurrentDay()
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
             if (isLoading) {
@@ -112,7 +131,11 @@ fun MedicationTrackerScreenComponent(
                         .padding(16.dp)
                 ) {
                     items(medicationList!!.size) {
-                        MedicationElement(medicationList!![it]!!, medicationViewModel)
+                        MedicationElement(
+                            medicationList!![it]!!,
+                            medicationViewModel,
+                            medicationTrackerViewModel
+                        )
                         Spacer(modifier = Modifier.height(5.dp))
                     }
                     item {
@@ -122,17 +145,34 @@ fun MedicationTrackerScreenComponent(
             }
         }
         SaveButton(
-            medicationViewModel,
+            medicationTrackerViewModel,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
+        )
+    }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+        goToNextTracker(
+            navController,
+            route, medicationTrackerViewModel
         )
     }
 }
 
 
 @Composable
-fun MedicationElement(medicationElement: MedicationInfo, medicationViewModel: MedicationViewModel) {
+fun MedicationElement(
+    medicationElement: MedicationInfo,
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel
+) {
+    val tracker by medicationTrackerViewModel.medicationTrackerInfo.observeAsState()
+    var isChecked by remember { mutableStateOf(tracker?.takenFlag == "Y") }
+
+    LaunchedEffect(medicationElement.patientMedicationId) {
+        medicationTrackerViewModel.loadMedicationTrackerInfo(medicationElement.patientMedicationId!!)
+    }
+
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
             contentAlignment = Alignment.CenterStart,
@@ -162,10 +202,15 @@ fun MedicationElement(medicationElement: MedicationInfo, medicationViewModel: Me
                 .weight(0.1f)
                 .padding(horizontal = 4.dp)
         ) {
-            var isChecked by remember { mutableStateOf(false) }
             Checkbox(
                 checked = isChecked,
-                onCheckedChange = { isChecked = it },
+                onCheckedChange = {
+                    isChecked = it
+                    val updatedTracker = tracker?.copy(takenFlag = if (it) "Y" else "N")
+                    if (updatedTracker != null) {
+                        medicationTrackerViewModel.updateMedicationTrackerInfo(updatedTracker)
+                    }
+                },
                 colors = CheckboxDefaults.colors(
                     checkedColor = secondaryColor,
                     uncheckedColor = secondaryColor
@@ -173,6 +218,7 @@ fun MedicationElement(medicationElement: MedicationInfo, medicationViewModel: Me
             )
         }
     }
+    medicationTrackerViewModel.setPatientMedicationId(medicationElement.patientMedicationId!!.toInt())
 }
 
 @Composable
@@ -217,14 +263,62 @@ fun EditMedication(medicationToEdit: MedicationInfo, medicationViewModel: Medica
 }
 
 @Composable
-fun SaveButton(medicationViewModel: MedicationViewModel, modifier: Modifier = Modifier) {
+fun SaveButton(
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    modifier: Modifier = Modifier
+) {
     Button(
-        onClick = { // medicationViewModel.saveData()
-            medicationViewModel.checkNextTracker()
+        onClick = {
+            //medicationTrackerViewModel.saveMedicationTrackerInfo(medicationTrackerElement)
+            medicationTrackerViewModel.saveAllChanges()
+            medicationTrackerViewModel.checkNextTracker()
+            medicationTrackerViewModel.setIsVisible(true)
         },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor),
         modifier = modifier
     ) {
         Text(text = "Guardar")
     }
+}
+
+@Composable
+fun CurrentDay() {
+    val calendar = Calendar.getInstance()
+    val lineaModifier = Modifier
+        .fillMaxWidth()
+        .height(4.dp)
+
+    Column(
+        modifier = Modifier
+            .padding(top = 20.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "${getDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK))}," +
+                    " ${calendar.get(Calendar.DAY_OF_MONTH)} de" +
+                    " ${getMonth(calendar.get(Calendar.MONTH))}",
+            color = Color.Black,
+            style = TextStyle(fontSize = 20.sp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 30.dp, end = 8.dp)
+        )
+        Box(
+            modifier = lineaModifier
+                .background(mainColor)
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun goToNextTracker(
+    navController: NavController,
+    route: String,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+) {
+    if (route == "") {
+        //loading circle visible
+    }
+    medicationTrackerViewModel.setIsVisible(false)
+    navController.navigate(route)
 }

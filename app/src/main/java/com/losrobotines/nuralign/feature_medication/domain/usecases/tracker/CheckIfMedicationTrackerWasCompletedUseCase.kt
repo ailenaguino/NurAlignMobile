@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_medication.domain.usecases
+package com.losrobotines.nuralign.feature_medication.domain.usecases.tracker
 
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
 import java.text.SimpleDateFormat

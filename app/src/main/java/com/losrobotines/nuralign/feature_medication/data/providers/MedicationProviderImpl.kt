@@ -10,12 +10,10 @@ import javax.inject.Inject
 class MedicationProviderImpl @Inject constructor(private val apiService: MedicationApiService) :
     MedicationProvider {
 
-    override suspend fun saveMedicationList(medicationList: List<MedicationInfo?>): Boolean {
+    override suspend fun saveMedicationInfo(medicationInfo: MedicationInfo?): Boolean {
         try {
-            for (med in medicationList) {
-                val dto = mapDomainToData(med!!)
-                apiService.insertMedicationInfoIntoDatabase(dto)
-            }
+            val dto = mapDomainToData(medicationInfo!!)
+            apiService.insertMedicationInfoIntoDatabase(dto)
             return true
         } catch (e: Exception) {
             return false
@@ -28,8 +26,29 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         return mapDataToDomain(dto)
     }
 
+    override suspend fun updateMedicationInfo(medicationInfo: MedicationInfo?): Boolean {
+        try {
+            val dto = mapDomainToData(medicationInfo!!)
+            //apiService.updateMedicationInfo(dto.patientMedicationId)
+            return true
+        } catch (e: Exception) {
+            return false
+        }
+    }
+
+    /*
+    override suspend fun deleteMedicationInfo(patientMedicationId: Short): Boolean {
+        try {
+            apiService.deleteMedicationInfo(patientMedicationId)
+            return true
+        } catch (e: Exception) {
+            return false
+    }
+     */
+
     private fun mapDomainToData(medicationInfo: MedicationInfo): MedicationDto {
         return MedicationDto(
+            patientMedicationId = medicationInfo.patientMedicationId,
             patientId = medicationInfo.patientId,
             name = medicationInfo.medicationName,
             grammage = medicationInfo.medicationGrammage,
@@ -45,6 +64,7 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
                 if (med != null) {
                     list.add(
                         MedicationInfo(
+                            patientMedicationId = med.patientMedicationId,
                             patientId = med.patientId,
                             medicationName = med.name,
                             medicationGrammage = med.grammage,
