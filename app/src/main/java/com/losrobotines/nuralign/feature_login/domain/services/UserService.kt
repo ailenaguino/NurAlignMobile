@@ -20,12 +20,15 @@ class UserService @Inject constructor(
     private val medicationProvider: MedicationProvider,
     private val medicationTrackerProvider: MedicationTrackerProvider
 ) {
-    suspend fun getPatientId(): Short {
-        val currentUser = authRepository.getCurrentUserId()
-        val doc = Firebase.firestore.collection(USER).document(currentUser!!)
+    suspend fun getPatientId(): Result<Short?> {
+        return try {
+            val currentUser = authRepository.getCurrentUserId()
+            val doc = Firebase.firestore.collection(USER).document(currentUser!!)
+            val patientId = doc.get().await().getLong(ID)
 
-        currentUser.let {
-            return doc.get().await().getLong(ID)!!.toShort()
+            Result.success(patientId!!.toShort())
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get patient id: ${e.message}"))
         }
     }
 
@@ -35,33 +38,30 @@ class UserService @Inject constructor(
         return formatter.format(date)
     }
 
-    suspend fun getMedicationList(id: Short): List<MedicationInfo?> {
-        return medicationProvider.getMedicationList(id)
+    suspend fun getMedicationList(id: Short): Result<List<MedicationInfo?>> {
+        return try {
+            Result.success(medicationProvider.getMedicationList(id))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get medication list: ${e.message}"))
+        }
     }
 
-    suspend fun saveMedicationInfo(medicationInfo: MedicationInfo): Boolean {
-        return medicationProvider.saveMedicationInfo(medicationInfo)
+    suspend fun saveMedicationInfo(medicationInfo: MedicationInfo): Result<Boolean> {
+        return try {
+            Result.success(medicationProvider.saveMedicationInfo(medicationInfo))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to save medication info: ${e.message}"))
+        }
     }
 
-    suspend fun updateMedicationInfo(medicationInfo: MedicationInfo): Boolean {
-        return medicationProvider.updateMedicationInfo(medicationInfo)
-    }
-
-    /*
-    suspend fun deleteMedicationInfo(medicationInfo: MedicationInfo): Boolean {
-        return medicationProvider.deleteMedicationInfo(medicationInfo)
-    }
-     */
-
-    suspend fun getMedicationTrackerData(id: Short, effectiveDate: String): MedicationTrackerInfo? {
-        return medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate)
-    }
-
-    suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
-        return medicationTrackerProvider.saveMedicationTrackerData(medicationTrackerInfo)
-    }
-
-    suspend fun updateMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
-        return medicationTrackerProvider.updateMedicationTrackerData(medicationTrackerInfo)
+    suspend fun getMedicationTrackerData(
+        id: Short,
+        effectiveDate: String
+    ): Result<MedicationTrackerInfo?> {
+        return try {
+            Result.success(medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get medication tracker data: ${e.message}"))
+        }
     }
 }

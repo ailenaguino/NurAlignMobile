@@ -26,6 +26,9 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,98 +67,108 @@ fun MedicationTrackerScreenComponent(
     val isLoading by medicationViewModel.isLoading.observeAsState(initial = false)
     val route by medicationTrackerViewModel.route.observeAsState("")
     val isVisible by medicationTrackerViewModel.isVisible.observeAsState(false)
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-                item {
-                    SharedComponents().HalfCircleTop(title = "Toma diaria de medicación")
-                }
-                item {
-                    LargeFloatingActionButton(
-                        onClick = {},
-                        shape = RoundedCornerShape(10.dp),
-                        containerColor = mainColor,
-                        modifier = Modifier.padding(8.dp),
-                        elevation = FloatingActionButtonDefaults.elevation(
-                            defaultElevation = 7.dp
-                        )
-                    ) {
-                        SharedComponents().fabCompanion(
-                            listOf(
-                                "¡Hola! ¿Cómo estás hoy?",
-                                "Clickeame para esconder mi diálogo"
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+                    item {
+                        SharedComponents().HalfCircleTop(title = "Toma diaria de medicación")
+                    }
+                    item {
+                        LargeFloatingActionButton(
+                            onClick = {},
+                            shape = RoundedCornerShape(10.dp),
+                            containerColor = mainColor,
+                            modifier = Modifier.padding(8.dp),
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                defaultElevation = 7.dp
                             )
-                        )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    CurrentDay()
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-            }
-            if (isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (medicationList.isNullOrEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    item {
-                        AddIcon(medicationViewModel)
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                "No tienes medicaciones guardadas.", modifier = Modifier
-                                    .fillMaxWidth(),
-                                color = secondaryColor,
-                                fontSize = 24.sp,
-                                textAlign = TextAlign.Center
+                            SharedComponents().fabCompanion(
+                                listOf(
+                                    "¡Hola! ¿Cómo estás hoy?",
+                                    "Clickeame para esconder mi diálogo"
+                                )
                             )
                         }
                     }
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    items(medicationList!!.size) {
-                        MedicationElement(
-                            medicationList!![it]!!,
-                            medicationViewModel,
-                            medicationTrackerViewModel
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
                     item {
-                        AddIcon(medicationViewModel)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        CurrentDay()
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+                if (isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else if (medicationList.isNullOrEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        item {
+                            AddIcon(medicationViewModel)
+                            Spacer(modifier = Modifier.height(5.dp))
+                        }
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "No tienes medicaciones guardadas.", modifier = Modifier
+                                        .fillMaxWidth(),
+                                    color = secondaryColor,
+                                    fontSize = 24.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        items(medicationList!!.size) {
+                            MedicationElement(
+                                medicationList!![it]!!,
+                                medicationViewModel,
+                                medicationTrackerViewModel
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                        }
+                        item {
+                            AddIcon(medicationViewModel)
+                        }
                     }
                 }
             }
+            SaveButton(
+                medicationTrackerViewModel,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            )
         }
-        SaveButton(
-            medicationTrackerViewModel,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        )
-    }
-    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
-        goToNextTracker(
-            navController,
-            route, medicationTrackerViewModel
-        )
+        SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+            goToNextTracker(
+                navController,
+                route, medicationTrackerViewModel
+            )
+        }
+        SnackbarError(medicationViewModel, medicationTrackerViewModel, snackbarHostState)
     }
 }
 
@@ -321,4 +334,23 @@ fun goToNextTracker(
     }
     medicationTrackerViewModel.setIsVisible(false)
     navController.navigate(route)
+}
+
+@Composable
+fun SnackbarError(medicationViewModel: MedicationViewModel, medicationTrackerViewModel: MedicationTrackerViewModel, snackbarHostState: SnackbarHostState) {
+    val errorMessage by medicationViewModel.errorMessage.observeAsState()
+    val errorMessageTracker by medicationTrackerViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            medicationViewModel.clearErrorMessage()
+        }
+    }
+    LaunchedEffect(errorMessageTracker) {
+        errorMessageTracker?.let {
+            snackbarHostState.showSnackbar(it)
+            medicationTrackerViewModel.clearErrorMessage()
+        }
+    }
 }

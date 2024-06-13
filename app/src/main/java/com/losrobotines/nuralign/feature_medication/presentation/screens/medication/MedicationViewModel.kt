@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.medication
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,9 @@ class MedicationViewModel @Inject constructor(
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _saveStatus = MutableLiveData<Result<Unit>>()
-    val saveStatus: LiveData<Result<Unit>> = _saveStatus
+
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
 
     init {
         getCurrentPatientId()
@@ -46,30 +49,38 @@ class MedicationViewModel @Inject constructor(
 
     private fun loadMedicationList() {
         viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                _medicationList.value = userService.getMedicationList(userService.getPatientId())
+            val result = userService.getMedicationList(_patientId.value)
+            _isLoading.value = true
+
+            if (result.isSuccess) {
+                _medicationList.value = result.getOrNull()!!
                 _isLoading.value = false
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                Log.e("MedicationViewModel", "Error loading medications")
+                _errorMessage.value = "Error al cargar las medicaciones"
+                _isLoading.value = false
             }
         }
     }
 
     fun saveData(medicationInfo: MedicationInfo) {
         viewModelScope.launch {
-            try {
-                saveMedicationInfoUseCase(medicationInfo)
+            val result = saveMedicationInfoUseCase(medicationInfo)
+            if (result.isSuccess) {
                 loadMedicationList()
-            } catch (e: Exception) {
-                e.printStackTrace()
+                _saveStatus.value = Result.success(Unit)
+                clearMedicationState()
+            } else {
+                Log.e("MedicationViewModel", "Error saving ${medicationInfo.medicationName}")
+                _errorMessage.value =
+                    "Error al guardar la medicación ${medicationInfo.medicationName}"
             }
         }
     }
 
     fun editExistingMedication(medicationElement: MedicationInfo) {
         viewModelScope.launch {
-            val editResult = editExistingMedicationInListUseCase(
+            val result = editExistingMedicationInListUseCase(
                 medicationName.value,
                 medicationGrammage.intValue,
                 medicationOptionalFlag.value,
@@ -77,18 +88,49 @@ class MedicationViewModel @Inject constructor(
                 _medicationList.value!!
             )
 
-            if (editResult.isSuccess) {
+            if (result.isSuccess) {
                 loadMedicationList()
                 _saveStatus.value = Result.success(Unit)
                 clearMedicationState()
             } else {
                 _saveStatus.value = Result.failure(Exception("Failed to edit medication"))
+                _errorMessage.value =
+                    "Error al editar la medicación ${medicationElement.medicationName}"
+            }
+        }
+    }
+
+    fun removeMedicationFromList(medicationElement: MedicationInfo) {
+        viewModelScope.launch {
+            val result = removeMedicationFromListUseCase(medicationElement)
+
+            if (result.isSuccess) {
+                loadMedicationList()
+                clearMedicationState()
+            } else {
+                Log.e(
+                    "MedicationViewModel",
+                    result.exceptionOrNull()?.message ?: "Error removing medication"
+                )
+                _errorMessage.value =
+                    "Error al eliminar la medicación ${medicationElement.medicationName}"
             }
         }
     }
 
     private fun getCurrentPatientId() {
-        viewModelScope.launch { _patientId.value = userService.getPatientId() }
+        viewModelScope.launch {
+            val result = userService.getPatientId()
+            if (result.isSuccess) {
+                _patientId.value = result.getOrNull()!!
+            } else {
+                Log.e(
+                    "MedicationViewModel",
+                    "Error getting patient ID: ${result.exceptionOrNull()?.message}"
+                )
+                _errorMessage.value = "Error al obtener el ID del paciente"
+            }
+        }
     }
 
     fun clearMedicationState() {
@@ -97,17 +139,7 @@ class MedicationViewModel @Inject constructor(
         medicationOptionalFlag.value = ""
     }
 
-    fun removeMedicationFromList(medicationElement: MedicationInfo) {
-        viewModelScope.launch {
-            val removeResult = removeMedicationFromListUseCase(medicationElement)
-
-            if (removeResult.isSuccess) {
-                loadMedicationList()
-                clearMedicationState()
-            } else {
-                val errorMessage =
-                    removeResult.exceptionOrNull()?.message ?: "Error removing medication"
-            }
-        }
+    fun clearErrorMessage() {
+        _errorMessage.value = null
     }
 }

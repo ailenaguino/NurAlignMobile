@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.tracker
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -38,41 +39,50 @@ class MedicationTrackerViewModel @Inject constructor(
 
     private val _isLoading = MutableLiveData(false)
 
+    private val _saveStatus = MutableLiveData<Result<Unit>>()
+
     private val _isVisible = MutableLiveData(false)
     var isVisible: LiveData<Boolean> = _isVisible
 
     private val _route = MutableLiveData("")
     var route: LiveData<String> = _route
 
-    private val _saveStatus = MutableLiveData<Result<Unit>>()
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
 
     fun loadMedicationTrackerInfo(patientMedicationId: Short) {
         viewModelScope.launch {
+            val result =
+                userService.getMedicationTrackerData(patientMedicationId, _currentDate.value)
             _isLoading.value = true
-            try {
-                val tracker = userService.getMedicationTrackerData(
-                    patientMedicationId,
-                    _currentDate.value
-                )
+
+            if (result.isSuccess) {
+                val tracker = result.getOrNull()
                 _medicationTrackerInfo.value = tracker
                 _isLoading.value = false
-            } catch (e: Exception) {
+            } else {
+                Log.e(
+                    "MedicationTrackerViewModel",
+                    "Error loading medication tracker info: ${result.exceptionOrNull()?.message}"
+                )
+                _errorMessage.value = "Error al cargar el seguimiento de la toma de medicamentos"
                 _isLoading.value = false
-                println(e)
             }
         }
     }
 
     fun updateMedicationTrackerInfo(medicationTrackerInfo: MedicationTrackerInfo) {
         viewModelScope.launch {
-            _saveStatus.value = updateMedicationTrackerInfoUseCase(medicationTrackerInfo)
+            val result = updateMedicationTrackerInfoUseCase(medicationTrackerInfo)
 
-            val existingIndex =
-                updatedTrackers.indexOfFirst { it.patientMedicationId == medicationTrackerInfo.patientMedicationId }
-            if (existingIndex >= 0) {
-                updatedTrackers[existingIndex] = medicationTrackerInfo
+            if (result.isSuccess) {
+                _saveStatus.value = result
             } else {
-                updatedTrackers.add(medicationTrackerInfo)
+                Log.e(
+                    "MedicationTrackerViewModel",
+                    "Error updating ${medicationTrackerInfo.patientMedicationId}: ${result.exceptionOrNull()?.message}"
+                )
+                _errorMessage.value = "Error al actualizar el seguimiento"
             }
         }
     }
@@ -84,11 +94,16 @@ class MedicationTrackerViewModel @Inject constructor(
 
                 if (result.isSuccess) {
                     _saveStatus.value = result
+                    updatedTrackers.clear()
                 } else {
-                    println(result.exceptionOrNull())
+                    Log.e(
+                        "MedicationTrackerViewModel",
+                        "Error saving ${tracker.patientMedicationId}: ${result.exceptionOrNull()?.message}"
+                    )
+                    _errorMessage.value =
+                        "Error al guardar el seguimiento de la toma de medicamentos"
                 }
             }
-            updatedTrackers.clear()
         }
     }
 
@@ -98,7 +113,8 @@ class MedicationTrackerViewModel @Inject constructor(
 
     fun checkNextTracker() {
         viewModelScope.launch {
-            _route.value = checkNextTrackerToBeCompletedUseCase(userService.getPatientId().toInt())
+            _route.value =
+                checkNextTrackerToBeCompletedUseCase(_patientMedicationId.intValue)
         }
     }
 
@@ -106,4 +122,7 @@ class MedicationTrackerViewModel @Inject constructor(
         _isVisible.value = value
     }
 
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
 }
