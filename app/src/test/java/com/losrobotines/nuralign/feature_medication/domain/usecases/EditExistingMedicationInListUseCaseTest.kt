@@ -42,7 +42,7 @@ class EditExistingMedicationInListUseCaseTest {
     @Test
     fun `when old medication exists in medication list then change the old med with the new variables`() =
         runBlocking {
-            coEvery { userService.getMedicationList(userService.getPatientId()) } returns listFromDB
+            coEvery { userService.getMedicationList(userService.getPatientId().getOrNull()!!) } returns Result.success(listFromDB)
             val newList = editMedUseCase.invoke(
                 NAME_B,
                 DOSE_100,
@@ -57,7 +57,7 @@ class EditExistingMedicationInListUseCaseTest {
     @Test
     fun `when old medication doesn't exists in medication list, then return null`() {
         runBlocking {
-            coEvery { userService.getMedicationList(userService.getPatientId()) } returns listFromDB
+            coEvery { userService.getMedicationList(userService.getPatientId().getOrNull()!!) } returns Result.success(listFromDB)
             val result = editMedUseCase.invoke("C", 300, "Y", MEDICATION_B, listFromDB)
 
             assertTrue(result.isFailure)
