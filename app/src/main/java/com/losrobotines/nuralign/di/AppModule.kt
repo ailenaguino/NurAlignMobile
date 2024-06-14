@@ -1,17 +1,31 @@
 package com.losrobotines.nuralign.di
 
 import com.google.firebase.auth.FirebaseAuth
+import com.losrobotines.nuralign.BuildConfig
 import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
 import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.providers.PatientProvider
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerRepositoryImpl
+import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
+import com.losrobotines.nuralign.feature_medication.data.network.MedicationTrackerApiService
+import com.losrobotines.nuralign.feature_medication.data.providers.MedicationProviderImpl
+import com.losrobotines.nuralign.feature_medication.data.providers.MedicationTrackerProviderImpl
+import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
+import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
+import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.SaveMedicationTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.UpdateMedicationTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
-import com.losrobotines.nuralign.feature_sleep.data.SleepRepositoryImpl
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_sleep.data.SleepTrackerProviderImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
-import com.losrobotines.nuralign.feature_sleep.domain.SleepRepository
+import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
+import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
+import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,7 +52,7 @@ object AppModule {
         return Retrofit
             .Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://77.37.69.38:8081/api/")//hacer esto variable ambiental(externalizarla)
+            .baseUrl(BuildConfig.API_URL)
             .build()
     }
 
@@ -60,8 +74,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideSleepRepository(sleepApiService: SleepApiService): SleepRepository {
-        return SleepRepositoryImpl(sleepApiService)
+    fun provideSleepRepository(sleepApiService: SleepApiService): SleepTrackerProvider {
+        return SleepTrackerProviderImpl(sleepApiService)
     }
 
     @Provides
@@ -70,9 +84,69 @@ object AppModule {
     }
 
     @Provides
-    fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerRepository {
-        return MoodTrackerRepositoryImpl(moodTrackerApiService)
+    fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerProvider {
+        return MoodTrackerProviderImpl(moodTrackerApiService)
     }
 
 
+    //USE CASES
+    @Provides
+    fun provideFormatTimeUseCase(): FormatTimeUseCase {
+        return FormatTimeUseCase()
+    }
+
+    @Provides
+    fun provideSaveSleepDataUseCase(
+        sleepTrackerProvider: SleepTrackerProvider, authRepository: AuthRepository,
+        formatTimeUseCase: FormatTimeUseCase,
+    ): SaveSleepTrackerInfoUseCase {
+        return SaveSleepTrackerInfoUseCase(authRepository, formatTimeUseCase, sleepTrackerProvider)
+    }
+
+    @Provides
+    fun provideGetSleepDataUseCase(sleepTrackerProvider: SleepTrackerProvider): GetSleepDataUseCase {
+        return GetSleepDataUseCase(sleepTrackerProvider)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGeminiContentGenerator(): GeminiContentGenerator {
+        return GeminiContentGenerator()
+    }
+
+    @Provides
+    fun provideNotification(): Notification {
+        return Notification()
+    }
+
+    @Provides
+    fun provideMedicationApiService(retrofit: Retrofit): MedicationApiService {
+        return retrofit.create(MedicationApiService::class.java)
+    }
+
+    @Provides
+    fun provideMedicationProvider(medicationApiService: MedicationApiService): MedicationProvider {
+        return MedicationProviderImpl(medicationApiService)
+    }
+
+    @Provides
+    fun provideMedicationTrackerApiService(retrofit: Retrofit): MedicationTrackerApiService {
+        return retrofit.create(MedicationTrackerApiService::class.java)
+    }
+
+    @Provides
+    fun provideMedicationTrackerProvider(medicationTrackerApiService: MedicationTrackerApiService): MedicationTrackerProvider {
+        return MedicationTrackerProviderImpl(medicationTrackerApiService)
+    }
+
+    @Provides
+    fun provideSaveMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): SaveMedicationTrackerInfoUseCase {
+        return SaveMedicationTrackerInfoUseCase(medicationTrackerProvider)
+    }
+
+    @Provides
+    fun provideUpdateMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): UpdateMedicationTrackerInfoUseCase {
+        return UpdateMedicationTrackerInfoUseCase(medicationTrackerProvider)
+    }
 }

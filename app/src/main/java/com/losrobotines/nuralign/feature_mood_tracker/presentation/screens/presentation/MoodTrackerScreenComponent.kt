@@ -29,6 +29,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -50,48 +52,120 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import java.time.LocalDate
+import kotlinx.coroutines.delay
+import java.time.LocalDateTime
+import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MoodTrackerScreenComponent(
     navController: NavController,
-    moodTrackerViewModel: MoodTrackerViewModel
+    moodTrackerViewModel: MoodTrackerViewModel,
 ) {
     val context = LocalContext.current.applicationContext
     var isVisibleSelectedAnimos by remember { mutableStateOf(false) }
     val isSaved by moodTrackerViewModel.isSaved.observeAsState(false)
+    val route by moodTrackerViewModel.route.observeAsState("")
+    val isVisible by moodTrackerViewModel.isVisible.observeAsState(false)
+
 
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
             SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
         }
         item {
+            LargeFloatingActionButton(
+                onClick = {},
+                shape = RoundedCornerShape(10.dp),
+                containerColor = mainColor,
+                modifier = Modifier.padding(8.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 7.dp
+                )
+            ) {
+                SharedComponents().fabCompanion(
+                    listOf(
+                        "¿Cómo te sentiste hoy?",
+                        "Clickeame para esconder mi diálogo"
+                    )
+                )
+            }
+        }
+        item {
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(modifier = Modifier.height(10.dp))
-                SharedComponents().CompanionTextBalloon("¿Cómo te sentiste hoy?")
                 Linea()
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
-        item { AnimoDeprimido(moodTrackerViewModel, isSaved) }
-        item { AnimoElevado(moodTrackerViewModel, isSaved) }
-        item { AnimoIrritable(moodTrackerViewModel, isSaved) }
-        item { AnimoAnsioso(moodTrackerViewModel, isSaved) }
-        item { saveButtom(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved) }
+        item {
+            Box(modifier = Modifier.padding(8.dp)) {
+                AnimoDeprimido(
+                    moodTrackerViewModel,
+                    isSaved
+                )
+            }
+        }
+        item {
+            Box(modifier = Modifier.padding(8.dp)) {
+                AnimoElevado(
+                    moodTrackerViewModel,
+                    isSaved
+                )
+            }
+        }
+        item {
+            Box(modifier = Modifier.padding(8.dp)) {
+                AnimoIrritable(
+                    moodTrackerViewModel,
+                    isSaved
+                )
+            }
+        }
+        item {
+            Box(modifier = Modifier.padding(8.dp)) {
+                AnimoAnsioso(moodTrackerViewModel, isSaved)
+            }
+        }
+        item {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+                saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved)
+            }
+        }
+    }
+    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+        goToNextTracker(
+            navController,
+            route, moodTrackerViewModel
+        )
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
+fun goToNextTracker(
+    navController: NavController,
+    route: String,
+    moodTrackerViewModel: MoodTrackerViewModel,
+) {
+    if (route == "") {
+        //loading circle visible
+    }
+    moodTrackerViewModel.setIsVisible(false)
+    navController.navigate(route)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun saveButtom(
+private fun saveButton(
     moodTrackerViewModel: MoodTrackerViewModel,
     context: Context?,
     isVisibleSelectedAnimos: Boolean,
-    isSaved: Boolean
+    isSaved: Boolean,
 ) {
     var isVisibleSelectedAnimos1 = isVisibleSelectedAnimos
     Spacer(modifier = Modifier.height(50.dp))
@@ -109,18 +183,18 @@ private fun saveButtom(
                 Log.d("saveButtom", "Fields are complete, saving data")
                 isVisibleSelectedAnimos1 = true
                 moodTrackerViewModel.saveData()
-                moodTrackerViewModel.isSaved.value = true
+                moodTrackerViewModel.checkNextTracker()
+                moodTrackerViewModel.setIsVisible(true)
             }
         },
         modifier = Modifier
-            .padding(start = 280.dp, end = 15.dp)
-            .padding(vertical = 36.dp),
+            .padding(vertical = 24.dp, horizontal = 8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = secondaryColor,
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(15.dp),
-        enabled = !isSaved
+        enabled = true
     ) {
         Text("Guardar")
     }
@@ -185,6 +259,7 @@ private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Bo
         Color(0xffc381ba), Color(0xffa05695), Color(0xff813675),
         Color(0xff732166), Color(0xff400036)
     )
+
     SelectAnimo(
         "Ánimo más ansioso",
         "ansioso",
@@ -193,10 +268,12 @@ private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Bo
         moodTrackerViewModel,
         isSaved
     )
+
 }
 
 @Composable
 fun Linea() {
+    val calendar = Calendar.getInstance()
     val lineaModifier = Modifier
         .fillMaxWidth()
         .height(4.dp)
@@ -207,7 +284,9 @@ fun Linea() {
             .fillMaxWidth()
     ) {
         Text(
-            text = "Mie, 22 de Mayo",
+            text = "${getDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK))}," +
+                    " ${calendar.get(Calendar.DAY_OF_MONTH)} de" +
+                    " ${getMonth(calendar.get(Calendar.MONTH))}",
             color = Color.Black,
             style = TextStyle(fontSize = 20.sp),
             modifier = Modifier
@@ -231,7 +310,7 @@ fun SelectAnimo(
     iconResId: Int,
     colors: List<Color>,
     moodTrackerViewModel: MoodTrackerViewModel,
-    isSaved: Boolean
+    isSaved: Boolean,
 ) {
     val labels = listOf("Nulo", "Leve", "Moderado", "Alto", "Severo")
 
@@ -323,7 +402,7 @@ fun SelectAnimo(
                                 width = if (index == selectedBox) 3.dp else 0.dp,
                                 color = if (index == selectedBox) Color.Yellow else Color.Transparent,
                             )
-                            .clickable(enabled = !isSaved) {
+                            .clickable(enabled = true) {
                                 selectedBox = index
                                 val selectedValue = labels[index]
                                 when (animoType) {
@@ -366,7 +445,7 @@ fun SelectAnimo(
                     .padding(end = 45.dp, bottom = 12.dp),
                 label = { Text("Nota adicional") },
                 singleLine = true,
-                enabled = !isSaved,
+                enabled = true,
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.LightGray,
                     focusedLabelColor = secondaryColor,

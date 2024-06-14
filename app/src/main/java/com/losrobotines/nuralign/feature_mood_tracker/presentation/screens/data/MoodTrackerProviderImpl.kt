@@ -3,21 +3,20 @@ package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data
 import android.util.Log
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import retrofit2.HttpException
 import javax.inject.Inject
 
-class MoodTrackerRepositoryImpl @Inject constructor(private val apiService: MoodTrackerApiService) :
-    MoodTrackerRepository {
-    override suspend fun saveMoodTrackerInfo(moodTrackerInfo: MoodTrackerInfo) {
+class MoodTrackerProviderImpl @Inject constructor(private val apiService: MoodTrackerApiService) :
+    MoodTrackerProvider {
+    override suspend fun saveMoodTrackerInfo(moodTrackerInfo: MoodTrackerInfo):Boolean {
         try {
             val dto = mapDomainToData(moodTrackerInfo)
-            Log.d("MoodTrackerRepository", "DtO Generado: $dto")
-            apiService.insertMoodTrackerInfoIntoDatabase(dto)
-            Log.d("MoodTrackerRepository", "Successfully saved MoodTrackerInfo")
+            val result = apiService.insertMoodTrackerInfoIntoDatabase(dto)
+            return result.isSuccessful
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("MoodTrackerRepository", "Error saving MoodTrackerInfo", e)
+            return false
         }
     }
 
@@ -26,6 +25,15 @@ class MoodTrackerRepositoryImpl @Inject constructor(private val apiService: Mood
         val dto = apiService.getMoodTrackerInfo(patientId)
         Log.d("MoodTrackerRepository", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
+    }
+
+    override suspend fun getTodaysTracker(patientId: Int, date: String): MoodTrackerInfo? {
+        try {
+            val response = apiService.getTodaysTracker(patientId,date)
+            return mapDataToDomain(response?.last())
+        } catch (e: HttpException) {
+            return null
+        }
     }
 
 
