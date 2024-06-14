@@ -63,7 +63,7 @@ class MedicationTrackerViewModel @Inject constructor(
             } else {
                 Log.e(
                     "MedicationTrackerViewModel",
-                    "Error loading medication tracker info: ${result.exceptionOrNull()?.message}"
+                    "${result.exceptionOrNull()?.message}"
                 )
                 _errorMessage.value = "Error al cargar el seguimiento de la toma de medicamentos"
                 _isLoading.value = false
@@ -94,6 +94,7 @@ class MedicationTrackerViewModel @Inject constructor(
 
                 if (result.isSuccess) {
                     _saveStatus.value = result
+
                     updatedTrackers.clear()
                 } else {
                     Log.e(

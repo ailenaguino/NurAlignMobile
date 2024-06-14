@@ -44,7 +44,6 @@ class MedicationViewModel @Inject constructor(
 
     init {
         getCurrentPatientId()
-        loadMedicationList()
     }
 
     private fun loadMedicationList() {
@@ -119,16 +118,20 @@ class MedicationViewModel @Inject constructor(
     }
 
     private fun getCurrentPatientId() {
+        _isLoading.value = true
         viewModelScope.launch {
             val result = userService.getPatientId()
+
             if (result.isSuccess) {
                 _patientId.value = result.getOrNull()!!
+                loadMedicationList()
             } else {
                 Log.e(
                     "MedicationViewModel",
                     "Error getting patient ID: ${result.exceptionOrNull()?.message}"
                 )
                 _errorMessage.value = "Error al obtener el ID del paciente"
+                _isLoading.value = false
             }
         }
     }
