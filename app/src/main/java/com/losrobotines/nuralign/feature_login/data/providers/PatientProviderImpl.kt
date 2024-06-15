@@ -8,7 +8,7 @@ import com.losrobotines.nuralign.feature_login.domain.usecases.SavePatientIdOnFi
 import javax.inject.Inject
 
 class PatientProviderImpl @Inject constructor(private val apiService: PatientApiService) : PatientProvider {
-    override suspend fun savePatientInfo(patientInfo: PatientInfo) {
+    override suspend fun savePatientData(patientInfo: PatientInfo) {
         val dto = mapDomainToData(patientInfo)
         val id = apiService.insertPatientInfoIntoDatabase(dto).patientId
         SavePatientIdOnFirestoreUseCase().invoke(id)

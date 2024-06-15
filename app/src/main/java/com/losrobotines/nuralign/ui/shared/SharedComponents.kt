@@ -1,37 +1,26 @@
 package com.losrobotines.nuralign.ui.shared
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,11 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.R
@@ -126,7 +116,7 @@ class SharedComponents {
     }
 
     @Composable
-    fun CompanionTextBalloon(texts: List<String>) {
+    fun CompanionTextBalloon(text: String) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -136,12 +126,8 @@ class SharedComponents {
                     RoundedCornerShape(32.dp)
                 )
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(0.8f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                TypewriterText(texts = texts, 100)
+            Box(modifier = Modifier.weight(0.8f).padding(horizontal = 16.dp, vertical = 8.dp)) {
+                TypewriterText(texts = listOf(text))
             }
             Box(modifier = Modifier.weight(0.2f)) {
                 Image(
@@ -158,7 +144,7 @@ class SharedComponents {
 
     @Composable
     fun TypewriterText(
-        texts: List<String>, delayValue: Int
+        texts: List<String>,
     ) {
         var textIndex by remember {
             mutableStateOf(0)
@@ -177,7 +163,7 @@ class SharedComponents {
                             startIndex = 0,
                             endIndex = charIndex + 1,
                         )
-                    delay(delayValue.toLong())
+                    delay(100)
                 }
                 textIndex = (textIndex + 1) % texts.size
                 delay(1000)
@@ -186,129 +172,8 @@ class SharedComponents {
 
         Text(
             text = textToDisplay,
-            fontSize = 20.sp,
-            color = Color.Black
+            fontSize = 24.sp,
+            color = secondaryColor
         )
-    }
-
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    fun fabCompanion(texts: List<String>) {
-        var isVisible by remember {
-            mutableStateOf(false)
-        }
-        AnimatedContent(
-            targetState = isVisible,
-            transitionSpec = { fadeIn() with fadeOut() },
-            content = { visible ->
-                if (visible) {
-                    LargeFloatingActionButton(
-                        onClick = { isVisible = !isVisible },
-                        shape = RoundedCornerShape(50.dp),
-                        containerColor = secondaryColor
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.robotin_bebe),
-                            contentDescription = "Robotín",
-                            modifier = Modifier
-                                .size(85.dp)
-                                .padding(4.dp)
-                        )
-                    }
-                } else {
-                    LargeFloatingActionButton(
-                        onClick = { isVisible = !isVisible },
-                        shape = RoundedCornerShape(10.dp),
-                        containerColor = Color.White
-                    ) {
-                        Row(modifier = Modifier.padding(4.dp)) {
-                            Box(
-                                modifier = Modifier
-                                    .weight(0.8f)
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                            ) {
-                                TypewriterText(texts = texts, 100)
-                            }
-                            Box(modifier = Modifier.weight(0.2f)) {
-                                Image(
-                                    painterResource(id = R.drawable.robotin_bebe),
-                                    contentDescription = "Fondo",
-                                    modifier = Modifier
-                                        .size(85.dp)
-                                        .padding(end = 1.dp, start = 4.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }, label = "companion animation"
-        )
-    }
-
-    @Composable
-    fun CompanionCongratulation(isVisible:Boolean, nextTracker: () -> Unit) {
-        AnimatedVisibility(visible = isVisible, enter = scaleIn(tween(1000))) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(mainColor)
-                    .wrapContentSize(Alignment.Center)
-            ) {
-                AnimatedVisibility(visible = isVisible, enter = scaleIn(spring(200F))) {
-                    Box(
-                        modifier = Modifier
-                            .padding(bottom = 24.dp)
-                            .clip(shape = CircleShape)
-                            .background(secondaryColor)
-                            .size(300.dp)
-                            .wrapContentSize(Alignment.Center)
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.robotin_bebe_contento),
-                            contentDescription = "Robotín",
-                            modifier = Modifier
-                                .size(200.dp)
-                                .padding(4.dp)
-                        )
-                    }
-                }
-                AnimatedVisibility(visible = isVisible, enter = scaleIn(spring(300F))) {
-                    ElevatedCard(
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 10.dp
-                        ),
-                        modifier = Modifier
-                            .height(150.dp)
-                            .width(300.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .wrapContentSize(Alignment.Center),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        )
-                    ) {
-                        Box(modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .weight(0.6f)) {
-                            TypewriterText(
-                                texts = listOf(
-                                    "\uD83C\uDF89 Felicitaciones \uD83C\uDF89 Completaste el seguimiento",
-                                    "¿Vamos al siguiente? ¡Vos podés! \uD83D\uDCAA"
-                                ), 50
-                            )
-                        }
-                        Button(
-                            onClick = { nextTracker() },
-                            colors = ButtonDefaults.buttonColors(containerColor = secondaryColor),
-                            modifier = Modifier
-                                .weight(0.4f)
-                                .padding(8.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Text(text = "Ir al próximo seguimiento")
-                        }
-                    }
-                }
-            }
-        }
     }
 }

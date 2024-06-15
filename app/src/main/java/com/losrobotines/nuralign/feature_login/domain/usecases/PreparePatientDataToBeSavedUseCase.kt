@@ -12,6 +12,6 @@ class PreparePatientDataToBeSavedUseCase @Inject constructor(
     suspend operator fun invoke(patientInfo: PatientInfo) {
         patientInfo.birthDate = formatBirthDateUseCase(patientInfo.birthDate) ?: "X"
         patientInfo.sex = formatSexUseCase(patientInfo.sex)
-        patientProvider.savePatientInfo(patientInfo)
+        patientProvider.savePatientData(patientInfo)
     }
 }

@@ -69,7 +69,6 @@ import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.utils.DateTransformation
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.navigation.Routes
-import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -77,11 +76,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-const val USER_NAME = "user_name"
-const val USER_SEX = "user_sex"
-const val FEMENINO = "Femenino"
-const val MASCULINO = "Masculino"
-const val OTRO = "Otro"
 
 @SuppressLint("NotConstructor")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -98,10 +92,6 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
     var userSex by remember { mutableStateOf("Seleccione su sexo") }
 
     val signupFlow = viewModel.signupFlow.collectAsState()
-
-
-    val context = LocalContext.current
-    val preferencesManager = remember { PreferencesManager(context) }
 
     SharedComponents().HalfCircleTop(title = "")
     Column(
@@ -319,8 +309,6 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
             }
 
             is LoginState.Success -> {
-                preferencesManager.saveData(USER_NAME, userFirstName)
-                preferencesManager.saveData(USER_SEX, userSex)
                 LaunchedEffect(Unit) {
                     navController.navigate(Routes.LoginScreen.route)
                 }
@@ -417,7 +405,7 @@ fun CustomDatePickerDialog(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun selectSexDropMenu(): String {
-    val sexList = arrayOf(FEMENINO, MASCULINO, OTRO)
+    val sexList = arrayOf("Femenino", "Masculino", "Otro")
     var expanded by remember { mutableStateOf(false) }
     var selectedSex by remember { mutableStateOf("Seleccioná tu sexo") }
 

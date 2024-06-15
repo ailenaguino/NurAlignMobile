@@ -13,9 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,6 +29,7 @@ import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginV
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
+import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
@@ -35,15 +37,8 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewMod
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
-import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerScreenComponent
-import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
-import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
-import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
-import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
-import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
-import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,16 +46,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel by viewModels<LoginViewModel>()
-    private lateinit var permissionManager: PermissionManager
 
-    @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter", "InlinedApi")
+    @SuppressLint("RememberReturnType", "UnusedMaterial3ScaffoldPaddingParameter")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        permissionManager = PermissionManager(this)
-        NotificationHelper.createNotificationChannel(this)
-
         setContent {
             NurAlignTheme {
                 Surface(
@@ -72,8 +62,6 @@ class MainActivity : ComponentActivity() {
                     val loginState by loginViewModel.loginFlow.collectAsState(null)
 
                     val isAuthenticated = loginState is LoginState.Success
-
-                    NotificationHelper.createNotificationChannel(this)
 
                     val startDestination = when (loginState) {
                         is LoginState.Success -> Routes.HomeScreen.route
@@ -107,10 +95,8 @@ class MainActivity : ComponentActivity() {
                                     val moodTrackerViewModel by viewModels<MoodTrackerViewModel>()
                                     MoodTrackerScreenComponent(navController, moodTrackerViewModel)
                                 }
-                                composable(Routes.MedicationTrackerScreen.route) {
-                                    val medicationViewModel by viewModels<MedicationViewModel>()
-                                    val medicationTrackerViewModel by viewModels<MedicationTrackerViewModel>()
-                                    MedicationTrackerScreenComponent(navController, medicationViewModel, medicationTrackerViewModel)
+                                composable(Routes.AddMedicationScreen.route) {
+                                    AddMedicationScreenComponent(navController)
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {
                                     val sleepViewModel by viewModels<SleepViewModel>()
@@ -131,32 +117,10 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.PersonalInformationScreen.route) {
                                     PersonalInformationScreenComponent(navController)
                                 }
-                                composable(Routes.RoutineScreen.route) {
-                                    val routineViewModel by viewModels<RoutineViewModel>()
-                                    RoutineScreenComponent(navController, routineViewModel)
-                                }
                             }
-                            LaunchedEffect(navController, loginState) {
-                                val currentIntent = intent
-                                val destination = currentIntent?.getStringExtra("destination")
-                                if (destination != null && isAuthenticated) {
-                                    when (destination) {
-                                        "SleepTrackerScreen" -> {
-                                            navController.navigate(Routes.SleepTrackerScreen.route)
-                                        }
-                                    }
-                                }
-                            }
-                         /*   runBlocking {
-                                if (isAuthenticated) {
-                                    delay(2000)
-                                    permissionManager.requestPermissions()
-                                }
-                            }
-
-                          */
                         }
                     }
+
                 }
             }
         }
