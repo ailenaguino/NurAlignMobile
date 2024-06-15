@@ -31,6 +31,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -60,7 +63,6 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.util.Calendar
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MoodTrackerScreenComponent(
@@ -72,77 +74,79 @@ fun MoodTrackerScreenComponent(
     val isSaved by moodTrackerViewModel.isSaved.observeAsState(false)
     val route by moodTrackerViewModel.route.observeAsState("")
     val isVisible by moodTrackerViewModel.isVisible.observeAsState(false)
+    val snackbarHostState = remember { SnackbarHostState() }
 
-
-    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-        item {
-            SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
-        item {
-            LargeFloatingActionButton(
-                onClick = {},
-                shape = RoundedCornerShape(10.dp),
-                containerColor = mainColor,
-                modifier = Modifier.padding(8.dp),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 7.dp
+    ) { paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+                item {
+                    SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
+                }
+                item {
+                    LargeFloatingActionButton(
+                        onClick = {},
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = mainColor,
+                        modifier = Modifier.padding(8.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 7.dp
+                        )
+                    ) {
+                        SharedComponents().fabCompanion(
+                            listOf(
+                                "¿Cómo te sentiste hoy?",
+                                "Clickeame para esconder mi diálogo"
+                            )
+                        )
+                    }
+                }
+                item {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Linea()
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoDeprimido(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoElevado(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoIrritable(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoAnsioso(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+                        saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved)
+                    }
+                }
+            }
+            SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+                goToNextTracker(
+                    navController,
+                    route, moodTrackerViewModel
                 )
-            ) {
-                SharedComponents().fabCompanion(
-                    listOf(
-                        "¿Cómo te sentiste hoy?",
-                        "Clickeame para esconder mi diálogo"
-                    )
-                )
             }
+            SnackbarError(moodTrackerViewModel, snackbarHostState)
         }
-        item {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Linea()
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoDeprimido(
-                    moodTrackerViewModel,
-                    isSaved
-                )
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoElevado(
-                    moodTrackerViewModel,
-                    isSaved
-                )
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoIrritable(
-                    moodTrackerViewModel,
-                    isSaved
-                )
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoAnsioso(moodTrackerViewModel, isSaved)
-            }
-        }
-        item {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-                saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved)
-            }
-        }
-    }
-    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
-        goToNextTracker(
-            navController,
-            route, moodTrackerViewModel
-        )
     }
 }
 
@@ -194,7 +198,7 @@ private fun saveButton(
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(15.dp),
-        enabled = true
+        enabled = isSaved
     ) {
         Text("Guardar")
     }
@@ -209,7 +213,7 @@ private fun AnimoDeprimido(moodTrackerViewModel: MoodTrackerViewModel, isSaved: 
         Color(0xff1b477c), Color(0xff001e41)
     )
     SelectAnimo(
-        "Animo más deprimido",
+        "Ánimo más deprimido",
         "deprimido",
         R.drawable.animo_deprimido_additional_note_icon,
         colors,
@@ -268,7 +272,6 @@ private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Bo
         moodTrackerViewModel,
         isSaved
     )
-
 }
 
 @Composable
@@ -336,7 +339,7 @@ fun SelectAnimo(
     }
 
     LaunchedEffect(animoType) {
-        // Cada vez que el valor de animoType cambie, se jecuta
+        // Cada vez que el valor de animoType cambie, se ejecuta
         selectedBox = when (animoType) {
             "elevado" -> moodTrackerViewModel.highestValue.intValue
             "deprimido" -> moodTrackerViewModel.lowestValue.intValue
@@ -402,7 +405,7 @@ fun SelectAnimo(
                                 width = if (index == selectedBox) 3.dp else 0.dp,
                                 color = if (index == selectedBox) Color.Yellow else Color.Transparent,
                             )
-                            .clickable(enabled = true) {
+                            .clickable(enabled = isSaved) {
                                 selectedBox = index
                                 val selectedValue = labels[index]
                                 when (animoType) {
@@ -445,7 +448,7 @@ fun SelectAnimo(
                     .padding(end = 45.dp, bottom = 12.dp),
                 label = { Text("Nota adicional") },
                 singleLine = true,
-                enabled = true,
+                enabled = isSaved,
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.LightGray,
                     focusedLabelColor = secondaryColor,
@@ -456,4 +459,17 @@ fun SelectAnimo(
         }
     }
     Spacer(modifier = Modifier.height(30.dp))
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SnackbarError(moodTrackerViewModel: MoodTrackerViewModel, snackbarHostState: SnackbarHostState) {
+    val errorMessage by moodTrackerViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            moodTrackerViewModel.clearErrorMessage()
+        }
+    }
 }

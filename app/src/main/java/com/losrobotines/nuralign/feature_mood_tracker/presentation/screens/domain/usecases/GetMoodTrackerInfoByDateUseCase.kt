@@ -6,7 +6,11 @@ import javax.inject.Inject
 
 class GetMoodTrackerInfoByDateUseCase @Inject constructor(private val moodTrackerProvider: MoodTrackerProvider) {
 
-    suspend operator fun invoke(patientId : Int, date: String) : MoodTrackerInfo?{
-        return moodTrackerProvider.getTodaysTracker(patientId, date)
+    suspend operator fun invoke(patientId: Int, date: String): MoodTrackerInfo? {
+        return try {
+            moodTrackerProvider.getTodaysTracker(patientId, date)
+        } catch (e: Exception) {
+            return null
+        }
     }
 }
