@@ -76,7 +76,8 @@ class MedicationTrackerViewModel @Inject constructor(
             val result = updateMedicationTrackerInfoUseCase(medicationTrackerInfo)
 
             if (result.isSuccess) {
-                _saveStatus.value = result
+                _medicationTrackerInfo.value = result.getOrNull()
+                _saveStatus.value = Result.success(Unit)
             } else {
                 Log.e(
                     "MedicationTrackerViewModel",

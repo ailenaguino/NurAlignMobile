@@ -1,9 +1,8 @@
-package com.losrobotines.nuralign.feature_medication.domain.usecases
+package com.losrobotines.nuralign.feature_medication.domain.usecases.medication
 
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
-import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.EditExistingMedicationInListUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk

@@ -1,22 +1,17 @@
-package com.losrobotines.nuralign.feature_medication.domain.usecases
+package com.losrobotines.nuralign.feature_medication.domain.usecases.medication
 
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
-import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.SaveMedicationInfoUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import io.mockk.slot
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.properties.Delegates
 
 private val MEDICATION_A = MedicationInfo(1, 9, "A", 200, "Y")
 private val MEDICATION_B = MedicationInfo(null, 9, "B", 100, "N")

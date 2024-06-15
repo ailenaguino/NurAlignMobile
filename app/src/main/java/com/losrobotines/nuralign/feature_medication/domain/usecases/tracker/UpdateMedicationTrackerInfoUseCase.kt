@@ -7,10 +7,10 @@ import javax.inject.Inject
 class UpdateMedicationTrackerInfoUseCase @Inject constructor(
     private val medicationTrackerProvider: MedicationTrackerProvider
 ) {
-    suspend operator fun invoke(medicationTrackerInfo: MedicationTrackerInfo): Result<Unit> {
+    suspend operator fun invoke(medicationTrackerInfo: MedicationTrackerInfo): Result<MedicationTrackerInfo> {
         return try {
             medicationTrackerProvider.updateMedicationTrackerData(medicationTrackerInfo)
-            Result.success(Unit)
+            Result.success(medicationTrackerInfo)
         } catch (e: Exception) {
             Result.failure(e)
         }
