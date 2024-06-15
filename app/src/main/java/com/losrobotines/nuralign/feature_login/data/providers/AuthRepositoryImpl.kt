@@ -35,8 +35,6 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
         }
     }
 
-    override fun getCurrentUserId() = firebaseAuth.currentUser?.uid
-
     override fun logout() {
         firebaseAuth.signOut()
     }

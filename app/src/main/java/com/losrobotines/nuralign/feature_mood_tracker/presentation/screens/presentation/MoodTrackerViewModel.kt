@@ -1,24 +1,20 @@
 package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.GetMoodTrackerInfoByDateUseCase
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.SaveMoodTrackerDataUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -26,22 +22,14 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MoodTrackerViewModel @Inject constructor(
-    private val saveMoodTrackerDataUseCase: SaveMoodTrackerDataUseCase,
-    private val getMoodTrackerInfoByDateUseCase: GetMoodTrackerInfoByDateUseCase,
-    private val authRepository: AuthRepository,
-    private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
+    private val moodTrackerRepository: MoodTrackerRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _isSaved = MutableLiveData(false)
-    var isSaved: LiveData<Boolean> = _isSaved
-
-    private val _route = MutableLiveData("")
-    var route: LiveData<String> = _route
-
-    private val _isVisible = MutableLiveData(false)
-    var isVisible: LiveData<Boolean> = _isVisible
+    val isSaved = MutableLiveData(false)
 
     val effectiveDate = MutableLiveData<LocalDate>()
+
 
     val highestValue = mutableIntStateOf(-1)
     val highestNote = mutableStateOf("")
@@ -56,17 +44,18 @@ class MoodTrackerViewModel @Inject constructor(
     val anxiousNote = mutableStateOf("")
 
     init {
-        loadMoodTrackerInfo()
+        loadMoodTrackerInfoToDatabase()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun loadMoodTrackerInfo() {
+    fun loadMoodTrackerInfoToDatabase() {
         viewModelScope.launch {
             try {
                 if (currentUserExists()) {
-                    val patientId = patientId()
+                    val patientId =
+                        11 // ************************(AUNMENTAR CADA VEZ QUE AGREGES EN LA BASE DE DATOS)******************
                     val date = getDate()
-                    val info = getMoodTrackerInfoByDateUseCase(patientId.toInt(), date)
+                    val info = moodTrackerRepository.getMoodTrackerInfo(patientId)
                     if (info != null) {
                         highestValue.intValue = info.highestValue.toInt()
                         highestNote.value = info.highestNote
@@ -77,31 +66,39 @@ class MoodTrackerViewModel @Inject constructor(
                         anxiousValue.intValue = info.anxiousValue.toInt()
                         anxiousNote.value = info.anxiousNote
                         effectiveDate.value = LocalDate.parse(info.effectiveDate)
+                        isSaved.value = true
+                    } else {
+                        isSaved.value = false
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                isSaved.value = false
             }
         }
     }
 
 
     fun saveData() {
+        //  if (currentUserExists()) {
+        //    getPatentId()
         viewModelScope.launch {
-            saveMoodTrackerDataUseCase.invoke(
+            moodTrackerRepository.saveMoodTrackerInfo(
                 MoodTrackerInfo(
-                patientId = patientId(),
-                effectiveDate = getDate(),
-                highestValue = highestValue.intValue.toString(),
-                lowestValue = lowestValue.intValue.toString(),
-                highestNote = highestNote.value,
-                lowestNote = lowestNote.value,
-                irritableValue = irritableValue.intValue.toString(),
-                irritableNote = irritableNote.value,
-                anxiousValue = anxiousValue.intValue.toString(),
-                anxiousNote = anxiousNote.value
-            ))
+                    patientId = 8,
+                    effectiveDate = getDate(),
+                    highestValue = highestValue.intValue.toString(),
+                    lowestValue = lowestValue.intValue.toString(),
+                    highestNote = highestNote.value,
+                    lowestNote = lowestNote.value,
+                    irritableValue = irritableValue.intValue.toString(),
+                    irritableNote = irritableNote.value,
+                    anxiousValue = anxiousValue.intValue.toString(),
+                    anxiousNote = anxiousNote.value
+                )
+            )
         }
+        //}
     }
 
 
@@ -112,26 +109,25 @@ class MoodTrackerViewModel @Inject constructor(
     }
 
 
-    private suspend fun patientId(): Short {
-        val idResult: Short
+    private fun getPatentId() {
         val uid = authRepository.currentUser!!.uid
         val doc = Firebase.firestore.collection("users").document(uid)
-        idResult = doc.get().await().getLong("id")!!.toShort()
-        return idResult
+        doc.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    Log.d("Firestore", "DocumentSnapshot data: ${document.data}")
+                } else {
+                    Log.d("Firestore", "No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("Firestore", "get failed with ", exception)
+            }
+
     }
 
     private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
-    }
-
-    fun checkNextTracker(){
-        viewModelScope.launch {
-            _route.value = checkNextTrackerToBeCompletedUseCase(patientId().toInt())
-        }
-    }
-
-    fun setIsVisible(value: Boolean) {
-        _isVisible.value = value
     }
 
 }

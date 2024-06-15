@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models
+package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain
 
 data class MoodTrackerInfo(
     val patientId: Short,

@@ -2,6 +2,15 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="SleepTrackerScreen">
+        <State />
+      </entry>
+      <entry key="SliderHour">
+        <State />
+      </entry>
+      <entry key="SliderMinimalExample">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>

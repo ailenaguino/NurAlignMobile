@@ -4,6 +4,6 @@ import com.losrobotines.nuralign.feature_login.domain.models.PatientInfo
 
 interface PatientProvider{
 
-    suspend fun savePatientInfo(patientInfo: PatientInfo)
+    suspend fun savePatientData(patientInfo: PatientInfo)
 
 }

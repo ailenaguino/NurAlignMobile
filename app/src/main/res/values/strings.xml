@@ -7,6 +7,4 @@
     <string name="title_activity_therapy_tracker_screen">TherapyTrackerScreen</string>
     <string name="title_activity_achievements_screen">AchievementsScreen</string>
     <string name="title_activity_personal_information_screen">PersonalInformationScreen</string>
-    <string name="title_activity_first_time">FirstTimeActivity</string>
-    <string name="title_activity_tutorial">TutorialActivity</string>
 </resources>
