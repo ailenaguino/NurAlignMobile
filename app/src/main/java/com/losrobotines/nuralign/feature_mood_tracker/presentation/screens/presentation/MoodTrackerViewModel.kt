@@ -84,6 +84,31 @@ class MoodTrackerViewModel @Inject constructor(
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun loadMoodTrackerInfOld() {
+        viewModelScope.launch {
+            try {
+                if (currentUserExists()) {
+                    val patientId = patientId()
+                    val date = getDate()
+                    val info = getMoodTrackerInfoByDateUseCase(patientId.toInt(), date)
+                    if (info != null) {
+                        highestValue.intValue = info.highestValue.toInt()
+                        highestNote.value = info.highestNote
+                        lowestValue.intValue = info.lowestValue.toInt()
+                        lowestNote.value = info.lowestNote
+                        irritableValue.intValue = info.irritableValue.toInt()
+                        irritableNote.value = info.irritableNote
+                        anxiousValue.intValue = info.anxiousValue.toInt()
+                        anxiousNote.value = info.anxiousNote
+                        effectiveDate.value = LocalDate.parse(info.effectiveDate)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
 
     fun saveData() {
