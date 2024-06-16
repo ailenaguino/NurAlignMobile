@@ -21,5 +21,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: Build app
+
+      - name: Build app with environment variables
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          API_KEY: ${{ secrets.API_KEY }}
         run: ./gradlew assemble
