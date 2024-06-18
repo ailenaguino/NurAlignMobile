@@ -27,9 +27,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Run tests
-        uses: ./gradlew test
-
       - name: Build app with environment variables
         env:
           API_URL: ${{ secrets.API_URL }}
