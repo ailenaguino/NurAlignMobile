@@ -72,9 +72,7 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
     val negativeThoughts: Boolean by sleepViewModel.negativeThoughts.observeAsState(false)
     val anxiousBeforeSleep: Boolean by sleepViewModel.anxiousBeforeSleep.observeAsState(false)
     val sleptThroughNight: Boolean by sleepViewModel.sleptThroughNight.observeAsState(false)
-    val additionalNotes: String by sleepViewModel.additionalNotes.observeAsState("")
     val time: String by sleepViewModel.bedTime.observeAsState("")
-    val isSaved by sleepViewModel.isSaved.observeAsState(false)
     val route by sleepViewModel.route.observeAsState("")
     val isVisible by sleepViewModel.isVisible.observeAsState(false)
 
@@ -105,18 +103,17 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
                 modifier = Modifier
                     .padding(16.dp, 0.dp)
             ) {
-                SliderHour(sliderPosition, isSaved) { sleepViewModel.onSliderChanged(it) }
+                SliderHour(sliderPosition) { sleepViewModel.onSliderChanged(it) }
                 Spacer(modifier = Modifier.height(24.dp))
 
 
-                QuestionGoToSleep(sleepViewModel, time, isSaved)
+                QuestionGoToSleep(sleepViewModel, time)
                 Spacer(modifier = Modifier.height(8.dp))
 
 
                 QuestionGeneral(
                     q = "¿Tuviste pensamientos negativos?",
                     checked = negativeThoughts,
-                    isSaved,
                     onCheckedChange = { sleepViewModel.setNegativeThoughts(it) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -125,7 +122,6 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
                 QuestionGeneral(
                     q = "¿Estuviste ansioso antes de dormir?",
                     checked = anxiousBeforeSleep,
-                    isSaved,
                     onCheckedChange = { sleepViewModel.setAnxiousBeforeSleep(it) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -134,19 +130,18 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
                 QuestionGeneral(
                     q = "¿Dormiste de corrido?",
                     checked = sleptThroughNight,
-                    isSaved,
                     onCheckedChange = { sleepViewModel.setSleptThroughNight(it) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                AdditionalNotes(sleepViewModel, isSaved)
+                AdditionalNotes(sleepViewModel)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Box(
                     contentAlignment = Alignment.BottomEnd,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    SaveButton(sleepViewModel, sliderPosition, isSaved)
+                    SaveButton(sleepViewModel)
                 }
             }
         }
@@ -167,7 +162,6 @@ fun goToNextTracker(navController: NavController, route: String, sleepViewModel:
 fun QuestionGeneral(
     q: String,
     checked: Boolean,
-    isSaved: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -210,7 +204,7 @@ fun QuestionGeneral(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AdditionalNotes(sleepViewModel: SleepViewModel, isSaved: Boolean) {
+fun AdditionalNotes(sleepViewModel: SleepViewModel) {
     val context = LocalContext.current.applicationContext
     val additionalNotes by sleepViewModel.additionalNotes.observeAsState("")
 
@@ -253,16 +247,14 @@ fun AdditionalNotes(sleepViewModel: SleepViewModel, isSaved: Boolean) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SaveButton(sleepViewModel: SleepViewModel, sliderPosition: Float, isSaved: Boolean) {
+fun SaveButton(sleepViewModel: SleepViewModel) {
     val context = LocalContext.current.applicationContext
     Button(
         onClick = {
             if (sleepViewModel.bedTime.value == "") {
                 Toast.makeText(context, "Complete todos los campos", Toast.LENGTH_SHORT).show()
             } else {
-                sleepViewModel.setSleepTime(sliderPosition.toInt())
                 sleepViewModel.saveData()
-                //sleepViewModel.setIsSaved(true)
                 sleepViewModel.checkNextTracker()
                 sleepViewModel.setIsVisible(true)
             }
@@ -280,7 +272,7 @@ fun SaveButton(sleepViewModel: SleepViewModel, sliderPosition: Float, isSaved: B
 }
 
 @Composable
-fun SliderHour(sliderPosition: Float, isSaved: Boolean, onSliderChanged: (Float) -> Unit) {
+fun SliderHour(sliderPosition: Float, onSliderChanged: (Float) -> Unit) {
 
     Column {
         Box(
@@ -342,14 +334,12 @@ fun SliderHour(sliderPosition: Float, isSaved: Boolean, onSliderChanged: (Float)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun QuestionGoToSleep(sleepViewModel: SleepViewModel, time: String, isSaved: Boolean) {
+fun QuestionGoToSleep(sleepViewModel: SleepViewModel, time: String) {
     val isOpen = remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
 
         Text(text = "¿A qué hora te fuiste a dormir?", fontSize = 16.sp, color = secondaryColor, modifier = Modifier.weight(0.6f))
-
-        //Spacer(modifier = Modifier.width(16.dp))
 
         Box(contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxWidth()

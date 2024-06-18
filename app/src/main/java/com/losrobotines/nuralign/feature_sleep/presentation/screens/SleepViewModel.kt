@@ -2,7 +2,6 @@ package com.losrobotines.nuralign.feature_sleep.presentation.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,9 +10,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
-import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
-import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
-import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepTrackerInfoByDateUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,14 +35,8 @@ class SleepViewModel @Inject constructor(
     private val _isVisible = MutableLiveData(false)
     var isVisible: LiveData<Boolean> = _isVisible
 
-    private val _isSaved = MutableLiveData(false)
-    val isSaved = _isSaved
-
     private val _sliderPosition = MutableLiveData(0F)
-    var sliderPosition: LiveData<Float> = _sliderPosition
-
-    private val _sleepHours = mutableIntStateOf(0)
-    val sleepHours = _sleepHours
+    var sliderPosition = _sliderPosition
 
     private val _negativeThoughts = MutableLiveData(false)
     var negativeThoughts = _negativeThoughts
@@ -63,6 +53,9 @@ class SleepViewModel @Inject constructor(
     private val _bedTime = MutableLiveData("")
     val bedTime = _bedTime
 
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
+
 
     fun saveData() {
         if (currentUserExists()) {
@@ -72,8 +65,8 @@ class SleepViewModel @Inject constructor(
                 saveSleepDataUseCase(
                     id,
                     currentDate,
-                    _sleepHours.intValue,
-                    _bedTime.value ?: "",
+                    _sliderPosition.value.let { it?.let { it.toInt().toShort() } ?: 0},
+                    _bedTime.value ?: "00:00",
                     _negativeThoughts.value ?: false,
                     _anxiousBeforeSleep.value ?: false,
                     _sleptThroughNight.value ?: false,
@@ -85,11 +78,11 @@ class SleepViewModel @Inject constructor(
 
 
         init {
-            loadMoodTrackerInfoToDatabase()
+            //loadMoodTrackerInfo()
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun loadMoodTrackerInfoToDatabase() {
+        fun loadMoodTrackerInfo() {
             viewModelScope.launch {
                 try {
                     if (currentUserExists()) {
@@ -97,8 +90,8 @@ class SleepViewModel @Inject constructor(
                         val date = getDate()
                         val info = getSleepTrackerInfoByDateUseCase(patientId.toInt(), date)
                         if (info != null) {
-                            sleepHours.intValue = info.sleepHours.toInt()
-                            bedTime.value = info.bedTime.toString()
+                            sliderPosition.value = info.sleepHours.toFloat()
+                            bedTime.value = info.bedTime
                             additionalNotes.value = info.sleepNotes
                             if (info.negativeThoughtsFlag == "N") {
                                 setNegativeThoughts(false)
@@ -127,10 +120,6 @@ class SleepViewModel @Inject constructor(
         _isVisible.value = value
     }
 
-    fun setIsSaved(value: Boolean) {
-        _isSaved.value = value
-    }
-
     fun setSleepTime(time: String) {
         _bedTime.value = time
     }
@@ -149,10 +138,6 @@ class SleepViewModel @Inject constructor(
 
     fun setSleptThroughNight(value: Boolean) {
         _sleptThroughNight.value = value
-    }
-
-    fun setSleepTime(time: Int) {
-        _sleepHours.intValue = time
     }
 
     fun onSliderChanged(sliderValue: Float) {
@@ -183,5 +168,10 @@ class SleepViewModel @Inject constructor(
             _route.value = checkNextTrackerUseCase(getPatientId().toInt())
         }
     }
+
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
+
 
 }
