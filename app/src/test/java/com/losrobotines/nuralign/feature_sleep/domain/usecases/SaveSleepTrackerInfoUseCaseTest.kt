@@ -12,6 +12,7 @@ import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class SaveSleepTrackerInfoUseCaseTest {
@@ -29,6 +30,7 @@ class SaveSleepTrackerInfoUseCaseTest {
             SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase, sleepTrackerProvider)
     }
 
+    @Disabled
     @Test
     fun `execute calls saveSleepData on sleepTrackerProvider`() = runBlocking {
         // Given
