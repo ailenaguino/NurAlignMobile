@@ -2,6 +2,7 @@ package com.losrobotines.nuralign.feature_achievements.presentation.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
@@ -23,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -35,25 +39,18 @@ import com.losrobotines.nuralign.ui.shared.SharedComponents
 @Composable
 fun AchievementsScreenComponent(navController: NavController) {
     val achievementsList = listOf(
-        AchievementsData("Ánimo de bronce", "Completá tu estado de ánimo por primera vez"),
-        AchievementsData(
-            "Ánimo de plata",
-            "Completá tu estado de ánimo durante una semana consecutiva"
-        ),
-        AchievementsData("Ánimo de oro", "Completá tu estado de ánimo durante un mes consecutivo"),
-        AchievementsData("Amigo virtual", "Chateá por primera vez con tu acompañante virtual"),
-        AchievementsData("Rutinario", "Completá tu rutina"),
-        AchievementsData("Medicación de bronce", "Completá tu toma de medicación por primera vez"),
-        AchievementsData(
-            "Medicación de plata",
-            "Completá tu toma de medicación durante una semana consecutiva"
-        ),
-        AchievementsData(
-            "Medicación de oro",
-            "Completá tu toma de medicación durante un mes consecutivo"
-        ),
-        AchievementsData("Terapia de bronce", "Completá una sesión de terapia por primera vez"),
-        AchievementsData("Terapia de plata", "Completá siete sesiones de terapia diferentes")
+        AchievementsData.animoBronce,
+        AchievementsData.animoPlata,
+        AchievementsData.animoOro,
+        AchievementsData.medicacionBronce,
+        AchievementsData.medicacionPlata,
+        AchievementsData.medicacionOro,
+        AchievementsData.suenioBronce,
+        AchievementsData.suenioPlata,
+        AchievementsData.suenioOro,
+        AchievementsData.terapiaBronce,
+        AchievementsData.terapiaPlata,
+        AchievementsData.terapiaOro
     )
     SharedComponents().HalfCircleTop("Logros")
     LazyVerticalGrid(
@@ -79,7 +76,7 @@ private fun Achievement(achievement: AchievementsData) {
         Box(contentAlignment = Alignment.CenterStart)
         {
             Image(
-                painterResource(id = R.drawable.achievement_default),
+                painterResource(id = achievement.image),
                 contentDescription = "Achievement ${achievement.name}",
                 modifier = Modifier
                     .size(90.dp)
@@ -92,7 +89,7 @@ private fun Achievement(achievement: AchievementsData) {
                     onDismissRequest = { openAlertDialog = false },
                     dialogTitle = achievement.name,
                     dialogText = achievement.descr,
-                    image = R.drawable.achievement_default
+                    image = achievement.image
                 )
             }
         }
@@ -104,7 +101,7 @@ private fun AchievementAlertDialog(
     onDismissRequest: () -> Unit,
     dialogTitle: String,
     dialogText: String,
-    image: Int
+    image: Int,
 ) {
     AlertDialog(
         icon = {
