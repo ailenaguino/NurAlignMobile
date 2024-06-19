@@ -20,15 +20,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-/*
 private val ROUTINE = Routine(
     id = 0,
     sleepTime = "22:30",
     activity = "Gimnasio",
     activityTime = "20:00",
-    activityDays = listOf("Lu", "Mi", "Vi")
+    activityDays = listOf("Lu", "Mi", "Vi"),
+    activity2 = "Clases de ingles",
+    activityTime2 = "17:30",
+    activityDays2 = listOf("Ma", "Jue")
 )
- */
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoutineViewModelTest {
@@ -67,7 +69,6 @@ class RoutineViewModelTest {
         testDispatcher.cleanupTestCoroutines()
     }
 
-    @Disabled
     @Test
     fun `loadInitialRoutine updates LiveData values`() = runBlocking {
         mockkStatic(Looper::class)
@@ -77,7 +78,7 @@ class RoutineViewModelTest {
 
         every { Looper.getMainLooper() } returns looper
         // Given
-        //coEvery { loadRoutineUseCase.invoke() } returns ROUTINE
+        coEvery { loadRoutineUseCase.invoke() } returns ROUTINE
 
         // When
         routineViewModel.loadInitialRoutine()
