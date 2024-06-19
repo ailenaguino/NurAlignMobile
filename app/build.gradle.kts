@@ -74,9 +74,11 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
-
-
 }
+
+
+
+
 
 dependencies {
 
@@ -87,6 +89,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("com.google.ar:core:1.43.0")
+    implementation("androidx.core:core-i18n:1.0.0-alpha01")
     androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     kapt("com.google.dagger:hilt-compiler:2.51.1")
@@ -138,6 +141,17 @@ dependencies {
 
     // Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+
+//*********************************************************************************
+    implementation ("androidx.compose.ui:ui:1.6.8")
+    implementation ("androidx.compose.material:material:1.6.8")
+    implementation ("androidx.compose.ui:ui-tooling:1.6.8")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.8")
+
+    
+
+
+
 
 
     implementation("androidx.core:core-ktx:1.12.0")

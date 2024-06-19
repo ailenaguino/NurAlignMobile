@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.shared.SharedComponents
@@ -75,6 +76,7 @@ fun MoodTrackerScreenComponent(
     val route by moodTrackerViewModel.route.observeAsState("")
     val isVisible by moodTrackerViewModel.isVisible.observeAsState(false)
     val snackbarHostState = remember { SnackbarHostState() }
+
 
     Scaffold(
         snackbarHost = {
@@ -145,7 +147,7 @@ fun MoodTrackerScreenComponent(
                     route, moodTrackerViewModel
                 )
             }
-            SnackbarError(moodTrackerViewModel, snackbarHostState)
+            //SnackbarError(moodTrackerViewModel, snackbarHostState)
         }
     }
 }
@@ -198,7 +200,7 @@ private fun saveButton(
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(15.dp),
-        enabled = isSaved
+        enabled = true
     ) {
         Text("Guardar")
     }
@@ -405,7 +407,7 @@ fun SelectAnimo(
                                 width = if (index == selectedBox) 3.dp else 0.dp,
                                 color = if (index == selectedBox) Color.Yellow else Color.Transparent,
                             )
-                            .clickable(enabled = isSaved) {
+                            .clickable(enabled = true) {
                                 selectedBox = index
                                 val selectedValue = labels[index]
                                 when (animoType) {
@@ -448,7 +450,7 @@ fun SelectAnimo(
                     .padding(end = 45.dp, bottom = 12.dp),
                 label = { Text("Nota adicional") },
                 singleLine = true,
-                enabled = isSaved,
+                enabled = true,
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.LightGray,
                     focusedLabelColor = secondaryColor,
@@ -461,6 +463,7 @@ fun SelectAnimo(
     Spacer(modifier = Modifier.height(30.dp))
 }
 
+/*
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SnackbarError(moodTrackerViewModel: MoodTrackerViewModel, snackbarHostState: SnackbarHostState) {
@@ -473,3 +476,5 @@ fun SnackbarError(moodTrackerViewModel: MoodTrackerViewModel, snackbarHostState:
         }
     }
 }
+
+ */

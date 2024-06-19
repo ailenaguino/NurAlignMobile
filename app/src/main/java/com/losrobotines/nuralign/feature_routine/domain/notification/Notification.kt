@@ -51,10 +51,9 @@ class Notification @Inject constructor() {
 
             alarmManager.cancel(pendingIntent)
 
-            alarmManager.setRepeating(
+            alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis,
-                AlarmManager.INTERVAL_DAY,
                 pendingIntent
             )
         } else {
@@ -94,10 +93,9 @@ class Notification @Inject constructor() {
 
                 alarmManager.cancel(pendingIntent)
 
-                alarmManager.setRepeating(
+                alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
-                    AlarmManager.INTERVAL_DAY * 7,  // Repite cada semana en el mismo día
                     pendingIntent
                 )
             }
