@@ -12,15 +12,18 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-/*
+
+
 private val ROUTINE = Routine(
     id = 0,
     sleepTime = "22:30",
     activity = "Gimnasio",
     activityTime = "20:00",
-    activityDays = listOf("Lu", "Mi", "Vi")
+    activityDays = listOf("Lu", "Mi", "Vi"),
+    activity2 = "Clases de ingles",
+    activityTime2 = "17:30",
+    activityDays2 = listOf("Ma", "Jue")
 )
- */
 
 class SaveRoutineUseCaseTest {
 
@@ -38,21 +41,21 @@ class SaveRoutineUseCaseTest {
         clearAllMocks()
     }
 
-    @Disabled
     @Test
     fun `execute calls addRoutine on routineRepository`() = runBlocking {
 
-        /*
         // When
         saveRoutineUseCase(
             ROUTINE.sleepTime,
             ROUTINE.activity,
             ROUTINE.activityTime,
-            ROUTINE.activityDays
+            ROUTINE.activityDays,
+            ROUTINE.activity2,
+            ROUTINE.activityTime2,
+            ROUTINE.activityDays2
         )
-         */
 
         // Then
-        //coVerify(exactly = 1) { routineRepository.addRoutine(ROUTINE) }
+        coVerify(exactly = 1) { routineRepository.addRoutine(ROUTINE) }
     }
 }
