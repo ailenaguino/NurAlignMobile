@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_routine.domain
+package com.losrobotines.nuralign.feature_routine.domain.models
 
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 

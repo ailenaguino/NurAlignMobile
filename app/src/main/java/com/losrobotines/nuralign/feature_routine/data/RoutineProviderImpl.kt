@@ -2,10 +2,10 @@ package com.losrobotines.nuralign.feature_routine.data
 
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
-import com.losrobotines.nuralign.feature_routine.domain.Routine
+import com.losrobotines.nuralign.feature_routine.domain.models.Routine
 import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
-import com.losrobotines.nuralign.feature_routine.domain.toDatabase
-import com.losrobotines.nuralign.feature_routine.domain.toDomain
+import com.losrobotines.nuralign.feature_routine.domain.models.toDatabase
+import com.losrobotines.nuralign.feature_routine.domain.models.toDomain
 import javax.inject.Inject
 
 class RoutineProviderImpl @Inject constructor(private val dao: RoutineDao): RoutineProvider {

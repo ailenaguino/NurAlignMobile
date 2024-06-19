@@ -8,8 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
-import com.losrobotines.nuralign.feature_routine.domain.Routine
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase

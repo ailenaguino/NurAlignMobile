@@ -1,7 +1,7 @@
 package com.losrobotines.nuralign.feature_routine.presentation.usescases
 
 import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
-import com.losrobotines.nuralign.feature_routine.domain.Routine
+import com.losrobotines.nuralign.feature_routine.domain.models.Routine
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coVerify

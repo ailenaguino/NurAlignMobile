@@ -1,10 +1,8 @@
 package com.losrobotines.nuralign.feature_routine.presentation
 
-import org.junit.jupiter.api.Assertions.*
-
 import android.os.Looper
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.losrobotines.nuralign.feature_routine.domain.Routine
+import com.losrobotines.nuralign.feature_routine.domain.models.Routine
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
@@ -17,7 +15,6 @@ import kotlinx.coroutines.test.*
 import org.junit.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 private val ROUTINE = Routine(
