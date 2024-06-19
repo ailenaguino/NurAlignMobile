@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.USER_NAME
-import com.losrobotines.nuralign.feature_routine.domain.NotificationPrompts
+import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationPrompts
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.CustomTimePickerDialog
 import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents

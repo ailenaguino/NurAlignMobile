@@ -2,7 +2,6 @@ package com.losrobotines.nuralign.feature_routine.data.database
 
 import android.content.Context
 import androidx.room.Room
-import com.losrobotines.nuralign.feature_routine.data.RoutineDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

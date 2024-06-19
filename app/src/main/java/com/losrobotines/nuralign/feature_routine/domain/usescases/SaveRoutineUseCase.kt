@@ -1,10 +1,11 @@
 package com.losrobotines.nuralign.feature_routine.domain.usescases
 
-import com.losrobotines.nuralign.feature_routine.data.RoutineRepositoryDatabase
+import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
 import com.losrobotines.nuralign.feature_routine.domain.Routine
+import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
 import javax.inject.Inject
 
-class SaveRoutineUseCase @Inject constructor(private val routineRepository: RoutineRepositoryDatabase) {
+class SaveRoutineUseCase @Inject constructor(private val routineProvider: RoutineProvider) {
     suspend operator fun invoke(
         bedTimeRoutine: String,
         activity: String,
@@ -14,7 +15,7 @@ class SaveRoutineUseCase @Inject constructor(private val routineRepository: Rout
         activityTime2: String,
         activityDays2: List<String>,
     ) {
-        routineRepository.addRoutine(
+        routineProvider.addRoutine(
             Routine(
                 0,
                 bedTimeRoutine,

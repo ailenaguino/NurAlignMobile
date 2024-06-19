@@ -3,16 +3,17 @@ package com.losrobotines.nuralign.feature_routine.data
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 import com.losrobotines.nuralign.feature_routine.domain.Routine
+import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
 import com.losrobotines.nuralign.feature_routine.domain.toDatabase
 import com.losrobotines.nuralign.feature_routine.domain.toDomain
 import javax.inject.Inject
 
-class RoutineRepositoryDatabase @Inject constructor(private val dao: RoutineDao) {
+class RoutineProviderImpl @Inject constructor(private val dao: RoutineDao): RoutineProvider {
 
-    suspend fun addRoutine(routine: Routine) {
+    override suspend fun addRoutine(routine: Routine) {
         dao.insert(routine.toDatabase())
     }
-    suspend fun getRoutine(): Routine {
+    override suspend fun getRoutine(): Routine {
         val response: List<RoutineEntity> = dao.getAll()
         return if (response.isNotEmpty()) {
             response[0].toDomain()

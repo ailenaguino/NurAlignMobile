@@ -1,11 +1,9 @@
-package com.losrobotines.nuralign.feature_routine.data
+package com.losrobotines.nuralign.feature_routine.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
-import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 
 
 @Database(entities = [RoutineEntity::class], version = 2)
