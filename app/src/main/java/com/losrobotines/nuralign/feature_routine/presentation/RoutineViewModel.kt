@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_routine.presentation
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +16,9 @@ import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUse
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import javax.inject.Inject
+
 
 @HiltViewModel
 class RoutineViewModel @Inject constructor(
@@ -24,7 +28,6 @@ class RoutineViewModel @Inject constructor(
     //  private val updateRoutineUseCase: UpdateRoutineUseCase,
     val notification: Notification
 ) : ViewModel() {
-    val selectedDays = mutableStateListOf<String>()
 
     private var _isSaved = MutableLiveData(false)
     var isSaved: LiveData<Boolean> = _isSaved
@@ -35,8 +38,20 @@ class RoutineViewModel @Inject constructor(
     private val _activity = MutableLiveData("")
     val activity: LiveData<String> = _activity
 
+
     private val _activityRoutineTime = MutableLiveData("")
     val activityRoutineTime: LiveData<String> = _activityRoutineTime
+
+    val selectedDays = mutableStateListOf<String>()
+
+    private val _activity2 = MutableLiveData("")
+    val activity2: LiveData<String> = _activity2
+
+
+    private val _activityRoutineTime2 = MutableLiveData("")
+    val activityRoutineTime2: LiveData<String> = _activityRoutineTime2
+
+    val selectedDays2 = mutableStateListOf<String>()
 
 
     init {
@@ -50,7 +65,10 @@ class RoutineViewModel @Inject constructor(
             _bedTimeRoutine.value ?: "",
             _activity.value ?: "",
             _activityRoutineTime.value ?: "",
-            selectedDays.toList()
+            selectedDays.toList(),
+            _activity2.value ?: "",
+            _activityRoutineTime2.value ?: "",
+            selectedDays2.toList()
         )
     }
 
@@ -61,6 +79,9 @@ class RoutineViewModel @Inject constructor(
         _bedTimeRoutine.value = initialRoutine.sleepTime
         _activity.value = initialRoutine.activity
         selectedDays.addAll(initialRoutine.activityDays)
+        _activityRoutineTime2.value = initialRoutine.activityTime2
+        _activity2.value = initialRoutine.activity2
+        selectedDays2.addAll(initialRoutine.activityDays2)
         if (_bedTimeRoutine.value != "") {
             setIsSavedRoutine(true)
         }
@@ -97,22 +118,43 @@ class RoutineViewModel @Inject constructor(
     fun removeSelectedDay(day: String) {
         selectedDays.remove(day)
     }
+    fun setActivity2(activity: String) {
+        _activity2.value = activity
+    }
 
-    fun clearSelectedDays() {
+    fun setActivityRoutine2(activity: String) {
+        _activityRoutineTime2.value = activity
+    }
+
+    fun removeSelectedDay2(day: String) {
+        selectedDays2.remove(day)
+    }
+
+    fun addSelectedDay2(day: String) {
+        if (!selectedDays2.contains(day)) {
+            selectedDays2.add(day)
+        }
+    }
+
+
+    fun clearAll() {
+        _activity.value = ""
+        _activityRoutineTime.value = ""
         selectedDays.clear()
+        _isSaved.value = false
+    }
+    fun clearAllSecondActivity() {
+        _activity2.value = ""
+        _activityRoutineTime2.value = ""
+        selectedDays2.clear()
+        _isSaved.value = false
     }
 
-    /*
-    private suspend fun loadInitialRoutine(): RoutineEntity {
-        return loadRoutineUseCase()
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun parseTime(time: String): LocalTime? {
+        val parts = time.split(":")
+        return LocalTime.of(parts[0].toInt(), parts[1].toInt())
     }
-    suspend fun updateRoutine(
-        bedTime: String,
-        activity: String,
-        activityDays: List<String>,
-        activityTime: String
-    ) {
-        updateRoutineUseCase(bedTime, activity, activityDays, activityTime)
-    }
-     */
+
+
 }
