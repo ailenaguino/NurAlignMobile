@@ -149,7 +149,7 @@ fun TherapistScreenComponent(
 
 @Composable
 private fun MyTherapistsTitle() {
-    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+    Column(modifier = Modifier.padding(25.dp)) {
         Text(text = "Mis terapeutas", fontSize = 24.sp, color = secondaryColor)
         Divider(color = secondaryColor, thickness = 2.dp)
     }

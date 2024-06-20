@@ -1,14 +1,13 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists
 
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -55,9 +54,7 @@ fun AddNewTherapistAlertDialog(
             }
         },
         text = {
-            Column {
-                NewTherapistElement(therapistViewModel)
-            }
+            NewTherapistElement(therapistViewModel)
         },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
@@ -82,13 +79,12 @@ fun AddNewTherapistAlertDialog(
 fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxWidth()
     ) {
-
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .weight(0.5f)
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -96,7 +92,7 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 onValueChange = { therapistViewModel.therapistFirstName.value = it },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Nombre", color = secondaryColor) },
@@ -106,10 +102,11 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 )
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .weight(0.5f)
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -119,7 +116,7 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Apellido", color = secondaryColor) },
@@ -129,9 +126,11 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 )
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -139,7 +138,7 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 onValueChange = { therapistViewModel.therapistEmail.value = it },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Email", color = secondaryColor) },
@@ -149,9 +148,11 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 )
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -161,7 +162,7 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                 },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Teléfono", color = secondaryColor) },

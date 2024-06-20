@@ -47,7 +47,7 @@ class TherapistViewModel @Inject constructor(
         getCurrentPatientId()
     }
 
-    fun loadTherapistList() {
+    private fun loadTherapistList() {
         viewModelScope.launch {
             val result = userService.getTherapistList(_patientId.value)
             _isLoading.value = true

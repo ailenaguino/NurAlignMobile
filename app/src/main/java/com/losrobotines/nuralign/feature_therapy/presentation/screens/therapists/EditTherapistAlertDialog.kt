@@ -111,12 +111,13 @@ fun EditTherapistElement(
     val therapistEmail = remember { mutableStateOf(therapistInfo.therapistEmail) }
     val therapistPhone = remember { mutableIntStateOf(therapistInfo.therapistPhone) }
 
+
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(0.7f)
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -127,7 +128,7 @@ fun EditTherapistElement(
                 },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Nombre", color = secondaryColor) },
@@ -140,7 +141,7 @@ fun EditTherapistElement(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(0.3f)
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -151,7 +152,7 @@ fun EditTherapistElement(
                 },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Apellido", color = secondaryColor) },
@@ -164,7 +165,7 @@ fun EditTherapistElement(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(0.7f)
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -175,7 +176,7 @@ fun EditTherapistElement(
                 },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Email", color = secondaryColor) },
@@ -188,7 +189,7 @@ fun EditTherapistElement(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(0.7f)
+                .height(60.dp)
                 .padding(horizontal = 4.dp)
         ) {
             OutlinedTextField(
@@ -200,7 +201,7 @@ fun EditTherapistElement(
                 },
                 modifier = Modifier
                     .height(80.dp)
-                    .width(250.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
                 label = { Text("Teléfono", color = secondaryColor) },
