@@ -6,10 +6,13 @@ import javax.inject.Inject
 
 class SaveRoutineUseCase @Inject constructor(private val routineRepository: RoutineRepositoryDatabase) {
     suspend operator fun invoke(
-        bedTimeRoutine: kotlin.String,
-        activity: kotlin.String,
-        activityRoutineTime: kotlin.String,
-        selectedDays: List<String>
+        bedTimeRoutine: String,
+        activity: String,
+        activityRoutineTime: String,
+        selectedDays: List<String>,
+        activity2: String,
+        activityTime2: String,
+        activityDays2: List<String>,
     ) {
         routineRepository.addRoutine(
             Routine(
@@ -17,7 +20,10 @@ class SaveRoutineUseCase @Inject constructor(private val routineRepository: Rout
                 bedTimeRoutine,
                 activity,
                 activityRoutineTime,
-                selectedDays
+                selectedDays,
+                activity2,
+                activityTime2,
+                activityDays2
             )
         )
     }

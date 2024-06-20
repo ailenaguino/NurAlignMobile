@@ -20,12 +20,14 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -53,142 +55,15 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddActivityAlertDialog(
-    onDismissRequest: () -> Unit,
-    confirmButton: () -> Unit,
-    routineViewModel: RoutineViewModel
-) {
-
-    val context = LocalContext.current
-
-    AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.padding(horizontal = 15.dp),
-        title = {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Nueva Actividad",
-                    textAlign = TextAlign.Center
-                )
-            }
-        },
-        text = {
-            ActivityRow(routineViewModel)
-        },
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            Button(onClick = {
-                confirmButton()
-            }) {
-                Text("Guardar")
-            }
-        },
-        dismissButton = {
-            Button(onClick = { onDismissRequest() }) {
-                Text("Cancelar")
-            }
-        }
-    )
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ActivityElement(routineViewModel: RoutineViewModel) {
-    val activity by routineViewModel.activity.observeAsState("")
-    val time: String by routineViewModel.activityRoutineTime.observeAsState("")
+fun selectDays(routineViewModel: RoutineViewModel) {
     val isSaved by routineViewModel.isSaved.observeAsState(false)
-
-    val isOpen = remember { mutableStateOf(false) }
-
-    Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
-
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-                .weight(0.7f)
-                .padding(horizontal = 4.dp)
-        ) {
-            OutlinedTextField(
-                value = activity,
-                onValueChange = { routineViewModel.setActivity(it) },
-                modifier = Modifier
-                    .height(80.dp)
-                    .width(250.dp),
-                shape = RoundedCornerShape(20.dp),
-                enabled = !isSaved,
-                singleLine = true,
-                label = { Text("Actividad", color = secondaryColor) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = secondaryColor,
-                    unfocusedBorderColor = secondaryColor,
-                    disabledBorderColor = secondaryColor,
-                    disabledTextColor = secondaryColor
-                )
-            )
-        }
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .padding(start = 40.dp, end = 2.dp)
-                .size(90.dp)
-                .clickable(enabled = !isSaved) { isOpen.value = true }
-        ) {
-            OutlinedTextField(
-                value = time,
-                label = { Text("Hora") },
-                onValueChange = { routineViewModel.setActivityRoutine(it) },
-                modifier = Modifier
-                    .size(90.dp)
-                    .align(Alignment.Center),
-                shape = RoundedCornerShape(35.dp),
-                singleLine = true,
-                enabled = false,
-                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = Color.Blue,
-                    focusedBorderColor = secondaryColor,
-                    unfocusedBorderColor = secondaryColor,
-                    disabledBorderColor = secondaryColor,
-                    disabledLabelColor = secondaryColor,
-                    disabledTextColor = secondaryColor
-                )
-            )
-        }
-    }
-    if (isOpen.value) {
-        CustomTimePickerDialog(
-            onAccept = { selectedTime ->
-                isOpen.value = false
-                if (selectedTime != null) {
-                    val formattedTime =
-                        selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-                    routineViewModel.setActivityRoutine(formattedTime)
-                }
-            },
-            onCancel = {
-                isOpen.value = false
-            }
-        )
-    }
-
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ActivityRow(routineViewModel: RoutineViewModel) {
     val selectedDays = routineViewModel.selectedDays
     val days = arrayOf("Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do")
 
     Column {
-        ActivityElement(routineViewModel)
+     //   ActivityElement(routineViewModel)
         Spacer(modifier = Modifier.height(6.dp))
 
         Row(horizontalArrangement = Arrangement.Center) {
@@ -214,12 +89,14 @@ fun ActivityRow(routineViewModel: RoutineViewModel) {
                         }
                     },
                     shape = CutCornerShape(10),
-                    colors = ButtonDefaults.buttonColors(containerColor = if (isSelected) secondaryColor else mainColor),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (isSelected) secondaryColor else mainColor,
+                        disabledContainerColor = if (isSelected) secondaryColor else Color.Gray),
                     modifier = Modifier
                         .weight(1.4f)
                         .height(24.dp)
                         .padding(horizontal = 1.dp)
-                        .defaultMinSize(12.dp)
+                        .defaultMinSize(12.dp),
+                    enabled = !isSaved
                 ) {
                     Text(text = " ")
                 }
@@ -229,5 +106,244 @@ fun ActivityRow(routineViewModel: RoutineViewModel) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Divider(color = secondaryColor, thickness = 2.dp)
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ActivityRow(routineViewModel: RoutineViewModel) {
+    val activity by routineViewModel.activity.observeAsState("")
+    val time: String by routineViewModel.activityRoutineTime.observeAsState("")
+    val isSaved by routineViewModel.isSaved.observeAsState(false)
+
+    val isOpen = remember { mutableStateOf(false) }
+
+    Column {
+        Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .weight(0.7f)
+                    .padding(horizontal = 4.dp)
+            ) {
+                OutlinedTextField(
+                    value = activity,
+                    onValueChange = { routineViewModel.setActivity(it) },
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(250.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    enabled = !isSaved,
+                    singleLine = true,
+                    label = { Text("Actividad", color = secondaryColor) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = secondaryColor,
+                        unfocusedBorderColor = secondaryColor,
+                        disabledBorderColor = secondaryColor,
+                        disabledTextColor = secondaryColor
+                    )
+                )
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(start = 40.dp, end = 2.dp)
+                    .size(90.dp)
+                    .clickable(enabled = !isSaved) { isOpen.value = true }
+            ) {
+                OutlinedTextField(
+                    value = time,
+                    label = { Text("Hora") },
+                    onValueChange = { routineViewModel.setActivityRoutine(it) },
+                    modifier = Modifier
+                        .size(90.dp)
+                        .align(Alignment.Center),
+                    shape = RoundedCornerShape(35.dp),
+                    singleLine = true,
+                    enabled = false,
+                    textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = Color.Blue,
+                        focusedBorderColor = secondaryColor,
+                        unfocusedBorderColor = secondaryColor,
+                        disabledBorderColor = secondaryColor,
+                        disabledLabelColor = secondaryColor,
+                        disabledTextColor = secondaryColor
+                    )
+                )
+            }
+            IconButton(
+                onClick = { routineViewModel.clearAll() },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Clear All",
+                    tint = secondaryColor
+                )
+            }
+        }
+        if (isOpen.value) {
+            CustomTimePickerDialog(
+                onAccept = { selectedTime ->
+                    isOpen.value = false
+                    if (selectedTime != null) {
+                        val formattedTime =
+                            selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                        routineViewModel.setActivityRoutine(formattedTime)
+                    }
+                },
+                onCancel = {
+                    isOpen.value = false
+                }
+            )
+        }
+        selectDays(routineViewModel)
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SecondActivityRow(routineViewModel: RoutineViewModel) {
+    val isSaved by routineViewModel.isSaved.observeAsState(false)
+    val selectedDays2 = routineViewModel.selectedDays2
+    val days = arrayOf("Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do")
+
+    Column {
+        SecondActivityElement(routineViewModel)
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Row(horizontalArrangement = Arrangement.Center) {
+            for (day in days) {
+                Text(
+                    text = day,
+                    color = secondaryColor,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1.4f).padding(horizontal = 5.dp)
+                )
+            }
+        }
+        Row(horizontalArrangement = Arrangement.Center) {
+            for (day in days) {
+                val isSelected = selectedDays2.contains(day)
+                Button(
+                    onClick = {
+                        if (isSelected) {
+                            routineViewModel.removeSelectedDay2(day)
+                        } else {
+                            routineViewModel.addSelectedDay2(day)
+                        }
+                    },
+                    shape = CutCornerShape(10),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (isSelected) secondaryColor else mainColor,
+                        disabledContainerColor = if (isSelected) secondaryColor else Color.Gray),
+                    modifier = Modifier
+                        .weight(1.4f)
+                        .height(24.dp)
+                        .padding(horizontal = 1.dp)
+                        .defaultMinSize(12.dp),
+                    enabled = !isSaved
+                ) {
+                    Text(text = " ")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Divider(color = secondaryColor, thickness = 2.dp)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SecondActivityElement(routineViewModel: RoutineViewModel) {
+    val activity2 by routineViewModel.activity2.observeAsState("")
+    val time2: String by routineViewModel.activityRoutineTime2.observeAsState("")
+    val isSaved by routineViewModel.isSaved.observeAsState(false)
+
+    val isOpen = remember { mutableStateOf(false) }
+
+    Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
+
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier
+                .weight(0.7f)
+                .padding(horizontal = 4.dp)
+        ) {
+            OutlinedTextField(
+                value = activity2,
+                onValueChange = { routineViewModel.setActivity2(it) },
+                modifier = Modifier
+                    .height(80.dp)
+                    .width(250.dp),
+                shape = RoundedCornerShape(20.dp),
+                enabled = !isSaved,
+                singleLine = true,
+                label = { Text("Actividad", color = secondaryColor) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = secondaryColor,
+                    unfocusedBorderColor = secondaryColor,
+                    disabledBorderColor = secondaryColor,
+                    disabledTextColor = secondaryColor
+                )
+            )
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .padding(start = 40.dp, end = 2.dp)
+                .size(90.dp)
+                .clickable(enabled = !isSaved) { isOpen.value = true }
+        ) {
+            OutlinedTextField(
+                value = time2,
+                label = { Text("Hora") },
+                onValueChange = { routineViewModel.setActivityRoutine2(it) },
+                modifier = Modifier
+                    .size(90.dp)
+                    .align(Alignment.Center),
+                shape = RoundedCornerShape(35.dp),
+                singleLine = true,
+                enabled = false,
+                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = Color.Blue,
+                    focusedBorderColor = secondaryColor,
+                    unfocusedBorderColor = secondaryColor,
+                    disabledBorderColor = secondaryColor,
+                    disabledLabelColor = secondaryColor,
+                    disabledTextColor = secondaryColor
+                )
+            )
+        }
+        IconButton(
+            onClick = { routineViewModel.clearAllSecondActivity() },
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Clear All",
+                tint = secondaryColor
+            )
+        }
+    }
+    if (isOpen.value) {
+        CustomTimePickerDialog(
+            onAccept = { selectedTime ->
+                isOpen.value = false
+                if (selectedTime != null) {
+                    val formattedTime =
+                        selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                    routineViewModel.setActivityRoutine2(formattedTime)
+                }
+            },
+            onCancel = {
+                isOpen.value = false
+            }
+        )
     }
 }

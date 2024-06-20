@@ -15,6 +15,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel(){
 
 
+
     private val _loginFlow = MutableStateFlow<LoginState<FirebaseUser>?>(null)
     val loginFlow: StateFlow<LoginState<FirebaseUser>?> = _loginFlow
 
