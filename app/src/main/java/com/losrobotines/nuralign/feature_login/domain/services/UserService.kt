@@ -7,6 +7,8 @@ import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
+import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
+import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +20,8 @@ private const val ID = "id"
 class UserService @Inject constructor(
     private val authRepository: AuthRepository,
     private val medicationProvider: MedicationProvider,
-    private val medicationTrackerProvider: MedicationTrackerProvider
+    private val medicationTrackerProvider: MedicationTrackerProvider,
+    private val therapistProvider: TherapistProvider
 ) {
     suspend fun getPatientId(): Result<Short?> {
         return try {
@@ -62,6 +65,14 @@ class UserService @Inject constructor(
             Result.success(medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate))
         } catch (e: Exception) {
             Result.failure(Exception("Failed to get medication tracker data: ${e.message}"))
+        }
+    }
+
+    suspend fun getTherapistList(id: Short): Result<List<TherapistInfo?>> {
+        return try {
+            Result.success(therapistProvider.getTherapistList(id))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get therapist list: ${e.message}"))
         }
     }
 }

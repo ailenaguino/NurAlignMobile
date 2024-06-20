@@ -8,7 +8,6 @@ sealed class Routes(val route: String) {
     data object MedicationTrackerScreen : Routes("MedicationTrackerScreen")
     data object SleepTrackerScreen : Routes("SleepTrackerScreen")
     data object TherapyTrackerScreen : Routes("TherapyTrackerScreen")
-    data object AddTherapyScreen : Routes("AddTherapyScreen")
     data object AchievementsScreen : Routes("AchievementsScreen")
     data object SettingsScreen : Routes("SettingsScreen")
     data object PersonalInformationScreen : Routes("PersonalInformation")

@@ -25,6 +25,9 @@ import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_therapy.data.network.TherapistApiService
+import com.losrobotines.nuralign.feature_therapy.data.providers.TherapistProviderImpl
+import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
 import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
@@ -148,5 +151,15 @@ object AppModule {
     @Provides
     fun provideUpdateMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): UpdateMedicationTrackerInfoUseCase {
         return UpdateMedicationTrackerInfoUseCase(medicationTrackerProvider)
+    }
+
+    @Provides
+    fun provideTherapistApiService(retrofit: Retrofit): TherapistApiService {
+        return retrofit.create(TherapistApiService::class.java)
+    }
+
+    @Provides
+    fun provideTherapistProvider(therapistApiService: TherapistApiService): TherapistProvider {
+        return TherapistProviderImpl(therapistApiService)
     }
 }

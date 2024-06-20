@@ -42,8 +42,8 @@ import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewModel
-import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
-import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistScreenComponent
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistViewModel
 import com.losrobotines.nuralign.ui.bottom_bar.Destinations.Home.BottomBarNavigation
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,10 +119,8 @@ class MainActivity : ComponentActivity() {
                                     SleepTrackerScreenComponent(navController, sleepViewModel)
                                 }
                                 composable(Routes.TherapyTrackerScreen.route) {
-                                    TherapyTrackerScreenComponent(navController)
-                                }
-                                composable(Routes.AddTherapyScreen.route) {
-                                    AddTherapistScreenComponent(navController)
+                                    val therapistViewModel by viewModels<TherapistViewModel>()
+                                    TherapistScreenComponent(navController, therapistViewModel)
                                 }
                                 composable(Routes.AchievementsScreen.route) {
                                     AchievementsScreenComponent(navController)
