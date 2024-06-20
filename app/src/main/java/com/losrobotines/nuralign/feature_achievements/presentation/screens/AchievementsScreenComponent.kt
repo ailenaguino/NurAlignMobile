@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,12 +29,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_achievements.presentation.utils.AchievementsData
 import com.losrobotines.nuralign.ui.shared.SharedComponents
+import com.losrobotines.nuralign.ui.theme.green
+import com.losrobotines.nuralign.ui.theme.pink
+import com.losrobotines.nuralign.ui.theme.purple
+import com.losrobotines.nuralign.ui.theme.secondaryColor
+import com.losrobotines.nuralign.ui.theme.turquoise
 
 
 @SuppressLint("NotConstructor")
@@ -62,6 +72,18 @@ fun AchievementsScreenComponent(navController: NavController) {
         items(achievementsList.size) { item ->
             Achievement(achievementsList[item])
         }
+        item{
+            ButtonToTryAchievements(onClick = { /*TODO*/ }, color = turquoise)
+        }
+        item{
+            ButtonToTryAchievements(onClick = { /*TODO*/ }, color = green)
+        }
+        item{
+            ButtonToTryAchievements(onClick = { /*TODO*/ }, color = purple)
+        }
+        item{
+            ButtonToTryAchievements(onClick = { /*TODO*/ }, color = pink)
+        }
     }
 }
 
@@ -78,6 +100,7 @@ private fun Achievement(achievement: AchievementsData) {
             Image(
                 painterResource(id = achievement.image),
                 contentDescription = "Achievement ${achievement.name}",
+                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
                 modifier = Modifier
                     .size(90.dp)
                     .clickable {
@@ -144,3 +167,10 @@ private fun AchievementAlertDialog(
         confirmButton = {}
     )
 }
+
+@Composable
+fun ButtonToTryAchievements(onClick:()->Unit, color: Color){
+    Button(onClick = { onClick },
+        colors = ButtonDefaults.buttonColors(containerColor = color)){}
+}
+

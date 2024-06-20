@@ -25,4 +25,13 @@ object DbModule {
     @Singleton
     fun provideDao(db: RoutineDatabase) = db.routineDao()
 
+    @Provides
+    @Singleton
+    fun provideAchievementDao(db: RoutineDatabase) = db.getAchievementDao()
+
+    @Provides
+    @Singleton
+    fun provideCounterDao(db: RoutineDatabase) = db.getCounterDao()
+
+
 }

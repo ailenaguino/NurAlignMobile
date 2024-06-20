@@ -4,15 +4,22 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.losrobotines.nuralign.feature_achievements.data.database.AchievementDao
+import com.losrobotines.nuralign.feature_achievements.data.database.CounterDao
+import com.losrobotines.nuralign.feature_achievements.data.database.entities.AchievementEntity
+import com.losrobotines.nuralign.feature_achievements.data.database.entities.CounterEntity
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 
 
-@Database(entities = [RoutineEntity::class], version = 2)
+@Database(entities = [RoutineEntity::class, AchievementEntity::class, CounterEntity::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class RoutineDatabase : RoomDatabase() {
 
     abstract fun routineDao(): RoutineDao
+
+    abstract fun getAchievementDao(): AchievementDao
+    abstract fun getCounterDao(): CounterDao
 }
 
 
