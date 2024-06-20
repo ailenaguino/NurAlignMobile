@@ -1,40 +1,33 @@
 package com.losrobotines.nuralign.feature_routine.domain.models
 
+import androidx.room.TypeConverter
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 
 data class Routine(
     var id: Int = 0,
     var sleepTime: String,
-    var activity: String,
-    var activityTime: String,
-    var activityDays: List<String>,
-    var activity2: String,
-    var activityTime2: String,
-    var activityDays2: List<String>,
+    var activities: List<Activity>
 )
 
-fun Routine.toDatabase(): RoutineEntity {
-    return RoutineEntity(
-        id = id,
-        sleepTime = sleepTime,
-        activity = activity,
-        activityTime = activityTime,
-        activityDays = activityDays,
-        activity2 = activity2,
-        activityTime2 = activityTime2,
-        activityDays2 = activityDays2
-    )
-}
+data class Activity(
+    var name: String,
+    var time: String,
+    var days: List<String>
+)
 
 fun RoutineEntity.toDomain(): Routine {
     return Routine(
         id = id,
         sleepTime = sleepTime,
-        activity = activity,
-        activityTime = activityTime,
-        activityDays = activityDays,
-        activity2 = activity2,
-        activityTime2 = activityTime2,
-        activityDays2 = activityDays2
+        activities = activities
     )
 }
+
+fun Routine.toDatabase(): RoutineEntity {
+    return RoutineEntity(
+        id = id,
+        sleepTime = sleepTime,
+        activities = activities
+    )
+}
+

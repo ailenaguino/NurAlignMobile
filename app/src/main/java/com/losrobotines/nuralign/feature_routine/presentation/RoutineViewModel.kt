@@ -2,12 +2,14 @@ package com.losrobotines.nuralign.feature_routine.presentation
 
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.losrobotines.nuralign.feature_routine.domain.models.Activity
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
@@ -16,14 +18,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
-
-
 @HiltViewModel
 class RoutineViewModel @Inject constructor(
     private val loadRoutineUseCase: LoadRoutineUseCase,
     private val saveRoutineUseCase: SaveRoutineUseCase,
     private val geminiContentGenerator: GeminiContentGenerator,
-    //  private val updateRoutineUseCase: UpdateRoutineUseCase,
     val notification: Notification
 ) : ViewModel() {
 
@@ -33,24 +32,8 @@ class RoutineViewModel @Inject constructor(
     private val _bedTimeRoutine = MutableLiveData("")
     val bedTimeRoutine: LiveData<String> = _bedTimeRoutine
 
-    private val _activity = MutableLiveData("")
-    val activity: LiveData<String> = _activity
-
-
-    private val _activityRoutineTime = MutableLiveData("")
-    val activityRoutineTime: LiveData<String> = _activityRoutineTime
-
-    val selectedDays = mutableStateListOf<String>()
-
-    private val _activity2 = MutableLiveData("")
-    val activity2: LiveData<String> = _activity2
-
-
-    private val _activityRoutineTime2 = MutableLiveData("")
-    val activityRoutineTime2: LiveData<String> = _activityRoutineTime2
-
-    val selectedDays2 = mutableStateListOf<String>()
-
+    private val _activities = MutableLiveData<List<Activity>>(emptyList())
+    val activities: LiveData<List<Activity>> = _activities
 
     init {
         viewModelScope.launch {
@@ -59,93 +42,89 @@ class RoutineViewModel @Inject constructor(
     }
 
     suspend fun saveRoutine() {
+        Log.d("RoutineViewModel", "Saving routine with bedtime: ${_bedTimeRoutine.value} and activities: ${_activities.value}")
         saveRoutineUseCase.invoke(
-            _bedTimeRoutine.value ?: "",
-            _activity.value ?: "",
-            _activityRoutineTime.value ?: "",
-            selectedDays.toList(),
-            _activity2.value ?: "",
-            _activityRoutineTime2.value ?: "",
-            selectedDays2.toList()
+            bedTimeRoutine = _bedTimeRoutine.value ?: "",
+            activities = _activities.value ?: emptyList()
         )
     }
 
-
     suspend fun loadInitialRoutine() {
         val initialRoutine = loadRoutineUseCase.invoke()
-        _activityRoutineTime.value = initialRoutine.activityTime
         _bedTimeRoutine.value = initialRoutine.sleepTime
-        _activity.value = initialRoutine.activity
-        selectedDays.addAll(initialRoutine.activityDays)
-        _activityRoutineTime2.value = initialRoutine.activityTime2
-        _activity2.value = initialRoutine.activity2
-        selectedDays2.addAll(initialRoutine.activityDays2)
+        _activities.value = initialRoutine.activities
         if (_bedTimeRoutine.value != "") {
             setIsSavedRoutine(true)
         }
-    }
-
-
-    suspend fun generateNotificationMessage(prompt: String): String? {
-        return geminiContentGenerator.generateContent(prompt)
-
+        Log.d("RoutineViewModel", "Loaded initial routine: ${_bedTimeRoutine.value} with activities: ${_activities.value}")
     }
 
     fun setSleepTimeRoutine(time: String) {
         _bedTimeRoutine.value = time
     }
 
-    fun setActivity(activity: String) {
-        _activity.value = activity
+    fun addActivity(activity: Activity) {
+        val currentActivities = _activities.value.orEmpty().toMutableList()
+        currentActivities.add(activity)
+        _activities.value = currentActivities
+        Log.d("RoutineViewModel", "Added activity: $activity")
     }
 
-    fun setActivityRoutine(activity: String) {
-        _activityRoutineTime.value = activity
+    fun setActivityRoutine(activity: Activity, newTime: String) {
+        activity.time = newTime
+    }
+
+    fun removeActivity(activity: Activity) {
+        val currentActivities = _activities.value.orEmpty().toMutableList()
+        currentActivities.remove(activity)
+        _activities.value = currentActivities
+        Log.d("RoutineViewModel", "Removed activity: $activity")
+    }
+
+    fun updateActivityName(activity: Activity, name: String) {
+        val currentActivities = _activities.value.orEmpty().toMutableList()
+        val index = currentActivities.indexOf(activity)
+        if (index >= 0) {
+            currentActivities[index] = currentActivities[index].copy(name = name)
+            _activities.value = currentActivities
+            Log.d("RoutineViewModel", "Updated activity name: $activity")
+        }
+    }
+
+    fun updateActivityTime(activity: Activity, time: String) {
+        val currentActivities = _activities.value.orEmpty().toMutableList()
+        val index = currentActivities.indexOf(activity)
+        if (index >= 0) {
+            currentActivities[index] = currentActivities[index].copy(time = time)
+            _activities.value = currentActivities
+            Log.d("RoutineViewModel", "Updated activity time: $activity")
+        }
+    }
+
+    fun addSelectedDayToActivity(activity: Activity, day: String) {
+        val currentActivities = _activities.value.orEmpty().toMutableList()
+        val index = currentActivities.indexOf(activity)
+        if (index >= 0) {
+            val updatedDays = currentActivities[index].days.toMutableList().apply { add(day) }
+            currentActivities[index] = currentActivities[index].copy(days = updatedDays)
+            _activities.value = currentActivities
+            Log.d("RoutineViewModel", "Added day to activity: ${activity.name}, days: ${currentActivities[index].days}")
+        }
+    }
+
+    fun removeSelectedDayFromActivity(activity: Activity, day: String) {
+        val currentActivities = _activities.value.orEmpty().toMutableList()
+        val index = currentActivities.indexOf(activity)
+        if (index >= 0) {
+            val updatedDays = currentActivities[index].days.toMutableList().apply { remove(day) }
+            currentActivities[index] = currentActivities[index].copy(days = updatedDays)
+            _activities.value = currentActivities
+            Log.d("RoutineViewModel", "Removed day from activity: ${activity.name}, days: ${currentActivities[index].days}")
+        }
     }
 
     fun setIsSavedRoutine(value: Boolean) {
         _isSaved.value = value
-    }
-
-    fun addSelectedDay(day: String) {
-        if (!selectedDays.contains(day)) {
-            selectedDays.add(day)
-        }
-    }
-
-    fun removeSelectedDay(day: String) {
-        selectedDays.remove(day)
-    }
-    fun setActivity2(activity: String) {
-        _activity2.value = activity
-    }
-
-    fun setActivityRoutine2(activity: String) {
-        _activityRoutineTime2.value = activity
-    }
-
-    fun removeSelectedDay2(day: String) {
-        selectedDays2.remove(day)
-    }
-
-    fun addSelectedDay2(day: String) {
-        if (!selectedDays2.contains(day)) {
-            selectedDays2.add(day)
-        }
-    }
-
-
-    fun clearAll() {
-        _activity.value = ""
-        _activityRoutineTime.value = ""
-        selectedDays.clear()
-        _isSaved.value = false
-    }
-    fun clearAllSecondActivity() {
-        _activity2.value = ""
-        _activityRoutineTime2.value = ""
-        selectedDays2.clear()
-        _isSaved.value = false
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -154,5 +133,7 @@ class RoutineViewModel @Inject constructor(
         return LocalTime.of(parts[0].toInt(), parts[1].toInt())
     }
 
-
+    suspend fun generateNotificationMessage(prompt: String): String? {
+        return geminiContentGenerator.generateContent(prompt)
+    }
 }
