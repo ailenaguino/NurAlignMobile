@@ -62,7 +62,6 @@ class RemoveActivityUseCaseTest {
         coEvery { routineProvider.getRoutine() } returns ROUTINE
         coEvery { routineProvider.addRoutine(any()) } just Runs
 
-        // argumento pasado a addRoutine
         val routineSlot = slot<Routine>()
 
         // When

@@ -67,7 +67,7 @@ class AddActivityUseCaseTest {
         val updatedRoutine =   ROUTINE.copy(activities = updatedActivities)
 
         coEvery { routineProvider.getRoutine() } returns  ROUTINE
-        coEvery { routineProvider.addRoutine(any()) } answers { /* No-op */ }
+        coEvery { routineProvider.addRoutine(any()) } answers { }
 
         // When
         addActivityUseCase.invoke(NEW_ACTIVITY)
@@ -75,7 +75,7 @@ class AddActivityUseCaseTest {
         // Then
         coVerify(exactly = 1) { routineProvider.getRoutine() }
 
-        // Capturar y verificar la rutina actualizada
+
         val capturedRoutine = slot<Routine>()
         coVerify(exactly = 1) { routineProvider.addRoutine(capture(capturedRoutine)) }
 

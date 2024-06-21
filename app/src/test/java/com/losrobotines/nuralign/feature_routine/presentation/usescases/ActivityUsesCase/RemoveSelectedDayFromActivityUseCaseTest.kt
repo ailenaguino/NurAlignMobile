@@ -66,7 +66,6 @@ class RemoveSelectedDayFromActivityUseCaseTest {
         coEvery { routineProvider.getRoutine() } returns ROUTINE
         coEvery { routineProvider.addRoutine(any()) } just Runs
 
-        // Captor para capturar el argumento pasado a addRoutine
         val routineSlot = slot<Routine>()
 
         // When
