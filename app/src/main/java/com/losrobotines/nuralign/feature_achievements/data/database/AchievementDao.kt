@@ -10,7 +10,7 @@ import com.losrobotines.nuralign.feature_achievements.data.database.entities.Ach
 interface AchievementDao {
 
     @Query("SELECT * FROM achievement_table")
-    suspend fun getAllAchievements():List<AchievementEntity>
+    suspend fun getAllAchievements():List<AchievementEntity>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAchievement(achievementEntity: AchievementEntity)

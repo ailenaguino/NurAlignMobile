@@ -8,4 +8,5 @@ interface AchievementRepository {
     suspend fun getTrackerCounter(tracker: String):Counter?
     suspend fun startCounter(counter: Counter)
     suspend fun addOneToCounter(tracker: String)
+    suspend fun restartCounters()
 }

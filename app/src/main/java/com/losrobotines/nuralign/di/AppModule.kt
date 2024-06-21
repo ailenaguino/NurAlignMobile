@@ -2,6 +2,10 @@ package com.losrobotines.nuralign.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.losrobotines.nuralign.BuildConfig
+import com.losrobotines.nuralign.feature_achievements.data.AchievementRepositoryImpl
+import com.losrobotines.nuralign.feature_achievements.data.database.AchievementDao
+import com.losrobotines.nuralign.feature_achievements.data.database.CounterDao
+import com.losrobotines.nuralign.feature_achievements.domain.AchievementRepository
 import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
 import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
@@ -78,6 +82,11 @@ object AppModule {
     @Provides
     fun provideMoodTrackerRepository(moodTrackerApiService: MoodTrackerApiService): MoodTrackerProvider {
         return MoodTrackerProviderImpl(moodTrackerApiService)
+    }
+
+    @Provides
+    fun provideAchievementRespository(achievementDao: AchievementDao, counterDao: CounterDao): AchievementRepository {
+        return AchievementRepositoryImpl(achievementDao, counterDao)
     }
 
 

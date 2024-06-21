@@ -15,19 +15,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.losrobotines.nuralign.ui.bottom_bar.Destinations.Home.BottomBarNavigation
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreenComponent
@@ -50,7 +47,6 @@ import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -126,7 +122,8 @@ class MainActivity : ComponentActivity() {
                                     AddTherapistScreenComponent(navController)
                                 }
                                 composable(Routes.AchievementsScreen.route) {
-                                    AchievementsScreenComponent(navController)
+                                    val achievementViewModel by viewModels<AchievementsViewModel>()
+                                    AchievementsScreenComponent(navController, achievementViewModel)
                                 }
                                 composable(Routes.SettingsScreen.route) {
                                     SettingsScreenComponent(navController, loginViewModel)

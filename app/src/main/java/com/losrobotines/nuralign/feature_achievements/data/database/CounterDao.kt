@@ -17,4 +17,7 @@ interface CounterDao {
 
     @Query("UPDATE counter_table SET counter = counter+1 WHERE tracker LIKE :tracker")
     suspend fun updateCounter(tracker: String)
+
+    @Query("UPDATE counter_table SET counter = 0 WHERE counter > 0")
+    suspend fun restartCounters()
 }
