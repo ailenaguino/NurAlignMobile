@@ -18,6 +18,9 @@ import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.Upda
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
+import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
+import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.feature_sleep.data.SleepTrackerProviderImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
@@ -148,5 +151,9 @@ object AppModule {
     @Provides
     fun provideUpdateMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): UpdateMedicationTrackerInfoUseCase {
         return UpdateMedicationTrackerInfoUseCase(medicationTrackerProvider)
+    }
+    @Provides
+    fun provideRoutineProvider(dao: RoutineDao): RoutineProvider {
+        return RoutineProviderImpl(dao)
     }
 }
