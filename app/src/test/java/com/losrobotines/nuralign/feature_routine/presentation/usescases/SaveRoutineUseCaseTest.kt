@@ -18,7 +18,10 @@ private val ROUTINE = Routine(
     sleepTime = "22:30",
     activity = "Gimnasio",
     activityTime = "20:00",
-    activityDays = listOf("Lu", "Mi", "Vi")
+    activityDays = listOf("Lu", "Mi", "Vi"),
+    activity2 = "Clases de ingles",
+    activityTime2 = "17:30",
+    activityDays2 = listOf("Ma", "Jue")
 )
  */
 
@@ -48,7 +51,10 @@ class SaveRoutineUseCaseTest {
             ROUTINE.sleepTime,
             ROUTINE.activity,
             ROUTINE.activityTime,
-            ROUTINE.activityDays
+            ROUTINE.activityDays,
+            ROUTINE.activity2,
+            ROUTINE.activityTime2,
+            ROUTINE.activityDays2
         )
          */
 
