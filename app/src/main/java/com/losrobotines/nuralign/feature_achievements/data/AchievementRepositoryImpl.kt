@@ -14,13 +14,17 @@ class AchievementRepositoryImpl @Inject constructor(
     private val achievementDao: AchievementDao,
     private val counterDao: CounterDao,
 ) : AchievementRepository {
-    override suspend fun getUserAchivements(): List<Achievement> {
+    override suspend fun getUserAchievements(): List<Achievement> {
         val list = achievementDao.getAllAchievements()
         return if (!list.isNullOrEmpty()){
             mapDataToDomain(list)
         }else{
             emptyList()
         }
+    }
+
+    override suspend fun addAchievement(achievement: Achievement) {
+        achievementDao.insertAchievement(AchievementEntity(achievement = achievement.name))
     }
 
     override suspend fun getTrackerCounter(tracker: String): Counter? {

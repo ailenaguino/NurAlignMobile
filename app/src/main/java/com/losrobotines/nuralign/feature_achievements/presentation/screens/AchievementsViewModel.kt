@@ -9,11 +9,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement
 import com.losrobotines.nuralign.feature_achievements.domain.models.Counter
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.AddOneToCounterUseCase
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.GetCounterUseCase
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.RestartCountersUseCase
-import com.losrobotines.nuralign.feature_achievements.domain.usecases.SendNotificationIfNeededUseCase
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.FormatCorrectAchievementAndMessageUseCase
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.GetUserAchievementsUseCase
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.StartCounterUseCase
 import com.losrobotines.nuralign.navigation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,21 +27,25 @@ class AchievementsViewModel @Inject constructor(
     private val getCounterUseCase: GetCounterUseCase,
     private val startCounterUseCase: StartCounterUseCase,
     private val addOneToCounterUseCase: AddOneToCounterUseCase,
-    private val sendNotificationIfNeededUseCase: SendNotificationIfNeededUseCase,
-    private val restartCountersUseCase: RestartCountersUseCase
+    private val formatCorrectAchievementAndMessageUseCase: FormatCorrectAchievementAndMessageUseCase,
+    private val restartCountersUseCase: RestartCountersUseCase,
+    private val getUserAchievementsUseCase: GetUserAchievementsUseCase
 ) : ViewModel() {
 
-    private val _sendNotification = MutableLiveData(false)
-    var sendNotification = _sendNotification
-
-    private val _message = MutableLiveData("")
-    var message = _message
+    private val _achievementList = MutableLiveData<List<Achievement>>()
+    var achievementList = _achievementList
 
     object TrackerConstants {
         const val MOOD_TRACKER = "mood"
         const val SLEEP_TRACKER = "sleep"
         const val THERAPY_TRACKER = "therapy"
         const val MEDICATION_TRACKER = "medication"
+    }
+
+    init {
+        viewModelScope.launch {
+            _achievementList.value = getUserAchievementsUseCase()
+        }
     }
 
     fun moodTrackerIsSaved(context: Context) {
@@ -52,7 +58,7 @@ class AchievementsViewModel @Inject constructor(
             }
             counter = getCounterUseCase(TrackerConstants.MOOD_TRACKER)
             val message =
-                sendNotificationIfNeededUseCase(Counter(TrackerConstants.MOOD_TRACKER, counter?:1))
+                formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.MOOD_TRACKER, counter?:1))
             if (message.isNotEmpty()) {
                 createSimpleNotification(context, message)
         }
@@ -66,7 +72,7 @@ fun sleepTrackerIsSaved() {
             startCounterUseCase(TrackerConstants.SLEEP_TRACKER)
         } else {
             addOneToCounterUseCase(TrackerConstants.SLEEP_TRACKER)
-            sendNotificationIfNeededUseCase(Counter(TrackerConstants.SLEEP_TRACKER, counter))
+            formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.SLEEP_TRACKER, counter))
         }
     }
 }
@@ -78,7 +84,7 @@ fun medicationTrackerIsSaved() {
             startCounterUseCase(TrackerConstants.MEDICATION_TRACKER)
         } else {
             addOneToCounterUseCase(TrackerConstants.MEDICATION_TRACKER)
-            sendNotificationIfNeededUseCase(Counter(TrackerConstants.MEDICATION_TRACKER, counter))
+            formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.MEDICATION_TRACKER, counter))
         }
     }
 }
@@ -90,14 +96,10 @@ fun therapyTrackerIsSaved() {
             startCounterUseCase(TrackerConstants.THERAPY_TRACKER)
         } else {
             addOneToCounterUseCase(TrackerConstants.THERAPY_TRACKER)
-            sendNotificationIfNeededUseCase(Counter(TrackerConstants.THERAPY_TRACKER, counter))
+            formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.THERAPY_TRACKER, counter))
         }
     }
 }
-    fun setSendNotification(value: Boolean){
-        _sendNotification.value = value
-    }
-
     fun restartCounters(){
         viewModelScope.launch { restartCountersUseCase() }
     }
@@ -116,7 +118,7 @@ fun therapyTrackerIsSaved() {
 
         val notification = NotificationCompat.Builder(context, Channel.MY_CHANNEL_ID)
             .setSmallIcon(R.drawable.robotin_bebe)
-            .setContentTitle("Logro conseguido")
+            .setContentTitle("¡Logro Conseguido!")
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

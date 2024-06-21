@@ -1,12 +1,10 @@
 package com.losrobotines.nuralign.feature_achievements.presentation.screens
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,9 +35,7 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_achievements.presentation.utils.AchievementsData
@@ -88,50 +84,35 @@ fun AchievementsScreenComponent(
         item {
             ButtonToTryAchievements(
                 onClick = { achievementViewModel.moodTrackerIsSaved(context) },
-                color = turquoise,
-                achievementViewModel
+                color = turquoise
             )
         }
         item {
             ButtonToTryAchievements(
                 onClick = { achievementViewModel.medicationTrackerIsSaved() },
-                color = green,
-                achievementViewModel
+                color = green
             )
         }
         item {
             ButtonToTryAchievements(
                 onClick = { achievementViewModel.sleepTrackerIsSaved() },
-                color = purple,
-                achievementViewModel
+                color = purple
             )
         }
         item {
             ButtonToTryAchievements(
                 onClick = { achievementViewModel.therapyTrackerIsSaved() },
-                color = pink,
-                achievementViewModel
+                color = pink
             )
         }
 
         item {
             ButtonToTryAchievements(
                 onClick = { achievementViewModel.restartCounters() },
-                color = Color.Gray,
-                achievementViewModel
+                color = Color.Gray
             )
         }
     }
-    /*
-    when(achievementViewModel.sendNotification.value){
-        true -> {createSimpleNotification(context, achievementViewModel.message.value?: "")
-                achievementViewModel.setSendNotification(false)}
-        else -> ""
-    }
-    if(achievementViewModel.sendNotification.value!!){
-        createSimpleNotification(context, achievementViewModel.message.value?: "")
-        achievementViewModel.setSendNotification(false)
-    }*/
 }
 
 @Composable
@@ -216,7 +197,7 @@ private fun AchievementAlertDialog(
 }
 
 @Composable
-fun ButtonToTryAchievements(onClick: () -> Unit, color: Color, viewModel: AchievementsViewModel) {
+fun ButtonToTryAchievements(onClick: () -> Unit, color: Color) {
 
     Button(
         onClick = { onClick() },
