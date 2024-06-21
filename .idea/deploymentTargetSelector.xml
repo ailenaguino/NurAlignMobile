@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="deploymentTargetSelector">
-    <selectionStates>
-      <SelectionState runConfigName="app">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-21T18:22:51.970490300Z">
-          <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\dinum\.android\avd\Pixel_7a_API_33.avd" />
-            </handle>
-          </Target>
-        </DropdownSelection>
-        <DialogSelection />
-      </SelectionState>
-    </selectionStates>
-  </component>
+    <component name="deploymentTargetSelector">
+        <selectionStates>
+            <SelectionState runConfigName="app">
+                <option name="selectionMode" value="DROPDOWN" />
+                <DropdownSelection timestamp="2024-06-12T15:50:31.870033Z">
+                    <Target type="DEFAULT_BOOT">
+                        <handle>
+                            <DeviceId identifier="serial=ZY22FMVS69" pluginId="PhysicalDevice" />
+                        </handle>
+                    </Target>
+                </DropdownSelection>
+                <DialogSelection />
+            </SelectionState>
+        </selectionStates>
+    </component>
 </project>
