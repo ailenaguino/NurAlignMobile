@@ -42,7 +42,7 @@ class AchievementsViewModel @Inject constructor(
         const val MEDICATION_TRACKER = "medication"
     }
 
-    init {
+    fun getAchievements(){
         viewModelScope.launch {
             _achievementList.value = getUserAchievementsUseCase()
         }

@@ -1,10 +1,6 @@
 package com.losrobotines.nuralign.feature_achievements.presentation.screens
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,11 +31,20 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationCompat
 import androidx.navigation.NavController
-import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.MEDICATION_BRONCE
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.MEDICATION_ORO
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.MEDICATION_PLATA
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.MOOD_BRONCE
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.MOOD_ORO
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.MOOD_PLATA
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.SLEEP_BRONCE
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.SLEEP_ORO
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.SLEEP_PLATA
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.THERAPY_BRONCE
+import com.losrobotines.nuralign.feature_achievements.domain.models.Achievement_Names.THERAPY_PLATA
 import com.losrobotines.nuralign.feature_achievements.presentation.utils.AchievementsData
-import com.losrobotines.nuralign.navigation.MainActivity
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.green
 import com.losrobotines.nuralign.ui.theme.pink
@@ -56,21 +61,10 @@ fun AchievementsScreenComponent(
     navController: NavController,
     achievementViewModel: AchievementsViewModel,
 ) {
+    achievementViewModel.getAchievements()
+    val achievementListFromViewModel = achievementViewModel.achievementList.value
     val context = LocalContext.current.applicationContext
-    val achievementsList = listOf(
-        AchievementsData.animoBronce,
-        AchievementsData.animoPlata,
-        AchievementsData.animoOro,
-        AchievementsData.medicacionBronce,
-        AchievementsData.medicacionPlata,
-        AchievementsData.medicacionOro,
-        AchievementsData.suenioBronce,
-        AchievementsData.suenioPlata,
-        AchievementsData.suenioOro,
-        AchievementsData.terapiaBronce,
-        AchievementsData.terapiaPlata,
-        AchievementsData.terapiaOro
-    )
+    val achievementsList = mapAchievements(achievementListFromViewModel)
     SharedComponents().HalfCircleTop("Logros")
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -128,7 +122,11 @@ private fun Achievement(achievement: AchievementsData) {
             Image(
                 painterResource(id = achievement.image),
                 contentDescription = "Achievement ${achievement.name}",
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
+                colorFilter = if (!achievement.userHasIt) {
+                    ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                } else {
+                    ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(1f) })
+                },
                 modifier = Modifier
                     .size(90.dp)
                     .clickable {
@@ -205,29 +203,41 @@ fun ButtonToTryAchievements(onClick: () -> Unit, color: Color) {
     ) {}
 }
 
-fun createSimpleNotification(context: Context, message: String){
-    val intent = Intent(context, MainActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    }
-
-    val pendingIntent = PendingIntent.getActivity(
-        context,
-        0,
-        intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+fun mapAchievements(list: List<Achievement>?): List<AchievementsData> {
+    val achievementsList = listOf(
+        AchievementsData.animoBronce,
+        AchievementsData.animoPlata,
+        AchievementsData.animoOro,
+        AchievementsData.medicacionBronce,
+        AchievementsData.medicacionPlata,
+        AchievementsData.medicacionOro,
+        AchievementsData.suenioBronce,
+        AchievementsData.suenioPlata,
+        AchievementsData.suenioOro,
+        AchievementsData.terapiaBronce,
+        AchievementsData.terapiaPlata,
+        AchievementsData.terapiaOro
     )
-
-    val notification = NotificationCompat.Builder(context, Channel.MY_CHANNEL_ID)
-        .setSmallIcon(R.drawable.robotin_bebe)
-        .setContentTitle("Logro conseguido")
-        .setContentText(message)
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        .setContentIntent(pendingIntent)
-        .setAutoCancel(true)
-        .build()
-
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    notificationManager.notify(1, notification)
-
+    if (!list.isNullOrEmpty()) {
+        for (achievementName in list) {
+            when (achievementName.name) {
+                MOOD_BRONCE -> achievementsList[0].userHasIt = true
+                MOOD_PLATA -> achievementsList[1].userHasIt = true
+                MOOD_ORO -> achievementsList[2].userHasIt = true
+                SLEEP_BRONCE -> achievementsList[3].userHasIt = true
+                SLEEP_PLATA -> achievementsList[4].userHasIt = true
+                SLEEP_ORO -> achievementsList[5].userHasIt = true
+                MEDICATION_BRONCE -> achievementsList[6].userHasIt = true
+                MEDICATION_PLATA -> achievementsList[7].userHasIt = true
+                MEDICATION_ORO -> achievementsList[8].userHasIt = true
+                THERAPY_BRONCE -> achievementsList[9].userHasIt = true
+                THERAPY_PLATA -> achievementsList[10].userHasIt = true
+                else -> achievementsList[11].userHasIt = true
+            }
+        }
+    }
+    return achievementsList
 }
+
+
 

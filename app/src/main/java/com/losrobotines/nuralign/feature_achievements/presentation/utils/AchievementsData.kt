@@ -5,7 +5,8 @@ import com.losrobotines.nuralign.R
 sealed class AchievementsData(
     val image: Int,
     val name: String,
-    val descr: String
+    val descr: String,
+    var userHasIt: Boolean = false
 ) {
     data object animoBronce: AchievementsData (R.drawable.animo_bronce, "Ánimo de bronce", "Completá tu estado de ánimo por primera vez.")
     data object animoPlata: AchievementsData (R.drawable.animo_plata, "Ánimo de plata", "Completá tu estado de ánimo siete veces.")
