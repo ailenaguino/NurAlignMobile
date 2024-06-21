@@ -18,10 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,13 +45,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import com.losrobotines.nuralign.feature_routine.domain.models.Activity
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.CustomTimePickerDialog
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -116,6 +112,16 @@ fun GenericActivityRow(activity: Activity, routineViewModel: RoutineViewModel) {
                     )
                 )
             }
+            IconButton(
+                onClick = { routineViewModel.removeActivity(activity) },
+                enabled = !isSaved,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar actividad",
+                    tint = secondaryColor
+                )
+            }
         }
         if (isOpen.value) {
             CustomTimePickerDialog(
@@ -132,15 +138,7 @@ fun GenericActivityRow(activity: Activity, routineViewModel: RoutineViewModel) {
                 }
             )
         }
-    /*    IconButton(
-            onClick = { routineViewModel.removeActivity(activity) },
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Eliminar actividad",
-                tint = secondaryColor
-            )
-        } */
+
     }
     if (isOpen.value) {
         CustomTimePickerDialog(

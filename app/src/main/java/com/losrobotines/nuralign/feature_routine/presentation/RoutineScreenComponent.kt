@@ -125,12 +125,13 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                         value = newActivityTime,
                         label = { Text("Hora") },
                         onValueChange = { newActivityTime=it },
+                        enabled = !isSaved,
                         modifier = Modifier
                             .height(65.dp)
-                            .width(110.dp).clickable() { isOpen.value = true }
+                            .width(95.dp).clickable() { isOpen.value = true }
                         ,shape = RoundedCornerShape(35.dp),
                         singleLine = true,
-                        enabled = false,
+
                         textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
                         colors = OutlinedTextFieldDefaults.colors(
                             cursorColor = Color.Blue,
@@ -174,7 +175,7 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        },
+                        }, enabled = !isSaved,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = mainColor,
                             disabledContainerColor = Color.Gray,
