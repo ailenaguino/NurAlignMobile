@@ -87,6 +87,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("com.google.ar:core:1.43.0")
+    testImplementation("org.testng:testng:6.9.6")
     androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     kapt("com.google.dagger:hilt-compiler:2.51.1")

@@ -118,6 +118,4 @@ object AppModule {
     fun provideRoutineProvider(dao: RoutineDao): RoutineProvider {
         return RoutineProviderImpl(dao) // Assuming RoutineProviderImpl is an implementation of RoutineProvider
     }
-
-
 }

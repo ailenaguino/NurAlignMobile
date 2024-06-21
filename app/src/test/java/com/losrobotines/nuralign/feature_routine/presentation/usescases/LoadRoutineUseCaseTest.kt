@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_routine.presentation.usescases
 
 import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
+import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
+import com.losrobotines.nuralign.feature_routine.domain.models.Activity
 import com.losrobotines.nuralign.feature_routine.domain.models.Routine
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
 import io.mockk.clearAllMocks
@@ -17,22 +19,28 @@ import org.junit.jupiter.api.Test
 private val ROUTINE = Routine(
     id = 0,
     sleepTime = "22:30",
-    activity = "Gimnasio",
-    activityTime = "20:00",
-    activityDays = listOf("Lu", "Mi", "Vi"),
-    activity2 = "Clases de ingles",
-    activityTime2 = "17:30",
-    activityDays2 = listOf("Ma", "Jue")
+    activities = listOf(
+        Activity(
+            name = "Gimnasio",
+            time = "20:00",
+            days = listOf("Lu", "Mi", "Vi")
+        ),
+        Activity(
+            name = "Clases de ingles",
+            time = "17:30",
+            days = listOf("Ma", "Jue")
+        )
+    )
 )
 
 class LoadRoutineUseCaseTest {
 
-    private lateinit var routineRepository: RoutineProviderImpl
+    private lateinit var routineRepository: RoutineProvider
     private lateinit var loadRoutineUseCase: LoadRoutineUseCase
 
     @BeforeEach
     fun setUp() {
-        routineRepository = mockk(relaxed = true)
+        routineRepository = mockk()
         loadRoutineUseCase = LoadRoutineUseCase(routineRepository)
     }
 

@@ -2,8 +2,10 @@ package com.losrobotines.nuralign.feature_routine.presentation
 
 import android.os.Looper
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.losrobotines.nuralign.feature_routine.domain.models.Activity
 import com.losrobotines.nuralign.feature_routine.domain.models.Routine
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.usescases.ActivityProviderUseCase
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
 import com.losrobotines.nuralign.gemini.GeminiContentGenerator
@@ -17,17 +19,23 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+
 private val ROUTINE = Routine(
     id = 0,
     sleepTime = "22:30",
-    activity = "Gimnasio",
-    activityTime = "20:00",
-    activityDays = listOf("Lu", "Mi", "Vi"),
-    activity2 = "Clases de ingles",
-    activityTime2 = "17:30",
-    activityDays2 = listOf("Ma", "Jue")
+    activities = listOf(
+        Activity(
+            name = "Gimnasio",
+            time = "20:00",
+            days = listOf("Lu", "Mi", "Vi")
+        ),
+        Activity(
+            name = "Clases de ingles",
+            time = "17:30",
+            days = listOf("Ma", "Jue")
+        )
+    )
 )
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoutineViewModelTest {
@@ -41,6 +49,7 @@ class RoutineViewModelTest {
     private lateinit var saveRoutineUseCase: SaveRoutineUseCase
     private lateinit var geminiContentGenerator: GeminiContentGenerator
     private lateinit var notification: Notification
+    private lateinit var activityProviderUseCase: ActivityProviderUseCase
     private lateinit var routineViewModel: RoutineViewModel
 
 
@@ -50,12 +59,14 @@ class RoutineViewModelTest {
         loadRoutineUseCase = mockk(relaxed = true)
         saveRoutineUseCase = mockk(relaxed = true)
         geminiContentGenerator = mockk(relaxed = true)
+        activityProviderUseCase=mockk(relaxed = true)
         notification = mockk(relaxed = true)
 
         routineViewModel = RoutineViewModel(
             loadRoutineUseCase,
             saveRoutineUseCase,
             geminiContentGenerator,
+            activityProviderUseCase,
             notification
         )
     }
@@ -81,7 +92,7 @@ class RoutineViewModelTest {
         routineViewModel.loadInitialRoutine()
 
         // Then
-        Assert.assertEquals("22:30", routineViewModel.bedTimeRoutine.value)
+        Assert.assertEquals(ROUTINE.sleepTime, routineViewModel.bedTimeRoutine.value)
 
     }
 }

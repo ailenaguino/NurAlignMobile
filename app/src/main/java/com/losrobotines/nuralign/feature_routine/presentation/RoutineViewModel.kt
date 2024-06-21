@@ -2,15 +2,14 @@ package com.losrobotines.nuralign.feature_routine.presentation
 
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_routine.domain.models.Activity
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
+import com.losrobotines.nuralign.feature_routine.domain.usescases.ActivityProviderUseCase
 import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import com.losrobotines.nuralign.feature_routine.domain.usescases.LoadRoutineUseCase
 import com.losrobotines.nuralign.feature_routine.domain.usescases.SaveRoutineUseCase
@@ -18,18 +17,20 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
+
 @HiltViewModel
 class RoutineViewModel @Inject constructor(
     private val loadRoutineUseCase: LoadRoutineUseCase,
     private val saveRoutineUseCase: SaveRoutineUseCase,
     private val geminiContentGenerator: GeminiContentGenerator,
+    private val activityProviderUseCase: ActivityProviderUseCase,
     val notification: Notification
 ) : ViewModel() {
 
     private var _isSaved = MutableLiveData(false)
     var isSaved: LiveData<Boolean> = _isSaved
 
-    private val _bedTimeRoutine = MutableLiveData("")
+    private val _bedTimeRoutine = MutableLiveData<String>()
     val bedTimeRoutine: LiveData<String> = _bedTimeRoutine
 
     private val _activities = MutableLiveData<List<Activity>>(emptyList())
@@ -42,7 +43,6 @@ class RoutineViewModel @Inject constructor(
     }
 
     suspend fun saveRoutine() {
-        Log.d("RoutineViewModel", "Saving routine with bedtime: ${_bedTimeRoutine.value} and activities: ${_activities.value}")
         saveRoutineUseCase.invoke(
             bedTimeRoutine = _bedTimeRoutine.value ?: "",
             activities = _activities.value ?: emptyList()
@@ -53,10 +53,9 @@ class RoutineViewModel @Inject constructor(
         val initialRoutine = loadRoutineUseCase.invoke()
         _bedTimeRoutine.value = initialRoutine.sleepTime
         _activities.value = initialRoutine.activities
-        if (_bedTimeRoutine.value != "") {
+        if (_bedTimeRoutine.value != null) {
             setIsSavedRoutine(true)
         }
-        Log.d("RoutineViewModel", "Loaded initial routine: ${_bedTimeRoutine.value} with activities: ${_activities.value}")
     }
 
     fun setSleepTimeRoutine(time: String) {
@@ -64,62 +63,75 @@ class RoutineViewModel @Inject constructor(
     }
 
     fun addActivity(activity: Activity) {
-        val currentActivities = _activities.value.orEmpty().toMutableList()
-        currentActivities.add(activity)
-        _activities.value = currentActivities
-        Log.d("RoutineViewModel", "Added activity: $activity")
-    }
-
-    fun setActivityRoutine(activity: Activity, newTime: String) {
-        activity.time = newTime
-    }
-
-    fun removeActivity(activity: Activity) {
-        val currentActivities = _activities.value.orEmpty().toMutableList()
-        currentActivities.remove(activity)
-        _activities.value = currentActivities
-        Log.d("RoutineViewModel", "Removed activity: $activity")
-    }
-
-    fun updateActivityName(activity: Activity, name: String) {
-        val currentActivities = _activities.value.orEmpty().toMutableList()
-        val index = currentActivities.indexOf(activity)
-        if (index >= 0) {
-            currentActivities[index] = currentActivities[index].copy(name = name)
-            _activities.value = currentActivities
-            Log.d("RoutineViewModel", "Updated activity name: $activity")
+        viewModelScope.launch {
+            activityProviderUseCase.addActivity(activity)
+            _activities.value =
+                _activities.value?.plus(activity)
         }
     }
 
-    fun updateActivityTime(activity: Activity, time: String) {
-        val currentActivities = _activities.value.orEmpty().toMutableList()
-        val index = currentActivities.indexOf(activity)
-        if (index >= 0) {
-            currentActivities[index] = currentActivities[index].copy(time = time)
-            _activities.value = currentActivities
-            Log.d("RoutineViewModel", "Updated activity time: $activity")
+    fun setActivityRoutine(activity: Activity, newTime: String) {
+        viewModelScope.launch {
+            activityProviderUseCase.updateActivityTime(activity, newTime)
+        }
+    }
+
+    fun removeActivity(activity: Activity) {
+        viewModelScope.launch {
+            activityProviderUseCase.removeActivity(activity)
+            _activities.value =
+                _activities.value.orEmpty().toMutableList().apply { remove(activity) }
+        }
+    }
+
+    fun updateActivityTime(activity: Activity, newTime: String) {
+        viewModelScope.launch {
+            activityProviderUseCase.updateActivityTime(activity, newTime)
+            val currentActivities = _activities.value.orEmpty().toMutableList()
+            val index = currentActivities.indexOf(activity)
+            if (index >= 0) {
+                currentActivities[index] = currentActivities[index].copy(time = newTime)
+                _activities.value = currentActivities
+            }
+        }
+    }
+
+    fun updateActivityName(activity: Activity, name: String) {
+        viewModelScope.launch {
+            activityProviderUseCase.updateActivityName(activity, name)
+            val currentActivities = _activities.value.orEmpty().toMutableList()
+            val index = currentActivities.indexOf(activity)
+            if (index >= 0) {
+                currentActivities[index] = currentActivities[index].copy(name = name)
+                _activities.value = currentActivities
+            }
         }
     }
 
     fun addSelectedDayToActivity(activity: Activity, day: String) {
-        val currentActivities = _activities.value.orEmpty().toMutableList()
-        val index = currentActivities.indexOf(activity)
-        if (index >= 0) {
-            val updatedDays = currentActivities[index].days.toMutableList().apply { add(day) }
-            currentActivities[index] = currentActivities[index].copy(days = updatedDays)
-            _activities.value = currentActivities
-            Log.d("RoutineViewModel", "Added day to activity: ${activity.name}, days: ${currentActivities[index].days}")
+        viewModelScope.launch {
+            activityProviderUseCase.addSelectedDayToActivity(activity, day)
+            val currentActivities = _activities.value.orEmpty().toMutableList()
+            val index = currentActivities.indexOf(activity)
+            if (index >= 0) {
+                val updatedDays = currentActivities[index].days.toMutableList().apply { add(day) }
+                currentActivities[index] = currentActivities[index].copy(days = updatedDays)
+                _activities.value = currentActivities
+            }
         }
     }
 
     fun removeSelectedDayFromActivity(activity: Activity, day: String) {
-        val currentActivities = _activities.value.orEmpty().toMutableList()
-        val index = currentActivities.indexOf(activity)
-        if (index >= 0) {
-            val updatedDays = currentActivities[index].days.toMutableList().apply { remove(day) }
-            currentActivities[index] = currentActivities[index].copy(days = updatedDays)
-            _activities.value = currentActivities
-            Log.d("RoutineViewModel", "Removed day from activity: ${activity.name}, days: ${currentActivities[index].days}")
+        viewModelScope.launch {
+            activityProviderUseCase.removeSelectedDayFromActivity(activity, day)
+            val currentActivities = _activities.value.orEmpty().toMutableList()
+            val index = currentActivities.indexOf(activity)
+            if (index >= 0) {
+                val updatedDays =
+                    currentActivities[index].days.toMutableList().apply { remove(day) }
+                currentActivities[index] = currentActivities[index].copy(days = updatedDays)
+                _activities.value = currentActivities
+            }
         }
     }
 

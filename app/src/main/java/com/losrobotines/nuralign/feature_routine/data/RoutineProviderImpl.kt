@@ -12,7 +12,6 @@ import javax.inject.Inject
 class RoutineProviderImpl @Inject constructor(private val dao: RoutineDao) : RoutineProvider {
 
     override suspend fun addRoutine(routine: Routine) {
-        Log.d("RoutineProviderImpl", "Inserting routine into database: $routine")
         dao.insert(routine.toDatabase())
     }
 
@@ -27,7 +26,6 @@ class RoutineProviderImpl @Inject constructor(private val dao: RoutineDao) : Rou
                 activities = emptyList()
             )
         }
-        Log.d("RoutineProviderImpl", "Retrieved routine from database: $routine")
         return routine
     }
 }

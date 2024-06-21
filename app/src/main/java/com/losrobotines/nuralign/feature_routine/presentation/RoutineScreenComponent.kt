@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,15 +20,15 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -75,11 +75,33 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
     val preferencesManager = remember { PreferencesManager(context) }
     val name = preferencesManager.getString(USER_NAME, "Usuario")
 
-    Column {
-        LazyColumn {
+    Column() {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(1)
+        ) {
             item {
                 SharedComponents().HalfCircleTop(title = "Mi rutina")
             }
+            item {
+                LargeFloatingActionButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(10.dp),
+                    containerColor = mainColor,
+                    modifier = Modifier.padding(8.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 7.dp
+                    )
+                ) {
+                    SharedComponents().fabCompanion(
+                        listOf(
+                            "Aca podes completar tu rutina semanal asi te recuerdo de tus actividades.",
+                            "Clickeame para esconder mi diálogo"
+                        )
+                    )
+                }
+            }
+        }
+        LazyColumn {
             item {
                 Spacer(modifier = Modifier.height(15.dp))
             }
@@ -93,22 +115,25 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
             item {
                 Text(
                     text = "Actividades",
-                    fontSize = 18.sp,
+                    fontSize = 22.sp,
                     color = secondaryColor,
-                    modifier = Modifier.padding(start = 10.dp)
+                    modifier = Modifier
+                        .padding(start = 15.dp),
+                    style = TextStyle(textDecoration = TextDecoration.Underline)
                 )
             }
             item {
+                Spacer(modifier = Modifier.height(5.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(8.dp)
                 ) {
                     OutlinedTextField(
-                        value =newActivityName,
-                        onValueChange = {newActivityName=it },
+                        value = newActivityName,
+                        onValueChange = { newActivityName = it },
                         modifier = Modifier
                             .height(65.dp)
-                            .width(160.dp),
+                            .width(150.dp),
                         shape = RoundedCornerShape(20.dp),
                         enabled = !isSaved,
                         label = { Text("Actividad", color = secondaryColor) },
@@ -124,14 +149,14 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                     OutlinedTextField(
                         value = newActivityTime,
                         label = { Text("Hora") },
-                        onValueChange = { newActivityTime=it },
-                        enabled = !isSaved,
+                        onValueChange = { newActivityTime = it },
                         modifier = Modifier
                             .height(65.dp)
-                            .width(95.dp).clickable() { isOpen.value = true }
-                        ,shape = RoundedCornerShape(35.dp),
+                            .width(85.dp)
+                            .clickable(enabled = !isSaved) { isOpen.value = true },
+                        shape = RoundedCornerShape(35.dp),
                         singleLine = true,
-
+                        enabled = false,
                         textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
                         colors = OutlinedTextFieldDefaults.colors(
                             cursorColor = Color.Blue,
@@ -147,7 +172,8 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                             onAccept = { selectedTime ->
                                 isOpen.value = false
                                 if (selectedTime != null) {
-                                    newActivityTime = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                                    newActivityTime =
+                                        selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                                 }
                             },
                             onCancel = {
@@ -175,7 +201,8 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        }, enabled = !isSaved,
+                        },
+                        enabled = !isSaved,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = mainColor,
                             disabledContainerColor = Color.Gray,
@@ -192,9 +219,6 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-
-
-
             item {
                 Spacer(modifier = Modifier.height(70.dp))
             }
@@ -207,33 +231,6 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                     name
                 )
             }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-private fun ActivityRow(activity: Activity, routineViewModel: RoutineViewModel) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Text(
-            text = activity.name,
-            fontSize = 16.sp,
-            color = secondaryColor,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = activity.time,
-            fontSize = 16.sp,
-            color = secondaryColor
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        IconButton(onClick = {
-            routineViewModel.removeActivity(activity)
-        }) {
-            Icon(Icons.Default.Delete, contentDescription = "Eliminar")
         }
     }
 }
