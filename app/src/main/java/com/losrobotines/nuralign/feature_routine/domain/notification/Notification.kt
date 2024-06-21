@@ -8,6 +8,7 @@ import android.content.Intent
 import java.time.LocalTime
 import java.util.Calendar
 import javax.inject.Inject
+
 class Notification @Inject constructor() {
     @SuppressLint("ScheduleExactAlarm", "NewApi", "LaunchActivityFromNotification")
     fun scheduledNotification(
@@ -22,25 +23,29 @@ class Notification @Inject constructor() {
         NotificationHelper.createNotificationChannel(context)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val intent = Intent(context, ScheduledNotification::class.java).apply {
-            putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
-            putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
-            putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
-            putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId)
-        }
 
         if (selectedDays.isNullOrEmpty()) {
-            // Para notificación diaria
             val calendar = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, selectedTime.hour)
                 set(Calendar.MINUTE, selectedTime.minute)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
 
+
                 if (before(Calendar.getInstance())) {
                     add(Calendar.DAY_OF_MONTH, 1)
                 }
             }
+
+
+            val intent = Intent(context, ScheduledNotification::class.java).apply {
+                putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
+                putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
+                putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
+                putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId)
+                putExtra(ScheduledNotification.NOTIFICATION_REPEAT, true)
+            }
+
 
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -49,7 +54,9 @@ class Notification @Inject constructor() {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
+
             alarmManager.cancel(pendingIntent)
+
 
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
@@ -67,6 +74,7 @@ class Notification @Inject constructor() {
                 "Do" to Calendar.SUNDAY
             )
 
+
             for (day in selectedDays) {
                 val calendar = Calendar.getInstance().apply {
                     set(Calendar.HOUR_OF_DAY, selectedTime.hour)
@@ -75,23 +83,32 @@ class Notification @Inject constructor() {
                     set(Calendar.MILLISECOND, 0)
                     daysOfWeek[day]?.let { set(Calendar.DAY_OF_WEEK, it) }
 
+
                     if (before(Calendar.getInstance())) {
                         add(Calendar.WEEK_OF_YEAR, 1)
                     }
                 }
 
-                val daySpecificIntent = Intent(intent).apply {
-                    putExtra(ScheduledNotification.NOTIFICATION_ID, notificationId + daysOfWeek[day]!!)
+
+                val intent = Intent(context, ScheduledNotification::class.java).apply {
+                    putExtra(ScheduledNotification.NOTIFICATION_TITLE, title)
+                    putExtra(ScheduledNotification.NOTIFICATION_CONTENT, content)
+                    putExtra(ScheduledNotification.NOTIFICATION_DESTINATION, destination)
+                    putExtra(
+                        ScheduledNotification.NOTIFICATION_ID,
+                        notificationId + daysOfWeek[day]!!
+                    )
                 }
+
 
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,
                     notificationId + daysOfWeek[day]!!,
-                    daySpecificIntent,
+                    intent,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
-
                 alarmManager.cancel(pendingIntent)
+
 
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
