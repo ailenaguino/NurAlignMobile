@@ -63,6 +63,11 @@ jobs:
       - name: change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Set secrets into local.properties
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> ./local.properties
+          echo "API_URL=${{ secrets.API_URL }}" >> ./local.properties
+
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew assembleDebug
 
