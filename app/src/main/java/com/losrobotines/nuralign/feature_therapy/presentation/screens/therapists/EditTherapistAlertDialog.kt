@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.AlertDialog
@@ -54,7 +53,7 @@ fun EditTherapistAlertDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${therapistInfo.therapistFirstName} - ${therapistInfo.therapistLastName}",
+                    text = "${therapistInfo.name} - ${therapistInfo.lastName}",
                     textAlign = TextAlign.Center
                 )
             }
@@ -106,10 +105,10 @@ fun EditTherapistElement(
     therapistViewModel: TherapistViewModel,
     therapistInfo: TherapistInfo
 ) {
-    val therapistFirstName = remember { mutableStateOf(therapistInfo.therapistFirstName) }
-    val therapistLastName = remember { mutableStateOf(therapistInfo.therapistLastName) }
-    val therapistEmail = remember { mutableStateOf(therapistInfo.therapistEmail) }
-    val therapistPhone = remember { mutableIntStateOf(therapistInfo.therapistPhone) }
+    val therapistFirstName = remember { mutableStateOf(therapistInfo.name) }
+    val therapistLastName = remember { mutableStateOf(therapistInfo.lastName) }
+    val therapistEmail = remember { mutableStateOf(therapistInfo.email) }
+    val therapistPhone = remember { mutableIntStateOf(therapistInfo.phoneNumber) }
 
 
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {

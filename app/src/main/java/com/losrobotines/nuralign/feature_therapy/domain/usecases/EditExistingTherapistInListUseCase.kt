@@ -19,10 +19,10 @@ class EditExistingTherapistInListUseCase @Inject constructor(
             val updatedTherapist = therapistList.find {
                 it == oldTherapistInfo
             }?.copy(
-                therapistFirstName = newTherapistFirstName.ifBlank { oldTherapistInfo.therapistFirstName },
-                therapistLastName = newTherapistLastName.ifBlank { oldTherapistInfo.therapistLastName },
-                therapistEmail = newTherapistEmail.ifBlank { oldTherapistInfo.therapistEmail },
-                therapistPhone = if (newTherapistPhone != 0) newTherapistPhone else oldTherapistInfo.therapistPhone
+                name = newTherapistFirstName.ifBlank { oldTherapistInfo.name },
+                lastName = newTherapistLastName.ifBlank { oldTherapistInfo.lastName },
+                email = newTherapistEmail.ifBlank { oldTherapistInfo.email },
+                phoneNumber = if (newTherapistPhone != 0) newTherapistPhone else oldTherapistInfo.phoneNumber
             )
 
             if (updatedTherapist != null) {

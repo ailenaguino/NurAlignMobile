@@ -29,7 +29,7 @@ class TherapistProviderImpl @Inject constructor(
     override suspend fun updateTherapistInfo(therapistInfo: TherapistInfo?): Boolean {
         try {
             val dto = mapDomainToData(therapistInfo!!)
-            apiService.updateTherapistInfo(dto.therapistId!!, dto)
+            apiService.updateTherapistInfo(dto.id!!, dto)
             return true
         } catch (e: Exception) {
             return false
@@ -47,26 +47,28 @@ class TherapistProviderImpl @Inject constructor(
 
     private fun mapDomainToData(therapistInfo: TherapistInfo): TherapistDto {
         return TherapistDto(
-            therapistId = therapistInfo.therapistId,
-            therapistFirstName = therapistInfo.therapistFirstName,
-            therapistLastName = therapistInfo.therapistLastName,
-            therapistEmail = therapistInfo.therapistEmail,
-            therapistPhone = therapistInfo.therapistPhone
+            id = therapistInfo.id,
+            name = therapistInfo.name,
+            lastName = therapistInfo.lastName,
+            email = therapistInfo.email,
+            phoneNumber = therapistInfo.phoneNumber,
+            registeredFlag = therapistInfo.registeredFlag
         )
     }
 
     private fun mapDataToDomain(dto: List<TherapistDto?>): List<TherapistInfo?> {
         val list = mutableListOf<TherapistInfo?>()
         dto.let {
-            for (med in it) {
-                if (med != null) {
+            for (therapist in it) {
+                if (therapist != null) {
                     list.add(
                         TherapistInfo(
-                            therapistId = med.therapistId,
-                            therapistFirstName = med.therapistFirstName,
-                            therapistLastName = med.therapistLastName,
-                            therapistEmail = med.therapistEmail,
-                            therapistPhone = med.therapistPhone
+                            id = therapist.id,
+                            name = therapist.name,
+                            lastName = therapist.lastName,
+                            email = therapist.email,
+                            phoneNumber = therapist.phoneNumber,
+                            registeredFlag = therapist.registeredFlag
                         )
                     )
                 }

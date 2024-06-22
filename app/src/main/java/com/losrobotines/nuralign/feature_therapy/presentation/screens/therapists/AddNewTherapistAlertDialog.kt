@@ -33,11 +33,12 @@ fun AddNewTherapistAlertDialog(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val newTherapist = TherapistInfo(
-        therapistId = null,
+        id = null,
         therapistViewModel.therapistFirstName.value,
         therapistViewModel.therapistLastName.value,
         therapistViewModel.therapistEmail.value,
-        therapistViewModel.therapistPhone.intValue
+        therapistViewModel.therapistPhone.intValue,
+        registeredFlag = "N"
     )
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),

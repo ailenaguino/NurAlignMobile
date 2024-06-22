@@ -168,7 +168,7 @@ private fun TherapistElement(
                 .padding(horizontal = 4.dp)
         ) {
             Text(
-                text = "${therapistInfo.therapistFirstName} ${therapistInfo.therapistLastName}",
+                text = "${therapistInfo.name} ${therapistInfo.lastName}",
                 modifier = Modifier
                     .fillMaxWidth(),
                 color = secondaryColor,

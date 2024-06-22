@@ -73,10 +73,10 @@ class TherapistViewModel @Inject constructor(
             } else {
                 Log.e(
                     "TherapistViewModel",
-                    "Error saving ${therapistInfo.therapistFirstName} ${therapistInfo.therapistLastName}"
+                    "Error saving ${therapistInfo.name} ${therapistInfo.lastName}"
                 )
                 _errorMessage.value =
-                    "Error al guardar al terapeuta ${therapistInfo.therapistFirstName} ${therapistInfo.therapistLastName}"
+                    "Error al guardar al terapeuta ${therapistInfo.name} ${therapistInfo.lastName}"
             }
         }
     }
@@ -99,7 +99,7 @@ class TherapistViewModel @Inject constructor(
             } else {
                 _saveStatus.value = Result.failure(Exception("Failed to edit therapist"))
                 _errorMessage.value =
-                    "Error al editar al terapeuta ${therapistInfo.therapistFirstName} ${therapistInfo.therapistLastName}"
+                    "Error al editar al terapeuta ${therapistInfo.name} ${therapistInfo.lastName}"
             }
         }
     }
@@ -117,7 +117,7 @@ class TherapistViewModel @Inject constructor(
                     result.exceptionOrNull()?.message ?: "Error removing therapist"
                 )
                 _errorMessage.value =
-                    "Error al eliminar al terapeuta ${therapistInfo.therapistFirstName} ${therapistInfo.therapistLastName}"
+                    "Error al eliminar al terapeuta ${therapistInfo.name} ${therapistInfo.lastName}"
             }
         }
     }

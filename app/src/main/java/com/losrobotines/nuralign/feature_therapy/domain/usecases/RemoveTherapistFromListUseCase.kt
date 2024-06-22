@@ -9,7 +9,7 @@ class RemoveTherapistFromListUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(patientId: Short, therapistInfo: TherapistInfo): Result<Unit> {
         return try {
-            therapistProvider.deleteTherapistInfo(patientId, therapistInfo.therapistId!!)
+            therapistProvider.deleteTherapistInfo(patientId, therapistInfo.id!!)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
