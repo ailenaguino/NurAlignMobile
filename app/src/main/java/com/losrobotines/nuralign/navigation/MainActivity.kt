@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
@@ -34,6 +35,7 @@ import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker
 import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
+import com.losrobotines.nuralign.feature_resumen_semanal.MoodBarChartExample
 import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
 import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
@@ -123,7 +125,8 @@ class MainActivity : ComponentActivity() {
                                     TherapistScreenComponent(navController, therapistViewModel)
                                 }
                                 composable(Routes.AchievementsScreen.route) {
-                                    AchievementsScreenComponent(navController)
+                                    val achievementsViewModel by viewModels<AchievementsViewModel>()
+                                    AchievementsScreenComponent(navController, achievementsViewModel)
                                 }
                                 composable(Routes.SettingsScreen.route) {
                                     SettingsScreenComponent(navController, loginViewModel)
@@ -143,6 +146,11 @@ class MainActivity : ComponentActivity() {
                                         CircularProgressIndicator()
                                     }
                                 }
+                                //******************************************************************************
+                                composable(Routes.TestGraficos.route) {
+                                    MoodBarChartExample()
+                                }
+                                //*****************************************************************************
                             }
 
                             LaunchedEffect(navController) {

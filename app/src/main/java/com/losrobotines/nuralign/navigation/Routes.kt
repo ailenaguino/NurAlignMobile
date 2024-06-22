@@ -14,5 +14,7 @@ sealed class Routes(val route: String) {
     data object RoutineScreen : Routes("RoutineScreen")
     data object LoadingScreen : Routes("LoadingScreen")
 
+    data object TestGraficos :Routes("TestGraficos")
+
 
 }
