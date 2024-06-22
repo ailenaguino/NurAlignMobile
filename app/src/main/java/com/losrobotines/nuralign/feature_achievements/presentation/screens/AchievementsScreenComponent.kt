@@ -77,25 +77,25 @@ fun AchievementsScreenComponent(
         }
         item {
             ButtonToTryAchievements(
-                onClick = { achievementViewModel.moodTrackerIsSaved(context) },
+                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.MOOD_TRACKER) },
                 color = turquoise
             )
         }
         item {
             ButtonToTryAchievements(
-                onClick = { achievementViewModel.medicationTrackerIsSaved() },
+                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.MEDICATION_TRACKER) },
                 color = green
             )
         }
         item {
             ButtonToTryAchievements(
-                onClick = { achievementViewModel.sleepTrackerIsSaved() },
+                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.SLEEP_TRACKER)},
                 color = purple
             )
         }
         item {
             ButtonToTryAchievements(
-                onClick = { achievementViewModel.therapyTrackerIsSaved() },
+                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.THERAPY_TRACKER) },
                 color = pink
             )
         }
@@ -125,7 +125,7 @@ private fun Achievement(achievement: AchievementsData) {
                 colorFilter = if (!achievement.userHasIt) {
                     ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
                 } else {
-                    ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(1f) })
+                    ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.7f) })
                 },
                 modifier = Modifier
                     .size(90.dp)
@@ -208,12 +208,12 @@ fun mapAchievements(list: List<Achievement>?): List<AchievementsData> {
         AchievementsData.animoBronce,
         AchievementsData.animoPlata,
         AchievementsData.animoOro,
-        AchievementsData.medicacionBronce,
-        AchievementsData.medicacionPlata,
-        AchievementsData.medicacionOro,
         AchievementsData.suenioBronce,
         AchievementsData.suenioPlata,
         AchievementsData.suenioOro,
+        AchievementsData.medicacionBronce,
+        AchievementsData.medicacionPlata,
+        AchievementsData.medicacionOro,
         AchievementsData.terapiaBronce,
         AchievementsData.terapiaPlata,
         AchievementsData.terapiaOro

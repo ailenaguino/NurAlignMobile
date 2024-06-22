@@ -29,7 +29,7 @@ class AchievementsViewModel @Inject constructor(
     private val addOneToCounterUseCase: AddOneToCounterUseCase,
     private val formatCorrectAchievementAndMessageUseCase: FormatCorrectAchievementAndMessageUseCase,
     private val restartCountersUseCase: RestartCountersUseCase,
-    private val getUserAchievementsUseCase: GetUserAchievementsUseCase
+    private val getUserAchievementsUseCase: GetUserAchievementsUseCase,
 ) : ViewModel() {
 
     private val _achievementList = MutableLiveData<List<Achievement>>()
@@ -42,69 +42,39 @@ class AchievementsViewModel @Inject constructor(
         const val MEDICATION_TRACKER = "medication"
     }
 
-    fun getAchievements(){
+    fun getAchievements() {
         viewModelScope.launch {
             _achievementList.value = getUserAchievementsUseCase()
         }
     }
 
-    fun moodTrackerIsSaved(context: Context) {
+    fun trackerIsSaved(context: Context, tracker:String) {
         viewModelScope.launch {
-            var counter = getCounterUseCase(TrackerConstants.MOOD_TRACKER)
+            var counter = getCounterUseCase(tracker)
             if (counter == null) {
-                startCounterUseCase(TrackerConstants.MOOD_TRACKER)
+                startCounterUseCase(tracker)
             } else {
-                addOneToCounterUseCase(TrackerConstants.MOOD_TRACKER)
+                addOneToCounterUseCase(tracker)
             }
-            counter = getCounterUseCase(TrackerConstants.MOOD_TRACKER)
+            counter = getCounterUseCase(tracker)
             val message =
-                formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.MOOD_TRACKER, counter?:1))
+                formatCorrectAchievementAndMessageUseCase(
+                    Counter(
+                        tracker,
+                        counter ?: 1
+                    )
+                )
             if (message.isNotEmpty()) {
                 createSimpleNotification(context, message)
+            }
         }
     }
-}
 
-fun sleepTrackerIsSaved() {
-    viewModelScope.launch {
-        val counter = getCounterUseCase(TrackerConstants.SLEEP_TRACKER)
-        if (counter == null) {
-            startCounterUseCase(TrackerConstants.SLEEP_TRACKER)
-        } else {
-            addOneToCounterUseCase(TrackerConstants.SLEEP_TRACKER)
-            formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.SLEEP_TRACKER, counter))
-        }
-    }
-}
-
-fun medicationTrackerIsSaved() {
-    viewModelScope.launch {
-        val counter = getCounterUseCase(TrackerConstants.MEDICATION_TRACKER)
-        if (counter == null) {
-            startCounterUseCase(TrackerConstants.MEDICATION_TRACKER)
-        } else {
-            addOneToCounterUseCase(TrackerConstants.MEDICATION_TRACKER)
-            formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.MEDICATION_TRACKER, counter))
-        }
-    }
-}
-
-fun therapyTrackerIsSaved() {
-    viewModelScope.launch {
-        val counter = getCounterUseCase(TrackerConstants.THERAPY_TRACKER)
-        if (counter == null) {
-            startCounterUseCase(TrackerConstants.THERAPY_TRACKER)
-        } else {
-            addOneToCounterUseCase(TrackerConstants.THERAPY_TRACKER)
-            formatCorrectAchievementAndMessageUseCase(Counter(TrackerConstants.THERAPY_TRACKER, counter))
-        }
-    }
-}
-    fun restartCounters(){
+    fun restartCounters() {
         viewModelScope.launch { restartCountersUseCase() }
     }
 
-    fun createSimpleNotification(context: Context, message: String){
+    fun createSimpleNotification(context: Context, message: String) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -126,7 +96,8 @@ fun therapyTrackerIsSaved() {
             .setAutoCancel(true)
             .build()
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(1, notification)
 
     }

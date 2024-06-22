@@ -125,7 +125,7 @@ dependencies {
 
     // Unit testing dependencies
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
-    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("io.mockk:mockk:1.13.11")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     // JUnit 5 dependencies
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
