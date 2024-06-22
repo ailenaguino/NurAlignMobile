@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
@@ -126,7 +127,8 @@ class MainActivity : ComponentActivity() {
                                     AddTherapistScreenComponent(navController)
                                 }
                                 composable(Routes.AchievementsScreen.route) {
-                                    AchievementsScreenComponent(navController)
+                                    val achievementsViewModel by viewModels<AchievementsViewModel>()
+                                    AchievementsScreenComponent(navController, achievementsViewModel)
                                 }
                                 composable(Routes.SettingsScreen.route) {
                                     SettingsScreenComponent(navController, loginViewModel)
