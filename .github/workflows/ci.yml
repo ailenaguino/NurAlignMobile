@@ -29,6 +29,11 @@ jobs:
           echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
           echo "API_URL=${{ secrets.API_URL }}" >> $GITHUB_ENV
 
+      - name: Set secrets into local.properties
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> ./local.properties
+          echo "API_URL=${{ secrets.API_URL }}" >> ./local.properties
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
