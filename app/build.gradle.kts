@@ -80,9 +80,11 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
-
-
 }
+
+
+
+
 
 dependencies {
 
@@ -93,6 +95,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("com.google.ar:core:1.43.0")
+    implementation("androidx.core:core-i18n:1.0.0-alpha01")
     androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     kapt("com.google.dagger:hilt-compiler:2.51.1")
@@ -131,7 +134,7 @@ dependencies {
 
     // Unit testing dependencies
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
-    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("io.mockk:mockk:1.13.11")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     // JUnit 5 dependencies
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
@@ -140,10 +143,22 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
 
     // Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+
+//*********************************************************************************
+    implementation ("androidx.compose.ui:ui:1.6.8")
+    implementation ("androidx.compose.material:material:1.6.8")
+    implementation ("androidx.compose.ui:ui-tooling:1.6.8")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.8")
+
+    
+
+
+
 
 
     implementation("androidx.core:core-ktx:1.12.0")
