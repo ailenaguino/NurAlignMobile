@@ -24,13 +24,15 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Set environment variables
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
+          echo "API_URL=${{ secrets.API_URL }}" >> $GITHUB_ENV
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build app with environment variables
-        env:
-          API_URL: ${{ secrets.API_URL }}
-          API_KEY: ${{ secrets.API_KEY }}
         run: ./gradlew build
 
   apk-auto-generation:
