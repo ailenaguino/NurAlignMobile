@@ -6,7 +6,12 @@ import javax.inject.Inject
 
 class SaveMoodTrackerDataUseCase @Inject constructor(private val moodTrackerProvider: MoodTrackerProvider) {
 
-    suspend operator fun invoke(moodTrackerInfo: MoodTrackerInfo){
-        moodTrackerProvider.saveMoodTrackerInfo(moodTrackerInfo)
+    suspend operator fun invoke(moodTrackerInfo: MoodTrackerInfo): Result<Unit> {
+        return try {
+            moodTrackerProvider.saveMoodTrackerInfo(moodTrackerInfo)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 }

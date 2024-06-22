@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,16 +15,19 @@ import com.google.firebase.ktx.Firebase
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.GetMoodTrackerInfoByDateUseCase
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.SaveMoodTrackerDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
+
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MoodTrackerViewModel @Inject constructor(
@@ -31,7 +36,6 @@ class MoodTrackerViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
 ) : ViewModel() {
-
     private val _isSaved = MutableLiveData(false)
     var isSaved: LiveData<Boolean> = _isSaved
 
@@ -41,7 +45,7 @@ class MoodTrackerViewModel @Inject constructor(
     private val _isVisible = MutableLiveData(false)
     var isVisible: LiveData<Boolean> = _isVisible
 
-    val effectiveDate = MutableLiveData<LocalDate>()
+    val effectiveDate = MutableLiveData<LocalDate?>()
 
     val highestValue = mutableIntStateOf(-1)
     val highestNote = mutableStateOf("")
@@ -55,6 +59,9 @@ class MoodTrackerViewModel @Inject constructor(
     val anxiousValue = mutableIntStateOf(-1)
     val anxiousNote = mutableStateOf("")
 
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: LiveData<String?> = _errorMessage
+
     init {
         loadMoodTrackerInfo()
     }
@@ -65,9 +72,13 @@ class MoodTrackerViewModel @Inject constructor(
             try {
                 if (currentUserExists()) {
                     val patientId = patientId()
-                    val date = getDate()
-                    val info = getMoodTrackerInfoByDateUseCase(patientId.toInt(), date)
-                    if (info != null) {
+                    val currentDate = getCurrentDate()
+                    val info = getMoodTrackerInfoByDateUseCase(patientId.toInt(), currentDate)
+
+                    Log.d("MoodTrackerViewModel", "Fecha actual: $currentDate")
+                    Log.d("MoodTrackerViewModel", "Datos obtenidos: $info")
+
+                    if (info != null && info.effectiveDate == currentDate) {
                         highestValue.intValue = info.highestValue.toInt()
                         highestNote.value = info.highestNote
                         lowestValue.intValue = info.lowestValue.toInt()
@@ -77,10 +88,19 @@ class MoodTrackerViewModel @Inject constructor(
                         anxiousValue.intValue = info.anxiousValue.toInt()
                         anxiousNote.value = info.anxiousNote
                         effectiveDate.value = LocalDate.parse(info.effectiveDate)
+                        _isSaved.value = true
+                        Log.d("MoodTrackerViewModel", "Datos cargados correctamente")
+                    } else {
+                        resetData()
+                        Log.d("MoodTrackerViewModel", "No hay datos para la fecha actual, restableciendo datos")
                     }
+                } else {
+                    resetData()
+                    Log.d("MoodTrackerViewModel", "Usuario no encontrado, restableciendo datos")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("MoodTrackerViewModel", "Error loading mood tracker info: ${e.message}")
+                _errorMessage.value = "Error al cargar el seguimiento del estado de ánimo"
             }
         }
     }
@@ -88,43 +108,57 @@ class MoodTrackerViewModel @Inject constructor(
 
     fun saveData() {
         viewModelScope.launch {
-            saveMoodTrackerDataUseCase.invoke(
-                MoodTrackerInfo(
-                patientId = patientId(),
-                effectiveDate = getDate(),
-                highestValue = highestValue.intValue.toString(),
-                lowestValue = lowestValue.intValue.toString(),
-                highestNote = highestNote.value,
-                lowestNote = lowestNote.value,
-                irritableValue = irritableValue.intValue.toString(),
-                irritableNote = irritableNote.value,
-                anxiousValue = anxiousValue.intValue.toString(),
-                anxiousNote = anxiousNote.value
-            ))
+            try {
+                saveMoodTrackerDataUseCase.invoke(
+                    MoodTrackerInfo(
+                        patientId = patientId(),
+                        effectiveDate = getCurrentDate(),
+                        highestValue = highestValue.intValue.toString(),
+                        lowestValue = lowestValue.intValue.toString(),
+                        highestNote = highestNote.value,
+                        lowestNote = lowestNote.value,
+                        irritableValue = irritableValue.intValue.toString(),
+                        irritableNote = irritableNote.value,
+                        anxiousValue = anxiousValue.intValue.toString(),
+                        anxiousNote = anxiousNote.value
+                    )
+                )
+                _isSaved.value = true
+                Log.d("MoodTrackerViewModel", "Datos guardados correctamente")
+            } catch (e: Exception) {
+                Log.e("MoodTrackerViewModel", "Error saving mood tracker info: ${e.message}")
+                _errorMessage.value = "Error al guardar el seguimiento del estado de ánimo"
+            }
         }
     }
-
-
-    private fun getDate(): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        val date = Date()
-        return formatter.format(date)
+    private fun resetData() {
+        highestValue.intValue = -1
+        highestNote.value = ""
+        lowestValue.intValue = -1
+        lowestNote.value = ""
+        irritableValue.intValue = -1
+        irritableNote.value = ""
+        anxiousValue.intValue = -1
+        anxiousNote.value = ""
+        effectiveDate.value = null
+        _isSaved.value = false
+    }
+    private fun getCurrentDate(): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return formatter.format(Date())
     }
 
-
     private suspend fun patientId(): Short {
-        val idResult: Short
         val uid = authRepository.currentUser!!.uid
-        val doc = Firebase.firestore.collection("users").document(uid)
-        idResult = doc.get().await().getLong("id")!!.toShort()
-        return idResult
+        val doc = Firebase.firestore.collection("users").document(uid).get().await()
+        return doc.getLong("id")!!.toShort()
     }
 
     private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
     }
 
-    fun checkNextTracker(){
+    fun checkNextTracker() {
         viewModelScope.launch {
             _route.value = checkNextTrackerToBeCompletedUseCase(patientId().toInt())
         }
@@ -134,6 +168,7 @@ class MoodTrackerViewModel @Inject constructor(
         _isVisible.value = value
     }
 
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
 }
-
-

@@ -11,5 +11,7 @@ interface AuthRepository {
         password: String,
     ): LoginState<FirebaseUser>
 
+    fun getCurrentUserId(): String?
+
     fun logout()
 }
