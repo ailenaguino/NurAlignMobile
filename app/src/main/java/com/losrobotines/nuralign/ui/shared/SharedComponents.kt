@@ -44,11 +44,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_login.presentation.screens.signup.COMPANION
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.delay
@@ -194,6 +197,9 @@ class SharedComponents {
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     fun fabCompanion(texts: List<String>) {
+        val context = LocalContext.current
+        val preferencesManager = remember { PreferencesManager(context) }
+        val currentStyle = preferencesManager.getInt(COMPANION, R.drawable.robotin_bebe)
         var isVisible by remember {
             mutableStateOf(false)
         }
@@ -208,7 +214,7 @@ class SharedComponents {
                         containerColor = secondaryColor
                     ) {
                         Image(
-                            painterResource(id = R.drawable.robotin_bebe),
+                            painterResource(id = currentStyle),
                             contentDescription = "Robotín",
                             modifier = Modifier
                                 .size(85.dp)
@@ -231,7 +237,7 @@ class SharedComponents {
                             }
                             Box(modifier = Modifier.weight(0.2f)) {
                                 Image(
-                                    painterResource(id = R.drawable.robotin_bebe),
+                                    painterResource(id = currentStyle),
                                     contentDescription = "Fondo",
                                     modifier = Modifier
                                         .size(85.dp)
@@ -247,6 +253,9 @@ class SharedComponents {
 
     @Composable
     fun CompanionCongratulation(isVisible:Boolean, nextTracker: () -> Unit) {
+        val context = LocalContext.current
+        val preferencesManager = remember { PreferencesManager(context) }
+        val currentStyle = preferencesManager.getInt(COMPANION, R.drawable.robotin_bebe)
         AnimatedVisibility(visible = isVisible, enter = scaleIn(tween(1000))) {
             Column(
                 modifier = Modifier
@@ -264,7 +273,7 @@ class SharedComponents {
                             .wrapContentSize(Alignment.Center)
                     ) {
                         Image(
-                            painterResource(id = R.drawable.robotin_bebe_contento),
+                            painterResource(id = currentStyle),
                             contentDescription = "Robotín",
                             modifier = Modifier
                                 .size(200.dp)

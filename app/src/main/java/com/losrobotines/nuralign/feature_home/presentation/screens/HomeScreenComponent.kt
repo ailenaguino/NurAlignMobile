@@ -155,6 +155,9 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                     navController.navigate(Routes.TestGraficos.route)
                 }
                 //*********************************************
+                5 -> {
+                    navController.navigate(Routes.CompanionScreen.route)
+                }
 
                 6 -> {
                     navController.navigate(Routes.AchievementsScreen.route)
