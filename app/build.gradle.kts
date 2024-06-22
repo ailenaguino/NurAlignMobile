@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.Packaging
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -6,6 +7,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -23,10 +25,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String","API_URL", "\"http://77.37.69.38:8081/api/\"")
-
-        buildConfigField("String","API_KEY","\"AIzaSyBJT-pFK_lSZpP3CAs2CGAqKzoiGJC2Uls\"")
-
     }
 
     buildTypes {
@@ -36,6 +34,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_URL", "\"${System.getenv("API_URL")}\"")
+
+            buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
+        }
+        debug {
+            buildConfigField("String", "API_URL", "\"${System.getenv("API_URL")}\"")
+
+            buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
         }
     }
     compileOptions {
