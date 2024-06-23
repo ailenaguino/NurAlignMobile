@@ -17,9 +17,7 @@ fun NavigationGraph(
 
     NavHost(navController, startDestination = Destinations.Home.route) {
         composable(Destinations.Asistencia.route) {
-            AchievementsScreenComponent(
-                navController
-            )
+
         }
         composable(Destinations.Home.route) {
           HomeScreenComponent(navController)

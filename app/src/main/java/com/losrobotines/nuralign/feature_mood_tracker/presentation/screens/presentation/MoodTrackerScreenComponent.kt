@@ -31,6 +31,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -52,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.shared.SharedComponents
@@ -60,7 +64,6 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.util.Calendar
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MoodTrackerScreenComponent(
@@ -72,77 +75,80 @@ fun MoodTrackerScreenComponent(
     val isSaved by moodTrackerViewModel.isSaved.observeAsState(false)
     val route by moodTrackerViewModel.route.observeAsState("")
     val isVisible by moodTrackerViewModel.isVisible.observeAsState(false)
+    val snackbarHostState = remember { SnackbarHostState() }
 
 
-    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-        item {
-            SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
-        item {
-            LargeFloatingActionButton(
-                onClick = {},
-                shape = RoundedCornerShape(10.dp),
-                containerColor = mainColor,
-                modifier = Modifier.padding(8.dp),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 7.dp
+    ) { paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+                item {
+                    SharedComponents().HalfCircleTop("Seguimiento del\nestado del ánimo")
+                }
+                item {
+                    LargeFloatingActionButton(
+                        onClick = {},
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = mainColor,
+                        modifier = Modifier.padding(8.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 7.dp
+                        )
+                    ) {
+                        SharedComponents().fabCompanion(
+                            listOf(
+                                "¿Cómo te sentiste hoy?",
+                                "Clickeame para esconder mi diálogo"
+                            )
+                        )
+                    }
+                }
+                item {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Linea()
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoDeprimido(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoElevado(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoIrritable(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        AnimoAnsioso(moodTrackerViewModel, isSaved)
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+                        saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved)
+                    }
+                }
+            }
+            SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+                goToNextTracker(
+                    navController,
+                    route, moodTrackerViewModel
                 )
-            ) {
-                SharedComponents().fabCompanion(
-                    listOf(
-                        "¿Cómo te sentiste hoy?",
-                        "Clickeame para esconder mi diálogo"
-                    )
-                )
             }
+            //SnackbarError(moodTrackerViewModel, snackbarHostState)
         }
-        item {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Linea()
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoDeprimido(
-                    moodTrackerViewModel,
-                    isSaved
-                )
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoElevado(
-                    moodTrackerViewModel,
-                    isSaved
-                )
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoIrritable(
-                    moodTrackerViewModel,
-                    isSaved
-                )
-            }
-        }
-        item {
-            Box(modifier = Modifier.padding(8.dp)) {
-                AnimoAnsioso(moodTrackerViewModel, isSaved)
-            }
-        }
-        item {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-                saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved)
-            }
-        }
-    }
-    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
-        goToNextTracker(
-            navController,
-            route, moodTrackerViewModel
-        )
     }
 }
 
@@ -209,7 +215,7 @@ private fun AnimoDeprimido(moodTrackerViewModel: MoodTrackerViewModel, isSaved: 
         Color(0xff1b477c), Color(0xff001e41)
     )
     SelectAnimo(
-        "Animo más deprimido",
+        "Ánimo más deprimido",
         "deprimido",
         R.drawable.animo_deprimido_additional_note_icon,
         colors,
@@ -268,7 +274,6 @@ private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Bo
         moodTrackerViewModel,
         isSaved
     )
-
 }
 
 @Composable
@@ -336,7 +341,7 @@ fun SelectAnimo(
     }
 
     LaunchedEffect(animoType) {
-        // Cada vez que el valor de animoType cambie, se jecuta
+        // Cada vez que el valor de animoType cambie, se ejecuta
         selectedBox = when (animoType) {
             "elevado" -> moodTrackerViewModel.highestValue.intValue
             "deprimido" -> moodTrackerViewModel.lowestValue.intValue
@@ -457,3 +462,19 @@ fun SelectAnimo(
     }
     Spacer(modifier = Modifier.height(30.dp))
 }
+
+/*
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SnackbarError(moodTrackerViewModel: MoodTrackerViewModel, snackbarHostState: SnackbarHostState) {
+    val errorMessage by moodTrackerViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            moodTrackerViewModel.clearErrorMessage()
+        }
+    }
+}
+
+ */

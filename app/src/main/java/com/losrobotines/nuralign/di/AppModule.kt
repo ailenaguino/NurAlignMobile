@@ -2,6 +2,10 @@ package com.losrobotines.nuralign.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.losrobotines.nuralign.BuildConfig
+import com.losrobotines.nuralign.feature_achievements.data.AchievementRepositoryImpl
+import com.losrobotines.nuralign.feature_achievements.data.database.AchievementDao
+import com.losrobotines.nuralign.feature_achievements.data.database.CounterDao
+import com.losrobotines.nuralign.feature_achievements.domain.AchievementRepository
 import com.losrobotines.nuralign.feature_login.data.network.PatientApiService
 import com.losrobotines.nuralign.feature_login.data.providers.AuthRepositoryImpl
 import com.losrobotines.nuralign.feature_login.data.providers.PatientProviderImpl
@@ -18,6 +22,9 @@ import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.Upda
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
+import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
+import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
 import com.losrobotines.nuralign.feature_routine.domain.notification.Notification
 import com.losrobotines.nuralign.feature_sleep.data.SleepTrackerProviderImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
@@ -88,6 +95,11 @@ object AppModule {
         return MoodTrackerProviderImpl(moodTrackerApiService)
     }
 
+    @Provides
+    fun provideAchievementRespository(achievementDao: AchievementDao, counterDao: CounterDao): AchievementRepository {
+        return AchievementRepositoryImpl(achievementDao, counterDao)
+    }
+
 
     //USE CASES
     @Provides
@@ -148,5 +160,9 @@ object AppModule {
     @Provides
     fun provideUpdateMedicationTrackerInfoUseCase(medicationTrackerProvider: MedicationTrackerProvider): UpdateMedicationTrackerInfoUseCase {
         return UpdateMedicationTrackerInfoUseCase(medicationTrackerProvider)
+    }
+    @Provides
+    fun provideRoutineProvider(dao: RoutineDao): RoutineProvider {
+        return RoutineProviderImpl(dao)
     }
 }

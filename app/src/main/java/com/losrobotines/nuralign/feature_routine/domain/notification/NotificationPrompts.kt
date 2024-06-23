@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_routine.domain
+package com.losrobotines.nuralign.feature_routine.domain.notification
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext

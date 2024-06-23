@@ -7,6 +7,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -24,10 +25,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String","API_URL", "\"http://77.37.69.38:8081/api/\"")
-
-        buildConfigField("String","API_KEY","\"AIzaSyBJT-pFK_lSZpP3CAs2CGAqKzoiGJC2Uls\"")
-
     }
 
     buildTypes {
@@ -37,6 +34,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_URL", "\"${System.getenv("API_URL")}\"")
+
+            buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
+        }
+        debug {
+            buildConfigField("String", "API_URL", "\"${System.getenv("API_URL")}\"")
+
+            buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
         }
     }
     compileOptions {
@@ -75,9 +80,11 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
-
-
 }
+
+
+
+
 
 dependencies {
 
@@ -88,6 +95,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("com.google.ar:core:1.43.0")
+    implementation("androidx.core:core-i18n:1.0.0-alpha01")
     androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     kapt("com.google.dagger:hilt-compiler:2.51.1")
@@ -126,7 +134,7 @@ dependencies {
 
     // Unit testing dependencies
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
-    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("io.mockk:mockk:1.13.11")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     // JUnit 5 dependencies
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
@@ -135,10 +143,22 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
 
     // Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+
+//*********************************************************************************
+    implementation ("androidx.compose.ui:ui:1.6.8")
+    implementation ("androidx.compose.material:material:1.6.8")
+    implementation ("androidx.compose.ui:ui-tooling:1.6.8")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.8")
+
+    
+
+
+
 
 
     implementation("androidx.core:core-ktx:1.12.0")
