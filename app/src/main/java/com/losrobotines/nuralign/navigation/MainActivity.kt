@@ -15,42 +15,43 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.losrobotines.nuralign.ui.bottom_bar.Destinations.Home.BottomBarNavigation
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsScreenComponent
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
+import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionScreenComponent
+import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
+import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpViewModel
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
-import com.losrobotines.nuralign.feature_medication.presentation.screens.AddMedicationScreenComponent
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerScreenComponent
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
+import com.losrobotines.nuralign.feature_resumen_semanal.MoodBarChartExample
+import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
+import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
+import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
 import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_information.PersonalInformationScreenComponent
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewModel
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.AddTherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.TherapyTrackerScreenComponent
-import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
-import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
-import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
-import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
-import com.losrobotines.nuralign.feature_routine.presentation.RoutineViewModel
+import com.losrobotines.nuralign.ui.bottom_bar.Destinations.Home.BottomBarNavigation
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -112,8 +113,10 @@ class MainActivity : ComponentActivity() {
                                     val moodTrackerViewModel by viewModels<MoodTrackerViewModel>()
                                     MoodTrackerScreenComponent(navController, moodTrackerViewModel)
                                 }
-                                composable(Routes.AddMedicationScreen.route) {
-                                    AddMedicationScreenComponent(navController)
+                                composable(Routes.MedicationTrackerScreen.route) {
+                                    val medicationViewModel by viewModels<MedicationViewModel>()
+                                    val medicationTrackerViewModel by viewModels<MedicationTrackerViewModel>()
+                                    MedicationTrackerScreenComponent(navController, medicationViewModel, medicationTrackerViewModel)
                                 }
                                 composable(Routes.SleepTrackerScreen.route) {
                                     val sleepViewModel by viewModels<SleepViewModel>()
@@ -126,7 +129,12 @@ class MainActivity : ComponentActivity() {
                                     AddTherapistScreenComponent(navController)
                                 }
                                 composable(Routes.AchievementsScreen.route) {
-                                    AchievementsScreenComponent(navController)
+                                    val achievementsViewModel by viewModels<AchievementsViewModel>()
+                                    AchievementsScreenComponent(navController, achievementsViewModel)
+                                }
+                                composable(Routes.CompanionScreen.route){
+                                    val companionViewModel by viewModels<CompanionViewModel>()
+                                    CompanionScreenComponent(companionViewModel)
                                 }
                                 composable(Routes.SettingsScreen.route) {
                                     SettingsScreenComponent(navController, loginViewModel)
@@ -146,6 +154,11 @@ class MainActivity : ComponentActivity() {
                                         CircularProgressIndicator()
                                     }
                                 }
+                                //******************************************************************************
+                                composable(Routes.TestGraficos.route) {
+                                    MoodBarChartExample()
+                                }
+                                //*****************************************************************************
                             }
 
                             LaunchedEffect(navController) {

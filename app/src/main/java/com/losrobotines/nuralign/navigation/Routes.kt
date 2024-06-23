@@ -5,7 +5,7 @@ sealed class Routes(val route: String) {
     data object SignUpScreen : Routes("SignUpScreen")
     data object HomeScreen : Routes("HomeScreen")
     data object MoodTrackerScreen : Routes("MoodTrackerScreen")
-    data object AddMedicationScreen : Routes("AddMedicationScreen")
+    data object MedicationTrackerScreen : Routes("MedicationTrackerScreen")
     data object SleepTrackerScreen : Routes("SleepTrackerScreen")
     data object TherapyTrackerScreen : Routes("TherapyTrackerScreen")
     data object AddTherapyScreen : Routes("AddTherapyScreen")
@@ -14,6 +14,9 @@ sealed class Routes(val route: String) {
     data object PersonalInformationScreen : Routes("PersonalInformation")
     data object RoutineScreen : Routes("RoutineScreen")
     data object LoadingScreen : Routes("LoadingScreen")
+
+    data object TestGraficos :Routes("TestGraficos")
+    data object CompanionScreen : Routes("CompanionScreen")
 
 
 }

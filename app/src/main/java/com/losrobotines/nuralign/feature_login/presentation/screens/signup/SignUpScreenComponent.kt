@@ -79,6 +79,7 @@ import java.time.format.DateTimeFormatter
 
 const val USER_NAME = "user_name"
 const val USER_SEX = "user_sex"
+const val COMPANION = "companion"
 const val FEMENINO = "Femenino"
 const val MASCULINO = "Masculino"
 const val OTRO = "Otro"
@@ -321,6 +322,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
             is LoginState.Success -> {
                 preferencesManager.saveData(USER_NAME, userFirstName)
                 preferencesManager.saveData(USER_SEX, userSex)
+                preferencesManager.saveIntData(COMPANION, R.drawable.robotin_bebe)
                 LaunchedEffect(Unit) {
                     navController.navigate(Routes.LoginScreen.route)
                 }
