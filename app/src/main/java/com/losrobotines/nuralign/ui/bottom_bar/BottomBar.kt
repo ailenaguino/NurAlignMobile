@@ -50,14 +50,14 @@ sealed class Destinations(
         route = Routes.HomeScreen.route,
         title = "Home",
         icon = Icons.Rounded.Home,
-        color = Color.White
+        color = secondaryColor
     )
 
     data object Configuracion : Destinations(
         route = Routes.SettingsScreen.route,
         title = "Configuración",
         icon = Icons.Rounded.Settings,
-        color = Color.White
+        color = secondaryColor
     )
 
     @Composable
@@ -88,14 +88,14 @@ sealed class Destinations(
                             Icon(
                                 imageVector = screen.icon,
                                 contentDescription = "Inicio",
-                                tint = if (selected) secondaryColor else screen.color,
+                                tint = if (selected) Color.White else screen.color,
                                 modifier = Modifier
                                     .size(35.dp)
                             )
                             Text(
                                 text = screen.title,
                                 fontSize = 16.sp,
-                                color = if (selected) secondaryColor else screen.color
+                                color = if (selected) Color.White else screen.color
                             )
                         }
                     },

@@ -30,6 +30,7 @@ class MoodTrackerProviderImpl @Inject constructor(private val apiService: MoodTr
     override suspend fun getTodaysTracker(patientId: Int, date: String): MoodTrackerInfo? {
         try {
             val response = apiService.getTodaysTracker(patientId,date)
+            Log.d("MoodTrackerRepository", "DtO Obtenido: $response")
             return mapDataToDomain(response?.last())
         } catch (e: HttpException) {
             return null
