@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
+import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.AddMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.EditMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
@@ -74,9 +75,11 @@ fun MedicationTrackerScreenComponent(
             SnackbarHost(snackbarHostState)
         }
     ) { paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 LazyVerticalGrid(columns = GridCells.Fixed(1)) {
                     item {
@@ -179,11 +182,19 @@ fun MedicationElement(
     medicationViewModel: MedicationViewModel,
     medicationTrackerViewModel: MedicationTrackerViewModel
 ) {
-    val tracker by medicationTrackerViewModel.medicationTrackerInfo.observeAsState()
+    val medicationTrackerList by medicationTrackerViewModel.medicationTrackerList.observeAsState(
+        emptyList()
+    )
+    val tracker =
+        medicationTrackerList.find { it?.patientMedicationId == medicationElement.patientMedicationId }
     var isChecked by remember { mutableStateOf(tracker?.takenFlag == "Y") }
 
     LaunchedEffect(medicationElement.patientMedicationId) {
         medicationTrackerViewModel.loadMedicationTrackerInfo(medicationElement.patientMedicationId!!)
+    }
+
+    LaunchedEffect(tracker){
+        isChecked = tracker?.takenFlag == "Y"
     }
 
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -217,11 +228,21 @@ fun MedicationElement(
         ) {
             Checkbox(
                 checked = isChecked,
-                onCheckedChange = {
-                    isChecked = it
-                    val updatedTracker = tracker?.copy(takenFlag = if (it) "Y" else "N")
-                    if (updatedTracker != null) {
-                        medicationTrackerViewModel.updateMedicationTrackerInfo(updatedTracker)
+                onCheckedChange = { newCheckedState ->
+                    isChecked = newCheckedState
+                    tracker?.let {
+                        medicationTrackerViewModel.updateTakenFlag(
+                            it.patientMedicationId,
+                            if (newCheckedState) "Y" else "N"
+                        )
+                    } ?: run {
+                        val newTracker =
+                            MedicationTrackerInfo(
+                                medicationElement.patientMedicationId!!,
+                                medicationTrackerViewModel.currentDate,
+                                if (newCheckedState) "Y" else "N"
+                            )
+                        medicationTrackerViewModel.addTrackerToUpdate(newTracker)
                     }
                 },
                 colors = CheckboxDefaults.colors(
@@ -282,8 +303,7 @@ fun SaveButton(
 ) {
     Button(
         onClick = {
-            //medicationTrackerViewModel.saveMedicationTrackerInfo(medicationTrackerElement)
-            medicationTrackerViewModel.saveAllChanges()
+            medicationTrackerViewModel.saveOrUpdateMedicationTracker()
             medicationTrackerViewModel.checkNextTracker()
             medicationTrackerViewModel.setIsVisible(true)
         },
@@ -337,7 +357,11 @@ fun goToNextTracker(
 }
 
 @Composable
-fun SnackbarError(medicationViewModel: MedicationViewModel, medicationTrackerViewModel: MedicationTrackerViewModel, snackbarHostState: SnackbarHostState) {
+fun SnackbarError(
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    snackbarHostState: SnackbarHostState
+) {
     val errorMessage by medicationViewModel.errorMessage.observeAsState()
     val errorMessageTracker by medicationTrackerViewModel.errorMessage.observeAsState()
 

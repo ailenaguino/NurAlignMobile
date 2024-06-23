@@ -25,13 +25,20 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
     }
 
     override suspend fun getMedicationTrackerData(
-        patientId: Short,
+        patientMedicationId: Short,
         effectiveDate: String
     ): MedicationTrackerInfo? {
-        val dto = apiService.getMedicationTrackerInfo(patientId, effectiveDate)
-        return if (dto.isSuccessful) {
-            mapDataToDomain(dto.body()!!)
-        } else {
+        val dto = apiService.getMedicationTrackerInfo(patientMedicationId, effectiveDate)
+        return try {
+            if (dto.isSuccessful) {
+                mapDataToDomain(dto.body())
+            } else {
+                //Lo dejo así hasta que esté hecho que cuando no haya tracker en el día
+                //la API devuelva 204. Por el momento devuelve 500.
+                //Una vez que devuelva 204, el null pasa a devolver una Exception
+                null
+            }
+        } catch (e: Exception) {
             throw Exception("Failed to get data")
         }
     }
@@ -40,7 +47,11 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
         return try {
             val dto = mapDomainToData(medicationTrackerInfo)
             val result =
-                apiService.updateMedicationTrackerInfo(dto.patientMedicationId, dto.effectiveDate)
+                apiService.updateMedicationTrackerInfo(
+                    dto.patientMedicationId,
+                    dto.effectiveDate,
+                    dto
+                )
             result!!.isSuccessful
         } catch (e: Exception) {
             false

@@ -58,8 +58,13 @@ class UserService @Inject constructor(
         id: Short,
         effectiveDate: String
     ): Result<MedicationTrackerInfo?> {
+        val result = medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate)
         return try {
-            Result.success(medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate))
+            if (result != null) {
+                Result.success(medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate))
+            } else {
+                Result.failure(Exception("No tracker data for medication $id on $effectiveDate"))
+            }
         } catch (e: Exception) {
             Result.failure(Exception("Failed to get medication tracker data: ${e.message}"))
         }
