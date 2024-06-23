@@ -1,6 +1,7 @@
 package com.losrobotines.nuralign.navigation
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -46,10 +47,13 @@ import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTracker
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewModel
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistViewModel
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_session.TherapySessionScreenComponent
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_session.TherapySessionViewModel
 import com.losrobotines.nuralign.ui.bottom_bar.Destinations.Home.BottomBarNavigation
 import com.losrobotines.nuralign.ui.theme.NurAlignTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -71,6 +75,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    setLocaleConfig()
+
                     val navController = rememberNavController()
 
                     val startDestination = remember { mutableStateOf(Routes.LoadingScreen.route) }
@@ -151,6 +157,10 @@ class MainActivity : ComponentActivity() {
                                     MoodBarChartExample()
                                 }
                                 //*****************************************************************************
+                                composable(Routes.TherapySessionScreen.route) {
+                                    val therapistViewModel by viewModels<TherapySessionViewModel>()
+                                    TherapySessionScreenComponent(navController, therapistViewModel)
+                                }
                             }
 
                             LaunchedEffect(navController) {
@@ -173,5 +183,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun setLocaleConfig(){
+        val locale = Locale("es")
+        Locale.setDefault(locale)
+
+        val config: Configuration = baseContext.resources.configuration
+        config.setLocale(locale)
+
+        createConfigurationContext(config)
     }
 }
