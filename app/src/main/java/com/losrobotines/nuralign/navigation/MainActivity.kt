@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                     val sleepViewModel by viewModels<SleepViewModel>()
                                     SleepTrackerScreenComponent(navController, sleepViewModel)
                                 }
-                                composable(Routes.TherapyTrackerScreen.route) {
+                                composable(Routes.TherapistScreen.route) {
                                     val therapistViewModel by viewModels<TherapistViewModel>()
                                     TherapistScreenComponent(navController, therapistViewModel)
                                 }
