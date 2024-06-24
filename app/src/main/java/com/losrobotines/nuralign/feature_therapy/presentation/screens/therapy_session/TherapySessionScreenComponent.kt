@@ -1,7 +1,7 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_session
 
 import android.os.Build
-import android.text.format.DateUtils
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +16,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -36,6 +36,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.ListItemDefaults.containerColor
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -49,28 +53,29 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
+import com.losrobotines.nuralign.ui.theme.secondaryColor
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -121,16 +126,32 @@ fun TherapySessionScreenComponent(
                     }
                     item {
                         SessionDateAndTime(therapySessionViewModel)
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    item {
+                        PreSessionNotes(therapySessionViewModel)
+                    }
+                    item {
+                        PostSessionNotes(therapySessionViewModel)
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    item {
+                        SessionFeel()
+                    }
+                    item {
+                        Box {
+                            SaveButton(
+                                therapySessionViewModel,
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .padding(16.dp)
+                            )
+                        }
                     }
                 }
             }
-            SaveButton(
-                therapySessionViewModel,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            )
         }
+
     }
 }
 
@@ -139,7 +160,7 @@ fun TherapySessionScreenComponent(
 private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) {
     val therapistList by therapySessionViewModel.therapistList.observeAsState(emptyList())
     var expanded by remember { mutableStateOf(false) }
-    var selectedTherapistText by remember { mutableStateOf("") }
+    var selectedTherapist by remember { mutableStateOf<TherapistInfo?>(null) }
 
     Column(
         Modifier
@@ -158,9 +179,9 @@ private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) 
                 color = Color.Transparent,
             ) {
                 TextField(
-                    value = selectedTherapistText,
+                    value = if (selectedTherapist != null) "${selectedTherapist!!.name} ${selectedTherapist!!.lastName}" else "",
                     onValueChange = {},
-                    label = { if (selectedTherapistText.isEmpty()) Text("Selecciona un terapeuta.") },
+                    label = { if (selectedTherapist == null) Text("Selecciona un terapeuta.") },
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     shape = RoundedCornerShape(35.dp),
@@ -171,7 +192,10 @@ private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) 
                         cursorColor = Color.Transparent,
                         focusedIndicatorColor = mainColor,
                         unfocusedIndicatorColor = mainColor,
-                        disabledIndicatorColor = Color.Transparent
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedTextColor = secondaryColor,
+                        unfocusedTextColor = secondaryColor,
+                        disabledTextColor = secondaryColor
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -197,7 +221,8 @@ private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) 
                                 }
                             },
                             onClick = {
-                                selectedTherapistText = "${it.name} ${it.lastName}"
+                                selectedTherapist = it
+                                therapySessionViewModel.updateSelectedTherapist(it)
                                 expanded = false
                             }
                         )
@@ -230,6 +255,11 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Día") },
+                placeholder = {
+                    Text(
+                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    )
+                },
                 modifier = Modifier.weight(0.7f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
@@ -239,7 +269,10 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
                     cursorColor = Color.Transparent,
                     focusedIndicatorColor = mainColor,
                     unfocusedIndicatorColor = mainColor,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedTextColor = secondaryColor,
+                    unfocusedTextColor = secondaryColor,
+                    disabledTextColor = secondaryColor
                 )
             )
 
@@ -247,7 +280,7 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
                 onClick = { dateIsOpen.value = true },
                 modifier = Modifier.weight(0.3f),
             ) {
-                Icon(Icons.Filled.CalendarMonth, contentDescription = "Día")
+                Icon(Icons.Filled.CalendarMonth, contentDescription = "Día", tint = secondaryColor)
             }
         }
         Row(
@@ -258,6 +291,7 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Hora") },
+                placeholder = { Text("00:00") },
                 modifier = Modifier.weight(0.7f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
@@ -267,7 +301,10 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
                     cursorColor = Color.Transparent,
                     focusedIndicatorColor = mainColor,
                     unfocusedIndicatorColor = mainColor,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedTextColor = secondaryColor,
+                    unfocusedTextColor = secondaryColor,
+                    disabledTextColor = secondaryColor
                 )
             )
 
@@ -275,7 +312,7 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
                 onClick = { timeIsOpen.value = true },
                 modifier = Modifier.weight(0.3f),
             ) {
-                Icon(Icons.Filled.AccessTime, contentDescription = "Hora")
+                Icon(Icons.Filled.AccessTime, contentDescription = "Hora", tint = secondaryColor)
             }
         }
 
@@ -288,11 +325,6 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
             CustomTimePickerDialog(therapySessionViewModel,
                 onCancel = { timeIsOpen.value = false })
         }
-
-
-        /*
-
-            */
     }
 }
 
@@ -309,7 +341,7 @@ fun CustomTimePickerDialog(
     Dialog(onDismissRequest = onCancel) {
         Surface(
             shape = MaterialTheme.shapes.large,
-            color = androidx.compose.material3.MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surface,
             modifier = Modifier.padding(16.dp)
         ) {
             Column(
@@ -318,7 +350,7 @@ fun CustomTimePickerDialog(
             ) {
                 Text(
                     text = "Seleccione la hora de la sesión",
-                    style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TimePicker(state = state)
@@ -355,20 +387,30 @@ fun CustomDatePickerDialog(
     onCancel: () -> Unit
 ) {
     val state = rememberDatePickerState()
+    val context = LocalContext.current
 
     DatePickerDialog(
         onDismissRequest = { },
         confirmButton = {
             Button(onClick = {
                 val dayInMillis = state.selectedDateMillis
-                val date =
-                    dayInMillis?.let {
-                        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-                    }
-                val formattedDate = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
-                therapySessionViewModel.updateSelectedDate(formattedDate)
-
-                onCancel()
+                if (dayInMillis != null) {
+                    val date =
+                        dayInMillis.let {
+                            Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                        }
+                    val formattedDate = DateTimeFormatter
+                        .ofPattern("dd/MM/yyyy")
+                        .format(date)
+                    therapySessionViewModel.updateSelectedDate(formattedDate)
+                    onCancel()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Seleccione una fecha",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }) {
                 Text("Aceptar")
             }
@@ -401,6 +443,168 @@ fun CustomDatePickerDialog(
         )
     }
 }
+
+@Composable
+fun PreSessionNotes(therapySessionViewModel: TherapySessionViewModel) {
+    val preSessionNotes by therapySessionViewModel.preSessionNotes.observeAsState("")
+    val context = LocalContext.current.applicationContext
+
+    Box(Modifier.padding(16.dp)) {
+        OutlinedTextField(
+            value = preSessionNotes,
+            onValueChange = { newText ->
+                if (newText.length <= 300) {
+                    therapySessionViewModel.updatePreSessionNotes(newText)
+                } else {
+                    Toast.makeText(context, "Máximo 300 caracteres", Toast.LENGTH_SHORT).show()
+                }
+            },
+            label = {
+                Text(
+                    "Notes pre-sesión",
+                    color = secondaryColor,
+                    textAlign = TextAlign.Center
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = secondaryColor,
+                unfocusedBorderColor = secondaryColor,
+                disabledBorderColor = secondaryColor,
+                disabledTextColor = Color.Gray
+            ),
+            enabled = true
+        )
+    }
+}
+
+@Composable
+fun PostSessionNotes(therapySessionViewModel: TherapySessionViewModel) {
+    val postSessionNotes by therapySessionViewModel.postSessionNotes.observeAsState("")
+    val context = LocalContext.current.applicationContext
+
+    Box(Modifier.padding(16.dp)) {
+        OutlinedTextField(
+            value = postSessionNotes,
+            onValueChange = { newText ->
+                if (newText.length <= 300) {
+                    therapySessionViewModel.updatePostSessionNotes(newText)
+                } else {
+                    Toast.makeText(context, "Máximo 300 caracteres", Toast.LENGTH_SHORT).show()
+                }
+            },
+            label = {
+                Text(
+                    "Notes post-sesión",
+                    color = secondaryColor,
+                    textAlign = TextAlign.Center
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = secondaryColor,
+                unfocusedBorderColor = secondaryColor,
+                disabledBorderColor = secondaryColor,
+                disabledTextColor = Color.Gray
+            ),
+            enabled = true
+        )
+    }
+}
+
+@Composable
+fun SessionFeel() {
+    var selectedOption by remember { mutableIntStateOf(0) }
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text("¿Cómo te sentiste durante la sesión?", color = secondaryColor)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RadioButton(
+                    selected = (selectedOption == 1),
+                    onClick = { selectedOption = 1 },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Text("Muy mal", color = secondaryColor)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RadioButton(
+                    selected = (selectedOption == 2),
+                    onClick = { selectedOption = 2 },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Text("Mal", color = secondaryColor)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RadioButton(
+                    selected = (selectedOption == 3),
+                    onClick = { selectedOption = 3 },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Text("Regular", color = secondaryColor)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RadioButton(
+                    selected = (selectedOption == 4),
+                    onClick = { selectedOption = 4 },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Text("Bien", color = secondaryColor)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                RadioButton(
+                    selected = (selectedOption == 5),
+                    onClick = { selectedOption = 5 },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Text("Muy bien", color = secondaryColor)
+            }
+        }
+    }
+}
+
 
 @Composable
 fun SaveButton(

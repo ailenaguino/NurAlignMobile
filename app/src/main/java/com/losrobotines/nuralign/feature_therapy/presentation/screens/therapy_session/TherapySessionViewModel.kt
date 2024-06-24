@@ -46,7 +46,7 @@ class TherapySessionViewModel @Inject constructor(
         Log.d("TherapySessionViewModel", "load ${_therapistList.value}")
     }
 
-    fun selectTherapist(therapist: TherapistInfo) {
+    fun updateSelectedTherapist(therapist: TherapistInfo) {
         _selectedTherapist.value = therapist
     }
 
@@ -63,12 +63,17 @@ class TherapySessionViewModel @Inject constructor(
 
     fun updateSelectedDate(date: String) {
         _selectedDate.value = date
-        Log.d("TherapySessionViewModel", "updateSelectedDate ${_selectedDate.value}")
-
     }
 
     fun updateSelectedTime(time: String) {
         _selectedTime.value = time
-        Log.d("TherapySessionViewModel", "updateSelectedTime ${_selectedTime.value}")
+    }
+
+    fun updatePreSessionNotes(notes: String) {
+        _preSessionNotes.value = notes
+    }
+
+    fun updatePostSessionNotes(notes: String) {
+        _postSessionNotes.value = notes
     }
 }
