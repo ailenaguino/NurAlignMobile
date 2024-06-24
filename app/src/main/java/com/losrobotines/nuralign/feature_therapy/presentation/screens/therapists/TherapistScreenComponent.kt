@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
+import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -90,9 +94,6 @@ fun TherapistScreenComponent(
                             )
                         }
                     }
-                    item {
-                        MyTherapistsTitle()
-                    }
                 }
                 if (isLoading) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -105,8 +106,9 @@ fun TherapistScreenComponent(
                             .padding(16.dp)
                     ) {
                         item {
-                            AddIcon(therapistViewModel)
-                            Spacer(modifier = Modifier.height(5.dp))
+                            //Este no debería ir, se borra cuando traiga bien los terapeutas de la db
+                            CreateNewTherapySession(navController)
+                            Spacer(modifier = Modifier.height(10.dp))
                         }
                         item {
                             Box(
@@ -121,6 +123,10 @@ fun TherapistScreenComponent(
                                     textAlign = TextAlign.Center
                                 )
                             }
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                        item {
+                            AddIcon(therapistViewModel)
                         }
                     }
                 } else {
@@ -129,12 +135,20 @@ fun TherapistScreenComponent(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
+                        item {
+                            CreateNewTherapySession(navController)
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                        item {
+                            MyTherapistsTitle()
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
                         items(therapistList!!.size) {
                             TherapistElement(
                                 therapistList!![it]!!,
                                 therapistViewModel
                             )
-                            Spacer(modifier = Modifier.height(5.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                         }
                         item {
                             AddIcon(therapistViewModel)
@@ -217,6 +231,35 @@ private fun AddIcon(therapistViewModel: TherapistViewModel) {
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun CreateNewTherapySession(navController: NavController) {
+    TextButton(
+        onClick = {
+            navController.navigate(Routes.TherapySessionScreen.route)
+        },
+        border = BorderStroke(2.dp, secondaryColor),
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 50.dp, end = 50.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(0.85f)) {
+                Text(text = "Quiero agregar una nueva sesión de terapia", color = secondaryColor)
+            }
+            Column(Modifier.weight(0.15f), horizontalAlignment = Alignment.End) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    contentDescription = "crear sesión de terapia",
+                    tint = secondaryColor
+                )
+            }
+        }
     }
 }
 
