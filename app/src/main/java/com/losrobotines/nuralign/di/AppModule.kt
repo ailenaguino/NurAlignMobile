@@ -100,27 +100,6 @@ object AppModule {
         return AchievementRepositoryImpl(achievementDao, counterDao)
     }
 
-
-    //USE CASES
-    @Provides
-    fun provideFormatTimeUseCase(): FormatTimeUseCase {
-        return FormatTimeUseCase()
-    }
-
-    @Provides
-    fun provideSaveSleepDataUseCase(
-        sleepTrackerProvider: SleepTrackerProvider, authRepository: AuthRepository,
-        formatTimeUseCase: FormatTimeUseCase,
-    ): SaveSleepTrackerInfoUseCase {
-        return SaveSleepTrackerInfoUseCase(authRepository, formatTimeUseCase, sleepTrackerProvider)
-    }
-
-    @Provides
-    fun provideGetSleepDataUseCase(sleepTrackerProvider: SleepTrackerProvider): GetSleepDataUseCase {
-        return GetSleepDataUseCase(sleepTrackerProvider)
-    }
-
-
     @Provides
     @Singleton
     fun provideGeminiContentGenerator(): GeminiContentGenerator {

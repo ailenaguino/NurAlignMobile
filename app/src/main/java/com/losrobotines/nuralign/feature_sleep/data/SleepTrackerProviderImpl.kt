@@ -19,17 +19,24 @@ class SleepTrackerProviderImpl @Inject constructor(private val apiService: Sleep
         return try {
             val dto = mapDomainToData(sleepInfo)
             val result = apiService.insertSleepTrackerInfo(dto)
-            return result.isSuccessful
+            result.isSuccessful
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 
     override suspend fun getSleepData(patientId: Int, effectiveDate: String): SleepInfo? {
         val dto = apiService.getSleepInfo(patientId, effectiveDate)
-        return if (dto.isSuccessful) {
-            mapDataToDomain(dto.body()!!)
-        } else {
+        return try {
+            if (dto.isSuccessful) {
+                mapDataToDomain(dto.body())
+            } else {
+                //Lo dejo así hasta que esté hecho que cuando no haya tracker en el día
+                //la API devuelva 204. Por el momento devuelve 500.
+                //Una vez que devuelva 204, el null pasa a devolver una Exception
+                null
+            }
+        } catch (e: Exception) {
             throw Exception("Failed to get data")
         }
     }
@@ -38,22 +45,12 @@ class SleepTrackerProviderImpl @Inject constructor(private val apiService: Sleep
         return try {
             val dto = mapDomainToData(sleepTrackerInfo)
             val result =
-                apiService.updateSleepTrackerInfo(dto.patientId, dto.effectiveDate)
+                apiService.updateSleepTrackerInfo(dto.patientId, dto.effectiveDate, dto)
             result!!.isSuccessful
         } catch (e: Exception) {
             false
         }
     }
-
-    override suspend fun getTodaysTracker(patientId: Int, date: String): SleepInfo? {
-        try {
-            val response = apiService.getTodaysTracker(patientId,date)
-            return mapDataToDomain(response?.last())
-        } catch (e: HttpException) {
-            return null
-        }
-    }
-
 
     private fun mapDataToDomain(dto: SleepTrackerDto?): SleepInfo? {
         return dto?.let {

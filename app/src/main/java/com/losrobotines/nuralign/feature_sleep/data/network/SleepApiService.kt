@@ -25,12 +25,7 @@ interface SleepApiService {
     @PATCH("sleepTracker/{patientId}")
     suspend fun updateSleepTrackerInfo(
         @Path("patientId") patientId: Short,
-        @Query("effectiveDate") effectiveDate: String
+        @Query("effectiveDate") effectiveDate: String,
+        @Body body: SleepTrackerDto
     ): Response<SleepTrackerDto>?
-
-    @GET("sleepTracker")
-    suspend fun getTodaysTracker(
-        @Query("patientId") patientId: Int,
-        @Query("date") date: String,
-    ): Array<SleepTrackerDto>?
 }

@@ -4,6 +4,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,8 +34,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -56,10 +61,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.SnackbarError
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlin.math.roundToInt
 import com.losrobotines.nuralign.ui.shared.SharedComponents
+import kotlinx.coroutines.delay
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -75,85 +86,120 @@ fun SleepTrackerScreenComponent(navController: NavController, sleepViewModel: Sl
     val time: String by sleepViewModel.bedTime.observeAsState("")
     val route by sleepViewModel.route.observeAsState("")
     val isVisible by sleepViewModel.isVisible.observeAsState(false)
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-        item {
-            SharedComponents().HalfCircleTop("Seguimiento del sueño")
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
-        item {
-            LargeFloatingActionButton(
-                onClick = {},
-                shape = RoundedCornerShape(10.dp),
-                containerColor = mainColor,
-                modifier = Modifier.padding(8.dp),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 7.dp
-                )
-            ) {
-                SharedComponents().fabCompanion(
-                    listOf(
-                        "¡Buen día! ¿Cómo pasaste la noche?"
-                    )
-                )
-            }
-        }
-        item {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(16.dp, 0.dp)
-            ) {
-                SliderHour(sliderPosition) { sleepViewModel.onSliderChanged(it) }
-                Spacer(modifier = Modifier.height(24.dp))
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            LazyVerticalGrid(columns = GridCells.Fixed(1)) {
+                item {
+                    SharedComponents().HalfCircleTop("Seguimiento del sueño")
+                }
+                item {
+                    LargeFloatingActionButton(
+                        onClick = {},
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = mainColor,
+                        modifier = Modifier.padding(8.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 7.dp
+                        )
+                    ) {
+                        SharedComponents().fabCompanion(
+                            listOf(
+                                "¡Buen día! ¿Cómo pasaste la noche?",
+                                "Clickeame para esconder mi diálogo"
+                            )
+                        )
+                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    CurrentDay()
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(16.dp, 0.dp)
+                    ) {
+                        SliderHour(sliderPosition) { sleepViewModel.onSliderChanged(it) }
+                        Spacer(modifier = Modifier.height(24.dp))
 
 
-                QuestionGoToSleep(sleepViewModel, time)
-                Spacer(modifier = Modifier.height(8.dp))
+                        QuestionGoToSleep(sleepViewModel, time)
+                        Spacer(modifier = Modifier.height(8.dp))
 
 
-                QuestionGeneral(
-                    q = "¿Tuviste pensamientos negativos?",
-                    checked = negativeThoughts,
-                    onCheckedChange = { sleepViewModel.setNegativeThoughts(it) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                        QuestionGeneral(
+                            q = "¿Tuviste pensamientos negativos?",
+                            checked = negativeThoughts,
+                            onCheckedChange = { sleepViewModel.setNegativeThoughts(it) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
 
 
-                QuestionGeneral(
-                    q = "¿Estuviste ansioso antes de dormir?",
-                    checked = anxiousBeforeSleep,
-                    onCheckedChange = { sleepViewModel.setAnxiousBeforeSleep(it) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                        QuestionGeneral(
+                            q = "¿Estuviste ansioso antes de dormir?",
+                            checked = anxiousBeforeSleep,
+                            onCheckedChange = { sleepViewModel.setAnxiousBeforeSleep(it) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
 
 
-                QuestionGeneral(
-                    q = "¿Dormiste de corrido?",
-                    checked = sleptThroughNight,
-                    onCheckedChange = { sleepViewModel.setSleptThroughNight(it) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                        QuestionGeneral(
+                            q = "¿Dormiste de corrido?",
+                            checked = sleptThroughNight,
+                            onCheckedChange = { sleepViewModel.setSleptThroughNight(it) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                AdditionalNotes(sleepViewModel)
-                Spacer(modifier = Modifier.height(8.dp))
+                        AdditionalNotes(sleepViewModel)
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                Box(
-                    contentAlignment = Alignment.BottomEnd,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SaveButton(sleepViewModel)
+                        Box(
+                            contentAlignment = Alignment.BottomEnd,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            SaveButton(sleepViewModel)
+                        }
+                    }
                 }
             }
         }
+        SharedComponents().CompanionCongratulation(isVisible = isVisible) {
+            goToNextTracker(navController, route, sleepViewModel)
+        }
+        SnackbarError(sleepViewModel, snackbarHostState)
     }
-    SharedComponents().CompanionCongratulation(isVisible = isVisible) {
-        goToNextTracker(navController, route, sleepViewModel)
-    }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun goToNextTracker(navController: NavController, route: String, sleepViewModel: SleepViewModel){
+@Composable
+fun SnackbarError(
+    sleepViewModel: SleepViewModel,
+    snackbarHostState: SnackbarHostState,
+) {
+    val errorMessage by sleepViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            sleepViewModel.clearErrorMessage()
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun goToNextTracker(navController: NavController, route: String, sleepViewModel: SleepViewModel) {
     sleepViewModel.setIsVisible(false)
     navController.navigate(route)
 }
@@ -162,7 +208,7 @@ fun goToNextTracker(navController: NavController, route: String, sleepViewModel:
 fun QuestionGeneral(
     q: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.weight(0.7f)) {
@@ -256,7 +302,6 @@ fun SaveButton(sleepViewModel: SleepViewModel) {
             } else {
                 sleepViewModel.saveData()
                 sleepViewModel.checkNextTracker()
-                sleepViewModel.setIsVisible(true)
             }
 
         },
@@ -339,7 +384,12 @@ fun QuestionGoToSleep(sleepViewModel: SleepViewModel, time: String) {
 
     Row(verticalAlignment = Alignment.CenterVertically) {
 
-        Text(text = "¿A qué hora te fuiste a dormir?", fontSize = 16.sp, color = secondaryColor, modifier = Modifier.weight(0.6f))
+        Text(
+            text = "¿A qué hora te fuiste a dormir?",
+            fontSize = 16.sp,
+            color = secondaryColor,
+            modifier = Modifier.weight(0.6f)
+        )
 
         Box(contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxWidth()
@@ -390,7 +440,7 @@ fun QuestionGoToSleep(sleepViewModel: SleepViewModel, time: String) {
 @Composable
 fun CustomTimePickerDialog(
     onAccept: (LocalTime?) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     val state = rememberTimePickerState()
     val cal = Calendar.getInstance()
@@ -432,3 +482,33 @@ fun CustomTimePickerDialog(
         }
     }
 }
+
+@Composable
+fun CurrentDay() {
+    val calendar = Calendar.getInstance()
+    val lineaModifier = Modifier
+        .fillMaxWidth()
+        .height(4.dp)
+
+    Column(
+        modifier = Modifier
+            .padding(top = 20.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "${getDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK))}," +
+                    " ${calendar.get(Calendar.DAY_OF_MONTH)} de" +
+                    " ${getMonth(calendar.get(Calendar.MONTH))}",
+            color = Color.Black,
+            style = TextStyle(fontSize = 20.sp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 30.dp, end = 8.dp)
+        )
+        Box(
+            modifier = lineaModifier
+                .background(mainColor)
+        )
+    }
+}
+
