@@ -20,10 +20,10 @@ interface TherapistApiService {
     @GET("patientTherapist/patient/{patientId}")
     suspend fun getTherapistList(@Path("patientId") patientId: Short): List<TherapistDto?>
 
-    @DELETE("patientTherapist/{patientId}")
+    @DELETE("patientTherapist/patient/{patientId}/therapist/{therapistId}")
     suspend fun deleteTherapistInfo(
         @Path("patientId") patientId: Short,
-        @Query("therapistId") therapistId: Short
+        @Path("therapistId") therapistId: Short
     ): Response<Unit>
 
     @PATCH("patientTherapist/patient/{patientId}")

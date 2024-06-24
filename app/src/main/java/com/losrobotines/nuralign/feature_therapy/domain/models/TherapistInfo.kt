@@ -6,5 +6,5 @@ data class TherapistInfo(
     var lastName: String,
     var email: String,
     var phoneNumber: Int,
-    var registeredFlag: String
+    var registeredFlag: String = "N"
 )
