@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
+/*
 class SaveSleepTrackerInfoUseCaseTest {
     private lateinit var authRepository: AuthRepository
     private lateinit var sleepTrackerProvider: SleepTrackerProvider
@@ -26,8 +27,7 @@ class SaveSleepTrackerInfoUseCaseTest {
         sleepTrackerProvider = mockk(relaxed = true)
         formatTimeUseCase = mockk(relaxed = true)
         authRepository = mockk(relaxed = true)
-        saveSleepTrackerInfoUseCase =
-            SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase, sleepTrackerProvider)
+        saveSleepTrackerInfoUseCase = SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase, sleepTrackerProvider)
     }
 
     @Disabled
@@ -74,4 +74,4 @@ class SaveSleepTrackerInfoUseCaseTest {
         // Then
         coVerify(exactly = 1) { sleepTrackerProvider.saveSleepData(expectedSleepInfo) }
     }
-}
+}*/

@@ -1,13 +1,12 @@
 package com.losrobotines.nuralign.feature_sleep.domain.usecases
 
-import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import javax.inject.Inject
 
-class SaveSleepTrackerInfoUseCase @Inject constructor(
+class UpdateSleepTrackerUseCase @Inject constructor(
     private val formatTimeUseCase: FormatTimeUseCase,
-    private val sleepTrackerProvider: SleepTrackerProvider
+    private val provider: SleepTrackerProvider
 ) {
     suspend operator fun invoke(
         patientId: Short,
@@ -17,8 +16,7 @@ class SaveSleepTrackerInfoUseCase @Inject constructor(
         negativeThoughts: Boolean,
         anxiousBeforeSleep: Boolean,
         sleptThroughNight: Boolean,
-        additionalNotes: String
-    ) : Result<Unit> {
+        additionalNotes: String) : Result<Unit>  {
         val formattedBedTime = bedTime.let { formatTimeUseCase.removeColonFromTime(it) }
         return try {
             val sleepInfo = SleepInfo(
@@ -31,11 +29,10 @@ class SaveSleepTrackerInfoUseCase @Inject constructor(
                 if (sleptThroughNight) "Y" else "N",
                 additionalNotes
             )
-            sleepTrackerProvider.saveSleepData(sleepInfo)
+            provider.updateSleepData(sleepInfo)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-
 }
