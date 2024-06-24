@@ -37,7 +37,7 @@ class SleepViewModel @Inject constructor(
     private val checkNextTrackerUseCase: CheckNextTrackerToBeCompletedUseCase,
     private val service: UserService,
     private val formatTimeUseCase: FormatTimeUseCase,
-    private val updateSleepTrackerUseCase: UpdateSleepTrackerUseCase
+    private val updateSleepTrackerUseCase: UpdateSleepTrackerUseCase,
 ) :
     ViewModel() {
 
@@ -79,30 +79,32 @@ class SleepViewModel @Inject constructor(
         if (currentUserExists()) {
             viewModelScope.launch {
                 val resultId = service.getPatientId()
-                val id = if(resultId.isSuccess) resultId.getOrNull()?:0 else {
+                val id = if (resultId.isSuccess) resultId.getOrNull() ?: 0 else {
                     _errorMessage.value = "Ha habido un error"
                     0
                 }
                 val currentDate = service.getCurrentDate()
                 val trackerExists = getSleepTrackerInfoByDateUseCase(id.toInt(), currentDate)
-                if(trackerExists!=null){
-                    try{
-                        val result = updateSleepTrackerUseCase(id,
+                if (trackerExists != null) {
+                    try {
+                        val result = updateSleepTrackerUseCase(
+                            id,
                             currentDate,
                             _sliderPosition.value.let { it?.toInt()?.toShort() ?: 0 },
                             _bedTime.value ?: "00:00",
                             _negativeThoughts.value ?: false,
                             _anxiousBeforeSleep.value ?: false,
                             _sleptThroughNight.value ?: false,
-                            _additionalNotes.value ?: "")
-                        if (result.isSuccess){
-                            loadMoodTrackerInfo()
+                            _additionalNotes.value ?: ""
+                        )
+                        if (result.isSuccess) {
+                            loadSleepTrackerInfo()
                             _isSaved.value = true
 
-                        }else{
+                        } else {
                             _errorMessage.value = "No se pudo guardar la información"
                         }
-                    } catch (e: Exception){
+                    } catch (e: Exception) {
                         _errorMessage.value = "Ha habido un error"
                     }
                 } else {
@@ -117,13 +119,13 @@ class SleepViewModel @Inject constructor(
                             _sleptThroughNight.value ?: false,
                             _additionalNotes.value ?: ""
                         )
-                        if (result.isSuccess){
-                            loadMoodTrackerInfo()
+                        if (result.isSuccess) {
+                            loadSleepTrackerInfo()
                             _isSaved.value = true
-                        }else{
+                        } else {
                             _errorMessage.value = "No se pudo guardar la información"
                         }
-                    } catch (e: Exception){
+                    } catch (e: Exception) {
                         _errorMessage.value = "Ha habido un error"
                     }
                 }
@@ -132,48 +134,48 @@ class SleepViewModel @Inject constructor(
     }
 
 
-        init {
-            loadMoodTrackerInfo()
-        }
+    init {
+        loadSleepTrackerInfo()
+    }
 
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun loadMoodTrackerInfo() {
-            viewModelScope.launch {
-                try {
-                    if (currentUserExists()) {
-                        val result = service.getPatientId()
-                        val id = if(result.isSuccess) result.getOrNull() ?: 0 else {
-                            _errorMessage.value = "Ha habido un error"
-                            0
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun loadSleepTrackerInfo() {
+        viewModelScope.launch {
+            try {
+                if (currentUserExists()) {
+                    val result = service.getPatientId()
+                    val id = if (result.isSuccess) result.getOrNull() ?: 0 else {
+                        _errorMessage.value = "Ha habido un error"
+                        0
+                    }
+                    val currentDate = service.getCurrentDate()
+                    val info = getSleepTrackerInfoByDateUseCase(id.toInt(), currentDate)
+                    if (info != null) {
+                        sliderPosition.value = info.sleepHours.toFloat()
+                        bedTime.value = formatTimeUseCase.addColonToTime(info.bedTime)
+                        additionalNotes.value = info.sleepNotes
+                        if (info.negativeThoughtsFlag == "N") {
+                            setNegativeThoughts(false)
+                        } else {
+                            setNegativeThoughts(true)
                         }
-                        val currentDate = service.getCurrentDate()
-                        val info = getSleepTrackerInfoByDateUseCase(id.toInt(), currentDate)
-                        if (info != null) {
-                            sliderPosition.value = info.sleepHours.toFloat()
-                            bedTime.value = formatTimeUseCase.addColonToTime(info.bedTime)
-                            additionalNotes.value = info.sleepNotes
-                            if (info.negativeThoughtsFlag == "N") {
-                                setNegativeThoughts(false)
-                            } else {
-                                setNegativeThoughts(true)
-                            }
-                            if (info.anxiousFlag == "N") {
-                                setAnxiousBeforeSleep(false)
-                            } else {
-                                setAnxiousBeforeSleep(true)
-                            }
-                            if (info.sleepStraightFlag == "N") {
-                                setSleptThroughNight(false)
-                            } else {
-                                setSleptThroughNight(true)
-                            }
+                        if (info.anxiousFlag == "N") {
+                            setAnxiousBeforeSleep(false)
+                        } else {
+                            setAnxiousBeforeSleep(true)
+                        }
+                        if (info.sleepStraightFlag == "N") {
+                            setSleptThroughNight(false)
+                        } else {
+                            setSleptThroughNight(true)
                         }
                     }
-                } catch (e: Exception) {
-                    _errorMessage.value = "El usuario no se encuentra logueado"
                 }
+            } catch (e: Exception) {
+                _errorMessage.value = "El usuario no se encuentra logueado"
             }
         }
+    }
 
     fun setIsVisible(value: Boolean) {
         _isVisible.value = value
@@ -210,14 +212,15 @@ class SleepViewModel @Inject constructor(
     fun checkNextTracker() {
         viewModelScope.launch {
             val result = service.getPatientId()
-            val id = if(result.isSuccess) result.getOrNull() ?: 0 else {
+            val id = if (result.isSuccess) result.getOrNull() ?: 0 else {
                 _errorMessage.value = "Ha habido un error"
                 0
             }
             delay(1000)
-            if(_isSaved.value!!){
+            if (_isSaved.value!!) {
                 _route.value = checkNextTrackerUseCase(id.toInt())
-                if (_route.value != Routes.HomeScreen.route) _isVisible.value = true
+                if (_route.value != Routes.HomeScreen.route) _isVisible.value =
+                    true else _errorMessage.value = "Ya completaste todos los seguimientos!"
             }
         }
     }

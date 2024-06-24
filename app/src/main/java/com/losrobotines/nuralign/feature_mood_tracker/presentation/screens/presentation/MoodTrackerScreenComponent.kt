@@ -58,6 +58,7 @@ import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
+import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewModel
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -117,27 +118,27 @@ fun MoodTrackerScreenComponent(
                 }
                 item {
                     Box(modifier = Modifier.padding(8.dp)) {
-                        AnimoDeprimido(moodTrackerViewModel, isSaved)
+                        AnimoDeprimido(moodTrackerViewModel)
                     }
                 }
                 item {
                     Box(modifier = Modifier.padding(8.dp)) {
-                        AnimoElevado(moodTrackerViewModel, isSaved)
+                        AnimoElevado(moodTrackerViewModel)
                     }
                 }
                 item {
                     Box(modifier = Modifier.padding(8.dp)) {
-                        AnimoIrritable(moodTrackerViewModel, isSaved)
+                        AnimoIrritable(moodTrackerViewModel)
                     }
                 }
                 item {
                     Box(modifier = Modifier.padding(8.dp)) {
-                        AnimoAnsioso(moodTrackerViewModel, isSaved)
+                        AnimoAnsioso(moodTrackerViewModel)
                     }
                 }
                 item {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-                        saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos, isSaved)
+                        saveButton(moodTrackerViewModel, context, isVisibleSelectedAnimos)
                     }
                 }
             }
@@ -147,10 +148,27 @@ fun MoodTrackerScreenComponent(
                     route, moodTrackerViewModel
                 )
             }
-            //SnackbarError(moodTrackerViewModel, snackbarHostState)
+        }
+        SnackbarError(moodTrackerViewModel, snackbarHostState)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SnackbarError(
+    moodTrackerViewModel: MoodTrackerViewModel,
+    snackbarHostState: SnackbarHostState
+) {
+    val errorMessage by moodTrackerViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            moodTrackerViewModel.clearErrorMessage()
         }
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun goToNextTracker(
@@ -158,9 +176,6 @@ fun goToNextTracker(
     route: String,
     moodTrackerViewModel: MoodTrackerViewModel,
 ) {
-    if (route == "") {
-        //loading circle visible
-    }
     moodTrackerViewModel.setIsVisible(false)
     navController.navigate(route)
 }
@@ -170,27 +185,22 @@ fun goToNextTracker(
 private fun saveButton(
     moodTrackerViewModel: MoodTrackerViewModel,
     context: Context?,
-    isVisibleSelectedAnimos: Boolean,
-    isSaved: Boolean,
+    isVisibleSelectedAnimos: Boolean
 ) {
     var isVisibleSelectedAnimos1 = isVisibleSelectedAnimos
     Spacer(modifier = Modifier.height(50.dp))
     Button(
         onClick = {
-            Log.d("saveButtom", "Save button clicked")
             if (moodTrackerViewModel.irritableValue.intValue == -1 ||
                 moodTrackerViewModel.lowestValue.intValue == -1 ||
                 moodTrackerViewModel.highestValue.intValue == -1 ||
                 moodTrackerViewModel.anxiousValue.intValue == -1
             ) {
-                Log.d("saveButtom", "Fields are incomplete")
                 Toast.makeText(context, "Complete los campos", Toast.LENGTH_SHORT).show()
             } else {
-                Log.d("saveButtom", "Fields are complete, saving data")
                 isVisibleSelectedAnimos1 = true
                 moodTrackerViewModel.saveData()
                 moodTrackerViewModel.checkNextTracker()
-                moodTrackerViewModel.setIsVisible(true)
             }
         },
         modifier = Modifier
@@ -209,7 +219,7 @@ private fun saveButton(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun AnimoDeprimido(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Boolean) {
+private fun AnimoDeprimido(moodTrackerViewModel: MoodTrackerViewModel) {
     val colors = listOf(
         Color(0xff9ebadc), Color(0xff678bb7), Color(0xff385f8e),
         Color(0xff1b477c), Color(0xff001e41)
@@ -219,14 +229,13 @@ private fun AnimoDeprimido(moodTrackerViewModel: MoodTrackerViewModel, isSaved: 
         "deprimido",
         R.drawable.animo_deprimido_additional_note_icon,
         colors,
-        moodTrackerViewModel,
-        isSaved
+        moodTrackerViewModel
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun AnimoElevado(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Boolean) {
+private fun AnimoElevado(moodTrackerViewModel: MoodTrackerViewModel) {
     val colors = listOf(
         Color(0xff91c776), Color(0xff67a549), Color(0xff408022),
         Color(0xff29630e), Color(0xff144000)
@@ -236,14 +245,13 @@ private fun AnimoElevado(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Bo
         "elevado",
         R.drawable.animo_elevado_additional_note_icon,
         colors,
-        moodTrackerViewModel,
-        isSaved
+        moodTrackerViewModel
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun AnimoIrritable(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Boolean) {
+private fun AnimoIrritable(moodTrackerViewModel: MoodTrackerViewModel) {
     val colors = listOf(
         Color(0xffdec278), Color(0xffac914b), Color(0xff7c6529),
         Color(0xff5f4b18), Color(0xff402e00)
@@ -253,14 +261,13 @@ private fun AnimoIrritable(moodTrackerViewModel: MoodTrackerViewModel, isSaved: 
         "irritable",
         R.drawable.animo_irritable_additional_note_icon,
         colors,
-        moodTrackerViewModel,
-        isSaved
+        moodTrackerViewModel
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Boolean) {
+private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel) {
     val colors = listOf(
         Color(0xffc381ba), Color(0xffa05695), Color(0xff813675),
         Color(0xff732166), Color(0xff400036)
@@ -271,8 +278,7 @@ private fun AnimoAnsioso(moodTrackerViewModel: MoodTrackerViewModel, isSaved: Bo
         "ansioso",
         R.drawable.animo_ansioso_additional_note_icon,
         colors,
-        moodTrackerViewModel,
-        isSaved
+        moodTrackerViewModel
     )
 }
 
@@ -314,8 +320,7 @@ fun SelectAnimo(
     animoType: String,
     iconResId: Int,
     colors: List<Color>,
-    moodTrackerViewModel: MoodTrackerViewModel,
-    isSaved: Boolean,
+    moodTrackerViewModel: MoodTrackerViewModel
 ) {
     val labels = listOf("Nulo", "Leve", "Moderado", "Alto", "Severo")
 
@@ -462,19 +467,3 @@ fun SelectAnimo(
     }
     Spacer(modifier = Modifier.height(30.dp))
 }
-
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun SnackbarError(moodTrackerViewModel: MoodTrackerViewModel, snackbarHostState: SnackbarHostState) {
-    val errorMessage by moodTrackerViewModel.errorMessage.observeAsState()
-
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            moodTrackerViewModel.clearErrorMessage()
-        }
-    }
-}
-
- */
