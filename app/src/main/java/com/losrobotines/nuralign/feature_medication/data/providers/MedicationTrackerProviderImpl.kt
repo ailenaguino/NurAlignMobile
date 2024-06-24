@@ -58,20 +58,6 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun getTodaysTracker(patientId: Int, date: String): MedicationTrackerInfo? {
-        try {
-            val response = apiService.getTodaysTracker(patientId.toShort(), date)
-            return mapDataToDomain(response?.find {
-                it.effectiveDate == LocalDate.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        && it.takenFlag.isNotBlank()
-            })
-        } catch (e: HttpException) {
-            return null
-        }
-    }
-
     private fun mapDataToDomain(dto: MedicationTrackerDto?): MedicationTrackerInfo? {
         return dto?.let {
             MedicationTrackerInfo(
