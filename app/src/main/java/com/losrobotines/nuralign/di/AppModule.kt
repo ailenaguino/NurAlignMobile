@@ -18,6 +18,9 @@ import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.Upda
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_resumen_semanal.data.WeeklySummaryApiService
+import com.losrobotines.nuralign.feature_resumen_semanal.data.WeeklySummaryProviderImpl
+import com.losrobotines.nuralign.feature_resumen_semanal.domain.WeeklySummaryProvider
 import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
@@ -156,4 +159,19 @@ object AppModule {
     fun provideRoutineProvider(dao: RoutineDao): RoutineProvider {
         return RoutineProviderImpl(dao)
     }
+
+    @Provides
+    @Singleton
+    fun provideWeeklySummary(retrofit: Retrofit): WeeklySummaryApiService {
+        return retrofit.create(WeeklySummaryApiService::class.java)
+    }
+
+    @Provides
+    fun provideWeeklySummaryProvider(weeklySummaryApiService: WeeklySummaryApiService): WeeklySummaryProvider {
+        return WeeklySummaryProviderImpl(weeklySummaryApiService)
+    }
+
+
+
+
 }

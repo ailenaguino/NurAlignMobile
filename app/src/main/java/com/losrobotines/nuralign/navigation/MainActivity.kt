@@ -34,7 +34,10 @@ import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker
 import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
-import com.losrobotines.nuralign.feature_resumen_semanal.MoodBarChartExample
+import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.WeeklySummaryMoodTracker
+import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.WeeklySummaryScreenComponent
+import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.WeeklySummarySleepTracker
+import com.losrobotines.nuralign.feature_resumen_semanal.presentation.WeeklySummaryViewModel
 import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
 import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
@@ -146,11 +149,20 @@ class MainActivity : ComponentActivity() {
                                         CircularProgressIndicator()
                                     }
                                 }
-                                //******************************************************************************
-                                composable(Routes.TestGraficos.route) {
-                                    MoodBarChartExample()
+                                composable(Routes.WeeklySummary.route) {
+                                    val weeklySummaryViewModel by viewModels<WeeklySummaryViewModel>()
+                                    WeeklySummaryScreenComponent(weeklySummaryViewModel,navController)
                                 }
-                                //*****************************************************************************
+
+                                composable(Routes.WeeklySummaryMoodTracker.route){
+                                    val weeklySummaryViewModel by viewModels<WeeklySummaryViewModel>()
+                                    WeeklySummaryMoodTracker(weeklySummaryViewModel)
+                                }
+
+                                composable(Routes.WeeklySummarySleepTracker.route) {
+                                    val weeklySummaryViewModel by viewModels<WeeklySummaryViewModel>()
+                                    WeeklySummarySleepTracker(weeklySummaryViewModel)
+                                }
                             }
 
                             LaunchedEffect(navController) {

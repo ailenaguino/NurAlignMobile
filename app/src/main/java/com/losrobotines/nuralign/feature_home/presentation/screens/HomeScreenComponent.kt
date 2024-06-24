@@ -150,11 +150,10 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                 3 -> {
                     navController.navigate(Routes.AddTherapyScreen.route)
                 }
-                //*************************************************************
+
                 4 ->{
-                    navController.navigate(Routes.TestGraficos.route)
+                    navController.navigate(Routes.WeeklySummary.route)
                 }
-                //*********************************************
 
                 6 -> {
                     navController.navigate(Routes.AchievementsScreen.route)
