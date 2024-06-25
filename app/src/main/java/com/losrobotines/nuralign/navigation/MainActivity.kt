@@ -45,6 +45,8 @@ import com.losrobotines.nuralign.feature_settings.presentation.screens.personal_
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepTrackerScreenComponent
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewModel
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.session_history.TherapySessionHistoryScreenComponent
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.session_history.TherapySessionHistoryViewModel
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistScreenComponent
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistViewModel
 import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_session.TherapySessionScreenComponent
@@ -160,6 +162,11 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.TherapySessionScreen.route) {
                                     val therapistViewModel by viewModels<TherapySessionViewModel>()
                                     TherapySessionScreenComponent(navController, therapistViewModel)
+                                }
+                                composable(Routes.TherapySessionHistoryScreen.route){
+                                    val therapySessionHistoryViewModel by viewModels<TherapySessionHistoryViewModel>()
+                                    val therapySessionViewModel by viewModels<TherapySessionViewModel>()
+                                    TherapySessionHistoryScreenComponent(navController, therapySessionHistoryViewModel, therapySessionViewModel)
                                 }
                             }
 

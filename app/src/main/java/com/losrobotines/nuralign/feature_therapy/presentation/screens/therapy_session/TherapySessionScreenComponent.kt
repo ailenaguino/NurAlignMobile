@@ -3,6 +3,7 @@ package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_s
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,8 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -36,15 +36,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.ListItemDefaults.containerColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
-import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -114,6 +113,7 @@ fun TherapySessionScreenComponent(
                                 listOf(
                                     "Aquí podras completar los datos de tu sesión de terapia",
                                     "Haz click en los íconos para seleccionar día y hora de la sesión",
+                                    "¡Recuerda volver a entrar luego de cada sesión para completar todos los datos!",
                                     "Clickeame para esconder mi diálogo"
                                 )
                             )
@@ -122,21 +122,22 @@ fun TherapySessionScreenComponent(
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                         TherapistDropDown(therapySessionViewModel)
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
                     item {
+                        Spacer(modifier = Modifier.height(10.dp))
                         SessionDateAndTime(therapySessionViewModel)
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
                     item {
+                        Spacer(modifier = Modifier.height(10.dp))
                         PreSessionNotes(therapySessionViewModel)
                     }
                     item {
-                        PostSessionNotes(therapySessionViewModel)
                         Spacer(modifier = Modifier.height(10.dp))
+                        PostSessionNotes(therapySessionViewModel)
                     }
                     item {
-                        SessionFeel()
+                        Spacer(modifier = Modifier.height(10.dp))
+                        SessionFeel(therapySessionViewModel)
                     }
                     item {
                         Box {
@@ -151,7 +152,6 @@ fun TherapySessionScreenComponent(
                 }
             }
         }
-
     }
 }
 
@@ -160,7 +160,9 @@ fun TherapySessionScreenComponent(
 private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) {
     val therapistList by therapySessionViewModel.therapistList.observeAsState(emptyList())
     var expanded by remember { mutableStateOf(false) }
-    var selectedTherapist by remember { mutableStateOf<TherapistInfo?>(null) }
+    val selectedTherapist by therapySessionViewModel.selectedTherapist.observeAsState(null)
+
+    var wasSelected by remember { mutableStateOf(false) }
 
     Column(
         Modifier
@@ -171,7 +173,11 @@ private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) 
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = {
-                expanded = !expanded
+                expanded = if (selectedTherapist != null && !wasSelected) {
+                    false
+                } else {
+                    !expanded
+                }
             },
             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         ) {
@@ -183,7 +189,11 @@ private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) 
                     onValueChange = {},
                     label = { if (selectedTherapist == null) Text("Selecciona un terapeuta.") },
                     readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    trailingIcon = {
+                        if ((selectedTherapist != null && wasSelected) || (selectedTherapist == null)) ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = expanded
+                        )
+                    },
                     shape = RoundedCornerShape(35.dp),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = containerColor,
@@ -215,15 +225,15 @@ private fun TherapistDropDown(therapySessionViewModel: TherapySessionViewModel) 
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        "${it.name} ${it.lastName}",
+                                        "${it!!.name} ${it.lastName}",
                                         textAlign = TextAlign.Center
                                     )
                                 }
                             },
                             onClick = {
-                                selectedTherapist = it
-                                therapySessionViewModel.updateSelectedTherapist(it)
+                                therapySessionViewModel.updateSelectedTherapist(it!!)
                                 expanded = false
+                                wasSelected = true
                             }
                         )
                     }
@@ -461,7 +471,7 @@ fun PreSessionNotes(therapySessionViewModel: TherapySessionViewModel) {
             },
             label = {
                 Text(
-                    "Notes pre-sesión",
+                    "Notas pre-sesión",
                     color = secondaryColor,
                     textAlign = TextAlign.Center
                 )
@@ -498,7 +508,7 @@ fun PostSessionNotes(therapySessionViewModel: TherapySessionViewModel) {
             },
             label = {
                 Text(
-                    "Notes post-sesión",
+                    "Notas post-sesión",
                     color = secondaryColor,
                     textAlign = TextAlign.Center
                 )
@@ -519,8 +529,23 @@ fun PostSessionNotes(therapySessionViewModel: TherapySessionViewModel) {
 }
 
 @Composable
-fun SessionFeel() {
-    var selectedOption by remember { mutableIntStateOf(0) }
+fun SessionFeel(therapySessionViewModel: TherapySessionViewModel) {
+    val selectedOption by therapySessionViewModel.sessionFeel.observeAsState(0)
+    val options = listOf(
+        "Muy mal" to 1,
+        "Mal" to 2,
+        "Regular" to 3,
+        "Bien" to 4,
+        "Muy bien" to 5
+    )
+    val colors = listOf(
+        Color(0xff9ebadc),
+        Color(0xff678bb7),
+        Color(0xff385f8e),
+        Color(0xff1b477c),
+        Color(0xff001e41)
+    )
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -537,69 +562,32 @@ fun SessionFeel() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RadioButton(
-                    selected = (selectedOption == 1),
-                    onClick = { selectedOption = 1 },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary
+            options.forEachIndexed { index, (text, value) ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        onClick = {
+                            therapySessionViewModel.updateSessionFeel(value)
+                        },
+                        modifier = Modifier
+                            .width(60.dp)
+                            .height(40.dp)
+                            .border(
+                                width = if (selectedOption == value) 3.dp else 0.dp,
+                                color = if (selectedOption == value) Color.Yellow else Color.Transparent
+                            ),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors[index],
+                            contentColor = Color.White
+                        ),
+                        content = {}
                     )
-                )
-                Text("Muy mal", color = secondaryColor)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RadioButton(
-                    selected = (selectedOption == 2),
-                    onClick = { selectedOption = 2 },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Text("Mal", color = secondaryColor)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RadioButton(
-                    selected = (selectedOption == 3),
-                    onClick = { selectedOption = 3 },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Text("Regular", color = secondaryColor)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RadioButton(
-                    selected = (selectedOption == 4),
-                    onClick = { selectedOption = 4 },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Text("Bien", color = secondaryColor)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                RadioButton(
-                    selected = (selectedOption == 5),
-                    onClick = { selectedOption = 5 },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Text("Muy bien", color = secondaryColor)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text, color = secondaryColor)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -613,7 +601,7 @@ fun SaveButton(
 ) {
     Button(
         onClick = {
-            //Guardar terapia en db
+            therapySessionViewModel.checkLogs()
         },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor),
         modifier = modifier
