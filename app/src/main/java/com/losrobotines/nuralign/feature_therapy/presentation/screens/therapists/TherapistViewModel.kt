@@ -44,11 +44,18 @@ class TherapistViewModel @Inject constructor(
     val errorMessage: LiveData<String?> = _errorMessage
 
     init {
-        getCurrentPatientId()
+        //getCurrentPatientId()
+        loadTherapistList()
     }
 
     private fun loadTherapistList() {
         viewModelScope.launch {
+            val newList = listOf(
+                TherapistInfo(2, "William", "Scottman", "wscottman@gmail.com", 1112344321, "N"),
+                TherapistInfo(3, "Bob", "Smith", "bsmith@gmail.com", 1132143214, "N")
+            )
+            _therapistList.value = newList
+            /*
             val result = userService.getTherapistList(_patientId.value)
             _isLoading.value = true
 
@@ -60,11 +67,14 @@ class TherapistViewModel @Inject constructor(
                 _errorMessage.value = "Error al cargar los terapeutas"
                 _isLoading.value = false
             }
+            */
         }
     }
 
+
     fun saveData(therapistInfo: TherapistInfo) {
         viewModelScope.launch {
+            /*
             val result = saveTherapistInfoUseCase(therapistInfo)
             if (result.isSuccess) {
                 loadTherapistList()
@@ -78,6 +88,7 @@ class TherapistViewModel @Inject constructor(
                 _errorMessage.value =
                     "Error al guardar al terapeuta ${therapistInfo.name} ${therapistInfo.lastName}"
             }
+             */
         }
     }
 

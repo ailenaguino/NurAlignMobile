@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
+import com.losrobotines.nuralign.feature_therapy.presentation.screens.session_history.TherapySessionHistoryViewModel
 import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
@@ -55,7 +56,8 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 @Composable
 fun TherapistScreenComponent(
     navController: NavController,
-    therapistViewModel: TherapistViewModel
+    therapistViewModel: TherapistViewModel,
+    therapySessionHistoryViewModel: TherapySessionHistoryViewModel
 ) {
     val therapistList by therapistViewModel.therapistList.observeAsState()
     val isLoading by therapistViewModel.isLoading.observeAsState(initial = false)
@@ -106,11 +108,6 @@ fun TherapistScreenComponent(
                             .padding(16.dp)
                     ) {
                         item {
-                            //Este no debería ir, se borra cuando traiga bien los terapeutas de la db
-                            CreateNewTherapySession(navController)
-                            Spacer(modifier = Modifier.height(10.dp))
-                        }
-                        item {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
@@ -145,8 +142,10 @@ fun TherapistScreenComponent(
                         }
                         items(therapistList!!.size) {
                             TherapistElement(
+                                navController,
                                 therapistList!![it]!!,
-                                therapistViewModel
+                                therapistViewModel,
+                                therapySessionHistoryViewModel
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                         }
@@ -171,14 +170,16 @@ private fun MyTherapistsTitle() {
 
 @Composable
 private fun TherapistElement(
+    navController: NavController,
     therapistInfo: TherapistInfo,
-    therapistViewModel: TherapistViewModel
+    therapistViewModel: TherapistViewModel,
+    therapySessionHistoryViewModel: TherapySessionHistoryViewModel
 ) {
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .weight(0.7f)
+                .weight(0.8f)
                 .padding(horizontal = 4.dp)
         ) {
             Text(
@@ -192,14 +193,14 @@ private fun TherapistElement(
         Box(
             modifier = Modifier
                 .wrapContentWidth(Alignment.End)
-                .weight(0.2f)
+                .weight(0.1f)
         ) {
             EditTherapist(therapistInfo, therapistViewModel)
         }
         Box(
             modifier = Modifier
                 .wrapContentWidth(Alignment.End)
-                .weight(0.2f)
+                .weight(0.1f)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
@@ -207,7 +208,10 @@ private fun TherapistElement(
                 tint = mainColor,
                 modifier = Modifier
                     .size(32.dp)
-                    .clickable { /*TODO*/ }
+                    .clickable {
+                        therapySessionHistoryViewModel.loadTherapySessionToEdit(therapistInfo)
+                        navController.navigate(Routes.TherapySessionHistoryScreen.route)
+                    }
             )
         }
     }

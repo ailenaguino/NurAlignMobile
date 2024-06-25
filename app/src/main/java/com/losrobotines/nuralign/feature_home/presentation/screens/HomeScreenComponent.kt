@@ -148,7 +148,7 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                 }
 
                 3 -> {
-                    navController.navigate(Routes.TherapySessionHistoryScreen.route)
+                    navController.navigate(Routes.TherapistScreen.route)
                 }
                 //*************************************************************
                 4 ->{

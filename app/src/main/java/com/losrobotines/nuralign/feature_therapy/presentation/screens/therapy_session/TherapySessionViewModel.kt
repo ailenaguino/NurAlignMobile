@@ -49,8 +49,8 @@ class TherapySessionViewModel @Inject constructor(
     private val _postSessionNotes = MutableLiveData<String>()
     val postSessionNotes: LiveData<String> = _postSessionNotes
 
-    private val _sessionFeel = MutableLiveData<Int>()
-    val sessionFeel: LiveData<Int> = _sessionFeel
+    private val _sessionFeel = MutableLiveData<String>()
+    val sessionFeel: LiveData<String> = _sessionFeel
 
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage: LiveData<String?> = _errorMessage
@@ -117,7 +117,7 @@ class TherapySessionViewModel @Inject constructor(
         _postSessionNotes.value = notes
     }
 
-    fun updateSessionFeel(feel: Int) {
+    fun updateSessionFeel(feel: String) {
         _sessionFeel.value = feel
     }
 
@@ -146,7 +146,7 @@ class TherapySessionViewModel @Inject constructor(
             sessionTime = formatTime(_selectedTime.value!!),
             preSessionNotes = _preSessionNotes.value,
             postSessionNotes = _postSessionNotes.value,
-            sessionFeel = _sessionFeel.value.toString()
+            sessionFeel = _sessionFeel.value
         )
     }
 
@@ -167,7 +167,7 @@ class TherapySessionViewModel @Inject constructor(
         _selectedTime.value = addColonTime(therapySessionInfo.sessionTime)
         _preSessionNotes.value = therapySessionInfo.preSessionNotes ?: ""
         _postSessionNotes.value = therapySessionInfo.postSessionNotes ?: ""
-        _sessionFeel.value = therapySessionInfo.sessionFeel?.toInt() ?: 0
+        _sessionFeel.value = therapySessionInfo.sessionFeel ?: ""
     }
 
     fun checkLogs() {

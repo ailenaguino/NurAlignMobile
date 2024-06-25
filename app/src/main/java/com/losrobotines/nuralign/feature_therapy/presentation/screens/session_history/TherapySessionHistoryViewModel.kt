@@ -12,11 +12,18 @@ import javax.inject.Inject
 @HiltViewModel
 class TherapySessionHistoryViewModel @Inject constructor(
     private val userService: UserService
-): ViewModel() {
+) : ViewModel() {
     private val _sessionHistoryList = MutableLiveData<List<TherapySessionInfo>>()
     val sessionHistoryList: LiveData<List<TherapySessionInfo>> = _sessionHistoryList
 
     private val _sessionTherapist = MutableLiveData<TherapistInfo>()
     val sessionTherapist: LiveData<TherapistInfo> = _sessionTherapist
+
+    private val _selectedTherapist = MutableLiveData<TherapistInfo>()
+    val selectedTherapist: LiveData<TherapistInfo> = _selectedTherapist
+
+    fun loadTherapySessionToEdit(therapistInfo: TherapistInfo) {
+        _selectedTherapist.value = therapistInfo
+    }
 
 }

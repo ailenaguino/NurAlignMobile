@@ -130,7 +130,8 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable(Routes.TherapistScreen.route) {
                                     val therapistViewModel by viewModels<TherapistViewModel>()
-                                    TherapistScreenComponent(navController, therapistViewModel)
+                                    val therapySessionHistoryViewModel by viewModels<TherapySessionHistoryViewModel>()
+                                    TherapistScreenComponent(navController, therapistViewModel, therapySessionHistoryViewModel)
                                 }
                                 composable(Routes.AchievementsScreen.route) {
                                     val achievementsViewModel by viewModels<AchievementsViewModel>()

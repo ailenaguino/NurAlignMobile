@@ -532,11 +532,11 @@ fun PostSessionNotes(therapySessionViewModel: TherapySessionViewModel) {
 fun SessionFeel(therapySessionViewModel: TherapySessionViewModel) {
     val selectedOption by therapySessionViewModel.sessionFeel.observeAsState(0)
     val options = listOf(
-        "Muy mal" to 1,
-        "Mal" to 2,
-        "Regular" to 3,
-        "Bien" to 4,
-        "Muy bien" to 5
+        "Muy mal" to "1",
+        "Mal" to "2",
+        "Regular" to "3",
+        "Bien" to "4",
+        "Muy bien" to "5"
     )
     val colors = listOf(
         Color(0xff9ebadc),

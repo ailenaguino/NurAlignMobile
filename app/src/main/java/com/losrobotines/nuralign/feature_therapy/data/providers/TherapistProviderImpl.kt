@@ -20,6 +20,8 @@ class TherapistProviderImpl @Inject constructor(
         try {
             val dto = mapDomainToData(therapistInfo!!)
             apiService.insertTherapistInfo(dto)
+            Log.d("TherapistProvider", "DtO Insertado: $dto")
+            Log.d("TherapistProvider", "TherapistInfo Insertado: ${apiService.insertTherapistInfo(dto)}")
             return true
         } catch (e: Exception) {
             return false

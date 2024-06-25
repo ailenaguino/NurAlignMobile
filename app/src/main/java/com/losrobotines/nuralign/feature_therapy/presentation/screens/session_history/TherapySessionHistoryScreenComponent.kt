@@ -23,6 +23,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,24 +44,33 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 @Composable
 fun TherapySessionHistoryScreenComponent(
     navController: NavController,
-    sessionHistoryViewModel: TherapySessionHistoryViewModel,
+    therapySessionHistoryViewModel: TherapySessionHistoryViewModel,
     therapySessionViewModel: TherapySessionViewModel
 ) {
-    //val sessionHistoryList by sessionHistoryViewModel.sessionHistoryList.observeAsState()
-    //val sessionTherapist by sessionHistoryViewModel.sessionTherapist.observeAsState()
+    //val sessionHistoryList by therapySessionHistoryViewModel.sessionHistoryList.observeAsState()
+    //val sessionTherapist by therapySessionHistoryViewModel.sessionTherapist.observeAsState()
+    val selectedTherapist by therapySessionHistoryViewModel.selectedTherapist.observeAsState()
     val sessionHistoryList: List<TherapySessionInfo>
-    val sessionTherapist =
-        TherapistInfo(2, "William", "Scottman", "wscottman@gmail.com", 1112344321, "N")
-    val therapySession = TherapySessionInfo(
+    val therapySession1 = TherapySessionInfo(
         patientId = 1,
         therapistId = 2,
         sessionDate = "24/06/2024",
         sessionTime = 1200,
         preSessionNotes = "Ni ganas de ir hoy a la sesión",
-        postSessionNotes = "",
-        sessionFeel = "3"
+        postSessionNotes = "Al final estuvo buena la sesión",
+        sessionFeel = "5"
     )
-    sessionHistoryList = listOf(therapySession)
+    val therapySession2 = TherapySessionInfo(
+        patientId = 1,
+        therapistId = 2,
+        sessionDate = "25/06/2024",
+        sessionTime = 1845,
+        preSessionNotes = "Me cortaron la luz y se me rompió la compu, estoy re enojado",
+        postSessionNotes = "",
+        sessionFeel = ""
+    )
+    sessionHistoryList = listOf(therapySession1, therapySession2)
+
 
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -99,7 +110,7 @@ fun TherapySessionHistoryScreenComponent(
                     }
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
-                        TherapistNameTitle(sessionTherapist)
+                        TherapistNameTitle(selectedTherapist!!)
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                     item {
