@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class TherapistDto(
     @SerializedName("id") val id: Short? = null,
+    @SerializedName("patientId") val patientId: Short,
     @SerializedName("name") val name: String,
     @SerializedName("lastName") val lastName: String,
     @SerializedName("email") val email: String,

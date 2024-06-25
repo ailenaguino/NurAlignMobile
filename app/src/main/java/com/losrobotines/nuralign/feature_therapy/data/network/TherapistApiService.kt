@@ -14,7 +14,7 @@ import retrofit2.http.Query
 interface TherapistApiService {
 
     @Headers("Content-Type: application/json")
-    @POST("patientTherapist")
+    @POST("therapists")
     suspend fun insertTherapistInfo(@Body body: TherapistDto): Response<TherapistDto>
 
     @GET("patientTherapist/patient/{patientId}")
@@ -26,9 +26,9 @@ interface TherapistApiService {
         @Path("therapistId") therapistId: Short
     ): Response<Unit>
 
-    @PATCH("patientTherapist/patient/{patientId}")
+    @PATCH("therapists/{therapistId}")
     suspend fun updateTherapistInfo(
-        @Path("patientId") patientId: Short,
+        @Path("therapistId") therapistId: Short,
         @Body body: TherapistDto
     ): Response<TherapistDto>
 }

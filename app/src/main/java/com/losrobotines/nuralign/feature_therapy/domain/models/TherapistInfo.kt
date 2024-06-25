@@ -2,6 +2,7 @@ package com.losrobotines.nuralign.feature_therapy.domain.models
 
 data class TherapistInfo(
     val id: Short? = null,
+    val patientId: Short,
     var name: String,
     var lastName: String,
     var email: String,

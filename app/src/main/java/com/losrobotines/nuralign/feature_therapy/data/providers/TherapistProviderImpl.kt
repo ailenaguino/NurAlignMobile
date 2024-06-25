@@ -50,6 +50,7 @@ class TherapistProviderImpl @Inject constructor(
     private fun mapDomainToData(therapistInfo: TherapistInfo): TherapistDto {
         return TherapistDto(
             id = therapistInfo.id,
+            patientId = therapistInfo.patientId,
             name = therapistInfo.name,
             lastName = therapistInfo.lastName,
             email = therapistInfo.email,
@@ -66,6 +67,7 @@ class TherapistProviderImpl @Inject constructor(
                     list.add(
                         TherapistInfo(
                             id = therapist.id,
+                            patientId = therapist.patientId,
                             name = therapist.name,
                             lastName = therapist.lastName,
                             email = therapist.email,
