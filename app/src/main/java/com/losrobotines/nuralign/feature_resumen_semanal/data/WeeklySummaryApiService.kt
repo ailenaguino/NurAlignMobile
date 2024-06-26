@@ -1,5 +1,7 @@
 package com.losrobotines.nuralign.feature_resumen_semanal.data
 
+import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
+import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
 import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import retrofit2.Response
@@ -23,15 +25,15 @@ interface WeeklySummaryApiService {
     ): Response<SleepTrackerDto?>
 
 
-    /*
+    @GET("medicationTracker/{patientId}")
+    suspend fun getMedicationTrackerInfo(
+        @Path("patientId") patientId: Short,
+        @Query("effectiveDate") effectiveDate: String
+    ): Response<MedicationTrackerDto?>
 
-        @GET("moodTracker")
-        suspend fun getTrackerByDate(
-            @Query("patientId") patientId: Int,
-            @Query("date") date: String,
-        ): Array<MoodTrackerDto>?
+    @GET("medications/patient/{patientId}")
+    suspend fun getMedicationList(@Path("patientId") patientId: Short): List<MedicationDto?>
 
-     */
 
 
 }

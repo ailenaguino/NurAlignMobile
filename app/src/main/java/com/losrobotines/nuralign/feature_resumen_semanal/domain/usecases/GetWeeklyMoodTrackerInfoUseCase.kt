@@ -17,7 +17,7 @@ class GetWeeklyMoodTrackerInfoUseCase @Inject constructor(
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
-        for (i in 0 until 5) { // Obtener los últimos 7 días
+        for (i in 0 until 7) {
             val date = dateFormat.format(calendar.time)
             Log.d("MoodTrackerUseCase", "Obteniendo datos para la fecha $date")
             val trackerInfo = weeklySummaryProvider.getMoodTracker(patientId, date)

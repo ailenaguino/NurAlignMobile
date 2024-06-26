@@ -6,7 +6,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.feature_resumen_semanal.presentation.WeeklySummaryViewModel
@@ -48,8 +46,6 @@ import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,7 +73,6 @@ fun WeeklySummarySleepTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
                     SharedComponents().fabCompanion(
                         listOf(
                             "Esta semana dormiste un promedio de ${weeklySummaryViewModel.getAverageSleepHours()} horas por dia",
-                            "Te dormiste en promedia a las ${weeklySummaryViewModel.getAverageBedTime()} ",
                             "Clickeame para esconder mi diálogo"
                         )
                     )
@@ -85,7 +80,7 @@ fun WeeklySummarySleepTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
             }
         }
 
-        SleepChart(sleepTrackerInfoList)
+        SleepChart(sleepTrackerInfoList,weeklySummaryViewModel)
 
 
     }
@@ -95,7 +90,7 @@ fun WeeklySummarySleepTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SleepChart(sleepData: List<SleepInfo?>) {
+fun SleepChart(sleepData: List<SleepInfo?>, weeklySummaryViewModel: WeeklySummaryViewModel) {
     val maxSleepHours = 24f // Máximo de horas de sueño
     val columnHeight = 40.dp // Altura de cada fila en dp
     val columnSpacing = 8.dp // Espacio entre filas en dp
@@ -137,7 +132,7 @@ fun SleepChart(sleepData: List<SleepInfo?>) {
                                 isDialogVisible = true
                             }
                     ) {
-                        Text(formatDate(sleepData[index]!!.effectiveDate))
+                        Text(weeklySummaryViewModel.formatDate(sleepData[index]!!.effectiveDate))
                         Spacer(modifier = Modifier.width(6.dp))
                         Canvas(
                             modifier = Modifier
@@ -180,7 +175,7 @@ fun SleepChart(sleepData: List<SleepInfo?>) {
                 selectedSleepInfo?.let { info ->
                     Column {
                         Text(
-                            "Fecha: ${formatDate(info.effectiveDate)}",
+                            "Fecha: ${weeklySummaryViewModel.formatDate(info.effectiveDate)}",
                             modifier = Modifier.padding(start = 10.dp),
                             color = Color.Black
                         )
@@ -241,13 +236,5 @@ fun String.toHourMinuteFormat(): String {
     } else {
         this
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun formatDate(dateString: String): String {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val date = LocalDate.parse(dateString, formatter)
-    val outputFormatter = DateTimeFormatter.ofPattern("dd MMM")
-    return date.format(outputFormatter)
 }
 

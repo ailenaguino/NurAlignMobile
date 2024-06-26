@@ -2,6 +2,7 @@ package com.losrobotines.nuralign.feature_routine.presentation
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -49,6 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.USER_NAME
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.AddMedicationAlertDialog
+import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.AddIcon
 import com.losrobotines.nuralign.feature_routine.domain.models.Activity
 import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationPrompts
 import com.losrobotines.nuralign.feature_sleep.presentation.screens.CustomTimePickerDialog
@@ -95,6 +99,7 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                     SharedComponents().fabCompanion(
                         listOf(
                             "Acá completa tu rutina semanal así te recuerdo de tus actividades.",
+                            "Además podes agregar que actividades haces cada día.",
                             "Clickeame para esconder mi diálogo"
                         )
                     )
@@ -104,10 +109,10 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 10.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             item {
@@ -115,7 +120,7 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
             }
 
             item {
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
             item {
@@ -130,104 +135,25 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
             }
 
             item {
-                Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = newActivityName,
-                        onValueChange = { newActivityName = it },
-                        modifier = Modifier
-                            .height(65.dp)
-                            .fillMaxWidth(0.4f), // Ocupa el 60% del ancho disponible
-                        shape = RoundedCornerShape(20.dp),
-                        enabled = !isSaved,
-                        label = { Text("Actividad", color = secondaryColor) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = secondaryColor,
-                            unfocusedBorderColor = secondaryColor,
-                            disabledBorderColor = secondaryColor,
-                            disabledTextColor = secondaryColor
-                        )
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    OutlinedTextField(
-                        value = newActivityTime,
-                        label = { Text("Hora") },
-                        onValueChange = { newActivityTime = it },
-                        modifier = Modifier
-                            .height(65.dp)
-                            .width(70.dp) // Ancho fijo para la hora
-                            .clickable(enabled = !isSaved) { isOpen.value = true },
-                        shape = RoundedCornerShape(30.dp),
-                        singleLine = true,
-                        enabled = false,
-                        textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = Color.Blue,
-                            focusedBorderColor = secondaryColor,
-                            unfocusedBorderColor = secondaryColor,
-                            disabledBorderColor = secondaryColor,
-                            disabledLabelColor = secondaryColor,
-                            disabledTextColor = secondaryColor
-                        )
-                    )
-
-                    if (isOpen.value) {
-                        CustomTimePickerDialog(
-                            onAccept = { selectedTime ->
-                                isOpen.value = false
-                                if (selectedTime != null) {
-                                    newActivityTime = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-                                }
-                            },
-                            onCancel = { isOpen.value = false }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button(
-                        onClick = {
-                            if (newActivityName.isNotEmpty() && newActivityTime.isNotEmpty()) {
-                                routineViewModel.addActivity(
-                                    Activity(
-                                        name = newActivityName,
-                                        time = newActivityTime,
-                                        days = emptyList()
-                                    )
-                                )
-                                newActivityName = ""
-                                newActivityTime = ""
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Por favor, complete el nombre y la hora de la actividad",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        enabled = !isSaved,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = mainColor,
-                            disabledContainerColor = Color.Gray,
-                            disabledContentColor = Color.White
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Text("Agregar")
-                    }
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-            }
-
-            items(activities) { activity ->
-                GenericActivityRow(activity, routineViewModel)
                 Spacer(modifier = Modifier.height(20.dp))
+                AddRoutineButton(routineViewModel)
+            }
+            if (activities.isEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "No tienes actividades guardadas.", modifier = Modifier
+                            .fillMaxWidth(),
+                        color = secondaryColor,
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }else {
+                items(activities) { activity ->
+                    GenericActivityRow(activity, routineViewModel)
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
             }
 
             item {
@@ -239,7 +165,6 @@ fun RoutineScreenComponent(navController: NavHostController, routineViewModel: R
                     routineViewModel = routineViewModel,
                     context = context,
                     scope = scope,
-                    isSaved = isSaved,
                     name = name
                 )
             }
@@ -253,8 +178,7 @@ private fun saveRoutine(
     routineViewModel: RoutineViewModel,
     context: Context,
     scope: CoroutineScope,
-    isSaved: Boolean,
-    name: String
+    name: String,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -285,16 +209,17 @@ private fun saveRoutine(
                 val prompt = NotificationPrompts.getMotivationalMessage(name)
 
                 scope.launch {
-                    routineViewModel.generateNotificationMessage(prompt)?.let {
-                        routineViewModel.notification.scheduledNotification(
-                            context,
-                            selectedBedTime,
-                            title = "Robotin",
-                            content = it,
-                            destination = "SleepTrackerScreen",
-                            notificationId = 1
-                        )
-                    }
+                    routineViewModel.generateNotificationMessage(prompt)
+                        ?.let { motivationalMessage ->
+                            routineViewModel.notification.scheduledNotification(
+                                context = context,
+                                selectedTime = selectedBedTime,
+                                title = "Robotin",
+                                content = motivationalMessage,
+                                destination = "SleepTrackerScreen",
+                                notificationId = 1
+                            )
+                        }
 
                     routineViewModel.activities.value?.forEachIndexed { index, activity ->
                         val selectedActivityTime = routineViewModel.parseTime(activity.time)
@@ -306,24 +231,30 @@ private fun saveRoutine(
                             ).show()
                             return@forEachIndexed
                         }
+
+                        Log.d("RoutineViewModel", "selectedActivityTime: $selectedActivityTime")
+                        Log.d("RoutineViewModel", "${activity.days}")
                         val activityMessage =
                             NotificationPrompts.getActivityMessage(activity.name, name)
-                        routineViewModel.generateNotificationMessage(activityMessage)?.let {
-                            routineViewModel.notification.scheduledNotification(
-                                context,
-                                selectedActivityTime,
-                                title = "Robotin",
-                                content = it,
-                                destination = "HomeScreen",
-                                notificationId = index + 2,
-                                selectedDays = activity.days
-                            )
-                        }
+                        routineViewModel.generateNotificationMessage(activityMessage)
+                            ?.let { activityNotificationMessage ->
+                                routineViewModel.notification.scheduledNotification(
+                                    context = context,
+                                    selectedTime = selectedActivityTime,
+                                    title = "Robotin",
+                                    content = activityNotificationMessage,
+                                    destination = "HomeScreen",
+                                    notificationId = index + 2,
+                                    selectedDays = activity.days ?: emptyList()
+                                )
+                            }
                     }
 
                     routineViewModel.saveRoutine()
                     routineViewModel.setIsSavedRoutine(true)
                 }
+
+                Toast.makeText(context, "Rutina guardada", Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.padding(end = 16.dp),
             colors = ButtonDefaults.buttonColors(
@@ -331,12 +262,14 @@ private fun saveRoutine(
                 disabledContainerColor = Color.Gray,
                 disabledContentColor = Color.White
             ),
-            enabled = !isSaved
-        ) {
+            enabled = true
+        )
+        {
             Text("Guardar")
         }
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun questionGoToSleep(
@@ -407,5 +340,30 @@ private fun questionGoToSleep(
                 isOpen.value = false
             }
         )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AddRoutineButton(routineViewModel: RoutineViewModel) {
+    var openAlertDialog by remember { mutableStateOf(false) }
+
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { openAlertDialog = true },
+            colors = ButtonDefaults.buttonColors(containerColor = mainColor)
+        ) {
+            Text(text = "Agregar medicación")
+        }
+        if (openAlertDialog) {
+            AddActivityAlertDialog(
+                onDismissRequest = { openAlertDialog = false },
+                confirmButton = { openAlertDialog = false },
+                routineViewModel = routineViewModel
+            )
+
+
+        }
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }

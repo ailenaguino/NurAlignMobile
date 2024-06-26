@@ -1,7 +1,6 @@
 package com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens
 
 import android.annotation.SuppressLint
-import android.content.ClipData.Item
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -21,8 +20,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +49,8 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 fun WeeklySummaryMoodTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
     val moodTrackerInfoList by weeklySummaryViewModel.moodTrackerInfoList.collectAsState()
     val isLoading by weeklySummaryViewModel.isLoading.collectAsState()
+    val moodAveragesLabels by weeklySummaryViewModel.moodAveragesLabels.collectAsState()
+
 
     Column() {
         LazyVerticalGrid(
@@ -70,9 +69,13 @@ fun WeeklySummaryMoodTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
                         defaultElevation = 7.dp
                     )
                 ) {
+                    val moodMessage = "En tu semana tuviste un promedio de ánimo:\nElevado: ${moodAveragesLabels?.highestValueLabel},"
+                    val moodMessage2 ="Deprimido: ${moodAveragesLabels?.lowestValueLabel},\nIrritable: ${moodAveragesLabels?.irritableValueLabel},\nAnsioso: ${moodAveragesLabels?.anxiousValueLabel}"
+
                     SharedComponents().fabCompanion(
                         listOf(
-                            "Esta semana dormiste un promedio de ${weeklySummaryViewModel.getAverageSleepHours()} horas por dia",
+                            moodMessage,
+                            moodMessage2,
                             "Clickeame para esconder mi diálogo"
                         )
                     )
@@ -89,7 +92,7 @@ fun WeeklySummaryMoodTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
         Spacer(modifier = Modifier.height(10.dp))
 
 
-        MoodBarChartList(moodTrackerInfoList)
+        MoodBarChartList(moodTrackerInfoList,weeklySummaryViewModel)
     }
 
 
@@ -111,7 +114,10 @@ fun Linea() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MoodBarChartList(moodData: List<MoodTrackerInfo?>) {
+fun MoodBarChartList(
+    moodData: List<MoodTrackerInfo?>,
+    weeklySummaryViewModel: WeeklySummaryViewModel
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -131,7 +137,7 @@ fun MoodBarChartList(moodData: List<MoodTrackerInfo?>) {
                         .align(Alignment.CenterVertically)
                 ) {
                     Text(
-                        text = formatDate(moodInfo!!.effectiveDate),
+                        text = weeklySummaryViewModel.formatDate(moodInfo!!.effectiveDate),
                         color = Color.Black,
                         textAlign = TextAlign.Center,
                         modifier = Modifier

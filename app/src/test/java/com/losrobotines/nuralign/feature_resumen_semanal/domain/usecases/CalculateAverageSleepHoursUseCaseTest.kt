@@ -10,6 +10,16 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+private val SLEEP_INFO_1 = mockk<SleepInfo> {
+    every { sleepHours } returns 8
+}
+private val SLEEP_INFO_2 = mockk<SleepInfo> {
+    every { sleepHours } returns 6
+}
+private val SLEEP_INFO_3 = mockk<SleepInfo> {
+    every { sleepHours } returns 7
+}
+private val SLEEP_INFO_4 = null
 class CalculateAverageSleepHoursUseCaseTest {
 
     private lateinit var calculateAverageSleepHoursUseCase: CalculateAverageSleepHoursUseCase
@@ -27,16 +37,7 @@ class CalculateAverageSleepHoursUseCaseTest {
     @Test
     fun `invoke returns correct average sleep hours`() = runBlocking {
         // Given
-        val sleepInfo1 = mockk<SleepInfo> {
-            every { sleepHours } returns 8
-        }
-        val sleepInfo2 = mockk<SleepInfo> {
-            every { sleepHours } returns 6
-        }
-        val sleepInfo3 = mockk<SleepInfo> {
-            every { sleepHours } returns 7
-        }
-        val sleepInfoList = listOf(sleepInfo1, sleepInfo2, sleepInfo3)
+        val sleepInfoList = listOf(SLEEP_INFO_1, SLEEP_INFO_2, SLEEP_INFO_3)
 
         // When
         val result = calculateAverageSleepHoursUseCase.invoke(sleepInfoList)
@@ -48,14 +49,7 @@ class CalculateAverageSleepHoursUseCaseTest {
     @Test
     fun `invoke returns correct average sleep hours with null values`() = runBlocking {
         // Given
-        val sleepInfo1 = mockk<SleepInfo> {
-            every { sleepHours } returns 8
-        }
-        val sleepInfo2 = null
-        val sleepInfo3 = mockk<SleepInfo> {
-            every { sleepHours } returns 7
-        }
-        val sleepInfoList = listOf(sleepInfo1, sleepInfo2, sleepInfo3)
+        val sleepInfoList = listOf(SLEEP_INFO_1, SLEEP_INFO_4, SLEEP_INFO_3)
 
         // When
         val result = calculateAverageSleepHoursUseCase.invoke(sleepInfoList)

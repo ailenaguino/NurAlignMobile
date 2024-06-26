@@ -17,6 +17,7 @@ sealed class Routes(val route: String) {
     data object WeeklySummary :Routes("WeeklySummary")
     data object WeeklySummaryMoodTracker : Routes("WeeklySummaryMoodTracker")
     data object  WeeklySummarySleepTracker : Routes("WeeklySummarySleepTracker")
+    data object  WeeklySummaryMedicationTracker : Routes("WeeklySummaryMedicationTracker")
 
 
 }

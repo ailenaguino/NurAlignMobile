@@ -37,7 +37,6 @@ class GetWeeklyMoodTrackerInfoUseCaseTest {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
-        // Mock behavior for weeklySummaryProvider.getMoodTracker
         coEvery { weeklySummaryProvider.getMoodTracker(any(), any()) } returns mockk()
 
         // When

@@ -38,6 +38,7 @@ import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.We
 import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.WeeklySummaryScreenComponent
 import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.WeeklySummarySleepTracker
 import com.losrobotines.nuralign.feature_resumen_semanal.presentation.WeeklySummaryViewModel
+import com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens.WeeklySummaryMedicationTracker
 import com.losrobotines.nuralign.feature_routine.domain.notification.NotificationHelper
 import com.losrobotines.nuralign.feature_routine.domain.notification.PermissionManager
 import com.losrobotines.nuralign.feature_routine.presentation.RoutineScreenComponent
@@ -162,6 +163,10 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.WeeklySummarySleepTracker.route) {
                                     val weeklySummaryViewModel by viewModels<WeeklySummaryViewModel>()
                                     WeeklySummarySleepTracker(weeklySummaryViewModel)
+                                }
+                                composable(Routes.WeeklySummaryMedicationTracker.route) {
+                                    val weeklySummaryViewModel by viewModels<WeeklySummaryViewModel>()
+                                    WeeklySummaryMedicationTracker(weeklySummaryViewModel)
                                 }
                             }
 
