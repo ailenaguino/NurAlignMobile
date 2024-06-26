@@ -1,6 +1,6 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases
+package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
 
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import org.junit.jupiter.api.Assertions.*
 
 import io.mockk.clearAllMocks

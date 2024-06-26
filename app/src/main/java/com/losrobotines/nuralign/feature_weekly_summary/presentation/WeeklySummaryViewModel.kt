@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.presentation
+package com.losrobotines.nuralign.feature_weekly_summary.presentation
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -12,19 +12,18 @@ import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases.CalculateAverageSleepHoursUseCase
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases.CalculateWeeklyMoodAveragesUseCase
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases.GetWeeklyMedicationTrackerInfoUseCase
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases.GetWeeklyMoodTrackerInfoUseCase
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases.GetWeeklySleepTrackerInfoUseCase
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases.MoodTrackerAveragesLabels
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.CalculateAverageSleepHoursUseCase
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.CalculateWeeklyMoodAveragesUseCase
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMedicationTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMoodTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklySleepTrackerInfoUseCase
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.MoodTrackerAveragesLabels
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 

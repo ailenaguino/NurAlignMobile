@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.presentation.screens
+package com.losrobotines.nuralign.feature_weekly_summary.presentation.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
-import com.losrobotines.nuralign.feature_resumen_semanal.presentation.WeeklySummaryViewModel
+import com.losrobotines.nuralign.feature_weekly_summary.presentation.WeeklySummaryViewModel
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 

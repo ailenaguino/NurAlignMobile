@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.data
+package com.losrobotines.nuralign.feature_weekly_summary.data
 
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto

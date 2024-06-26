@@ -1,8 +1,8 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases
+package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
 
 import android.util.Log
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

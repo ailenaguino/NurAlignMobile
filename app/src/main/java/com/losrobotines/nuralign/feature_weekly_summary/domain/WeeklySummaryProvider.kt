@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.domain
+package com.losrobotines.nuralign.feature_weekly_summary.domain
 
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo

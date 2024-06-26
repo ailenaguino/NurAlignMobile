@@ -1,6 +1,6 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases
+package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
 
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify

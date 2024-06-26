@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.data
+package com.losrobotines.nuralign.feature_weekly_summary.data
 
 import android.util.Log
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
@@ -6,7 +6,7 @@ import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_resumen_semanal.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import retrofit2.HttpException

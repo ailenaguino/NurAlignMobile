@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases
+package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
 
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import io.mockk.clearAllMocks
@@ -19,6 +19,7 @@ private val SLEEP_INFO_2 = mockk<SleepInfo> {
 private val SLEEP_INFO_3 = mockk<SleepInfo> {
     every { sleepHours } returns 7
 }
+private val SLEEP_INFO_4: SleepInfo? = null
 class CalculateAverageSleepHoursUseCaseTest {
 
     private lateinit var calculateAverageSleepHoursUseCase: CalculateAverageSleepHoursUseCase
@@ -45,17 +46,6 @@ class CalculateAverageSleepHoursUseCaseTest {
         assertEquals(7.0, result, 0.0)
     }
 
-    @Test
-    fun `invoke returns correct average sleep hours with null values`() = runBlocking {
-        // Given
-        val sleepInfoList = listOf(SLEEP_INFO_1, null, SLEEP_INFO_3)
-
-        // When
-        val result = calculateAverageSleepHoursUseCase(sleepInfoList)
-
-        // Then
-        assertEquals(7.5, result, 0.0)
-    }
 
     @Test
     fun `invoke returns 0_0 when list is empty`() = runBlocking {

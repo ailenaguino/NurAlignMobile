@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_resumen_semanal.domain.usecases
+package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
 
 import javax.inject.Inject
 import kotlin.math.roundToInt
