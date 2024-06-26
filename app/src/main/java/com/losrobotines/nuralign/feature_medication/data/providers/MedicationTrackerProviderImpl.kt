@@ -1,6 +1,7 @@
 package com.losrobotines.nuralign.feature_medication.data.providers
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationTrackerApiService
@@ -28,8 +29,9 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
         patientMedicationId: Short,
         effectiveDate: String
     ): MedicationTrackerInfo? {
-        val dto = apiService.getMedicationTrackerInfo(patientMedicationId, effectiveDate)
         return try {
+            val dto = apiService.getMedicationTrackerInfo(patientMedicationId, effectiveDate)
+
             if (dto.isSuccessful) {
                 mapDataToDomain(dto.body())
             } else {
@@ -39,7 +41,8 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
                 null
             }
         } catch (e: Exception) {
-            throw Exception("Failed to get data")
+            Log.e("MedicationTrackerProvider", e.message!!)
+            return null
         }
     }
 

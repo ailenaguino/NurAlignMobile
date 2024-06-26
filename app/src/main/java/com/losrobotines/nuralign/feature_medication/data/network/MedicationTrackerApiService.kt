@@ -16,13 +16,13 @@ interface MedicationTrackerApiService {
     @POST("medicationTracker")
     suspend fun insertMedicationTrackerInfo(@Body medicationTrackerInfo: MedicationTrackerDto): Response<MedicationTrackerDto>
 
-    @GET("medicationTracker/patient/{patientMedicationId}")
+    @GET("medicationTracker/{patientMedicationId}")
     suspend fun getMedicationTrackerInfo(
         @Path("patientMedicationId") patientMedicationId: Short,
         @Query("effectiveDate") effectiveDate: String
     ): Response<MedicationTrackerDto?>
 
-    @PATCH("medicationTracker/patient/{patientMedicationId}")
+    @PATCH("medicationTracker/{patientMedicationId}")
     suspend fun updateMedicationTrackerInfo(
         @Path("patientMedicationId") patientMedicationId: Short,
         @Query("effectiveDate") effectiveDate: String,

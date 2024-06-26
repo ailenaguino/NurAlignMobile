@@ -30,8 +30,6 @@ class MedicationTrackerViewModel @Inject constructor(
     private val _medicationTrackerList = MutableLiveData<List<MedicationTrackerInfo?>>()
     val medicationTrackerList: LiveData<List<MedicationTrackerInfo?>> = _medicationTrackerList
 
-    private val _updatedTrackers = mutableStateListOf<MedicationTrackerInfo>()
-
     private val _patientMedicationId = mutableIntStateOf(0)
     val patientMedicationId: State<Int?> = _patientMedicationId
 
@@ -49,103 +47,75 @@ class MedicationTrackerViewModel @Inject constructor(
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun loadMedicationTrackerInfo(patientMedicationId: Short) {
+    fun loadMedicationTrackerInfo(patientMedicationIds: List<Short>) {
         viewModelScope.launch {
             _isLoading.value = true
-            val result =
-                userService.getMedicationTrackerData(patientMedicationId, _currentDate.value)
-            val currentList = _medicationTrackerList.value ?: emptyList()
-            val index = currentList.indexOfFirst { it?.patientMedicationId == patientMedicationId }
 
-            if (result.isSuccess) {
-                val updatedList = currentList.toMutableList()
-                if (index >= 0) {
-                    updatedList[index] = result.getOrNull()
+            val currentList = mutableListOf<MedicationTrackerInfo?>()
+
+            patientMedicationIds.forEach {
+                val result =
+                    userService.getMedicationTrackerData(it, _currentDate.value)
+                if (result.isSuccess) {
+                    val trackerList = result.getOrNull()
+                    if (trackerList == null) {
+                        val newTracker = MedicationTrackerInfo(it, _currentDate.value, "N")
+                        currentList.add(newTracker)
+                    } else {
+                        currentList.add(trackerList)
+                    }
                 } else {
-                    updatedList.add(result.getOrNull())
+                    //Este error sale cuando no se encuentra el seguimiento para una medicación
+                    //Es porque el get devuelve 500, cuando devuelva 204 no debería mostrar más este error.
+                    _errorMessage.postValue("Error al cargar el seguimiento de la toma de medicamentos")
+                    _isLoading.postValue(false)
+                    currentList.add(null)
                 }
-                _medicationTrackerList.postValue(updatedList)
-                _isLoading.postValue(false)
-            } else {
-                Log.e(
-                    "MedicationTrackerViewModel",
-                    "${result.exceptionOrNull()?.message}"
-                )
-                //Este error sale cuando no se encuentra el seguimiento para una medicación
-                //Es porque el get devuelve 500, cuando devuelva 204 no debería mostrar más este error.
-                _errorMessage.postValue("Error al cargar el seguimiento de la toma de medicamentos")
-                _isLoading.postValue(false)
             }
+            _medicationTrackerList.postValue(currentList)
+            _isLoading.postValue(false)
         }
     }
 
     fun saveOrUpdateMedicationTracker() {
         viewModelScope.launch {
-            val currentTrackerList = _medicationTrackerList.value ?: emptyList()
-            val trackersToSave = _updatedTrackers.filter { tracker ->
-                currentTrackerList.none {
-                    it?.patientMedicationId == tracker.patientMedicationId
-                }
-            }.toList()
+            val trackerToSaveOrUpdate = _medicationTrackerList.value ?: emptyList()
 
-            val trackersToUpdate = _updatedTrackers.filter { tracker ->
-                currentTrackerList.any {
-                    it?.patientMedicationId == tracker.patientMedicationId
-                }
-            }.toList()
-
-            _updatedTrackers.clear()
-
-            if (trackersToSave.isNotEmpty()) {
-                val results = trackersToSave.map {
-                    saveMedicationTrackerInfoUseCase(it)
-                }
-                if (results.all { it.isSuccess }) {
-                    trackersToSave.forEach {
-                        loadMedicationTrackerInfo(it.patientMedicationId)
+            trackerToSaveOrUpdate.forEach { tracker ->
+                tracker?.let {
+                    val existingTracker = _medicationTrackerList.value?.find {
+                        it?.patientMedicationId == tracker.patientMedicationId
                     }
-                } else {
-                    results.forEachIndexed { index, result ->
+                    if (existingTracker == null) {
+                        val result = saveMedicationTrackerInfoUseCase(tracker)
                         if (result.isFailure) {
                             Log.e(
                                 "MedicationTrackerViewModel",
-                                "Error saving ${trackersToSave[index]} : ${result.exceptionOrNull()?.message}"
+                                "Error al guardar el seguimiento de la toma de medicamentos"
                             )
+                            _errorMessage.postValue("Error al guardar el seguimiento de la toma de medicamentos")
                         }
-                    }
-                    _errorMessage.value =
-                        "Error al guardar el seguimiento de la toma de medicamentos"
-                }
-            } else if (trackersToUpdate.isNotEmpty()) {
-                val results = trackersToUpdate.map {
-                    updateMedicationTrackerInfoUseCase(it)
-                }
-                if (results.all { it.isSuccess }) {
-                    trackersToUpdate.forEach {
-                        loadMedicationTrackerInfo(it.patientMedicationId)
-                    }
-                } else {
-                    results.forEachIndexed { index, result ->
+                    } else {
+                        val result = updateMedicationTrackerInfoUseCase(tracker)
                         if (result.isFailure) {
                             Log.e(
                                 "MedicationTrackerViewModel",
-                                "Error updating ${trackersToUpdate[index]} : ${result.exceptionOrNull()?.message}"
+                                "Error al actualizar el seguimiento de la toma de medicamentos"
                             )
+                            _errorMessage.postValue("Error al actualizar el seguimiento de la toma de medicamentos")
                         }
                     }
+
+                    loadMedicationTrackerInfo(trackerToSaveOrUpdate.mapNotNull {
+                        it?.patientMedicationId
+                    })
                 }
-            } else {
-                _errorMessage.value = "No hay seguimiento de medicamentos para guardar"
             }
         }
     }
 
     fun setPatientMedicationId(id: Int?) {
         _patientMedicationId.intValue = id!!
-    }
-
-    fun addTrackerToUpdate(tracker: MedicationTrackerInfo) {
-        _updatedTrackers.add(tracker)
     }
 
     fun updateTakenFlag(id: Short, takenFlag: String) {
@@ -155,14 +125,10 @@ class MedicationTrackerViewModel @Inject constructor(
 
             if (index >= 0) {
                 val updatedTracker = currentTrackerList[index]?.copy(takenFlag = takenFlag)
-                updatedTracker?.let {
-                    addTrackerToUpdate(it)
-                }
-
                 val updatedList = currentTrackerList.toMutableList()
                 updatedList[index] = updatedTracker
 
-                _medicationTrackerList.value = updatedList
+                _medicationTrackerList.postValue(updatedList)
             }
         }
     }

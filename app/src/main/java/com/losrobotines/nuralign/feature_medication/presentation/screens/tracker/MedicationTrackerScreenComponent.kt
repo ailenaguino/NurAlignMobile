@@ -65,10 +65,17 @@ fun MedicationTrackerScreenComponent(
     medicationTrackerViewModel: MedicationTrackerViewModel
 ) {
     val medicationList by medicationViewModel.medicationList.observeAsState()
+    val medicationIdList = medicationList?.mapNotNull { it?.patientMedicationId }
     val isLoading by medicationViewModel.isLoading.observeAsState(initial = false)
     val route by medicationTrackerViewModel.route.observeAsState("")
     val isVisible by medicationTrackerViewModel.isVisible.observeAsState(false)
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(medicationIdList) {
+        medicationIdList?.let{
+            medicationTrackerViewModel.loadMedicationTrackerInfo(it)
+        }
+    }
 
     Scaffold(
         snackbarHost = {
@@ -187,15 +194,6 @@ fun MedicationElement(
     )
     val tracker =
         medicationTrackerList.find { it?.patientMedicationId == medicationElement.patientMedicationId }
-    var isChecked by remember { mutableStateOf(tracker?.takenFlag == "Y") }
-
-    LaunchedEffect(medicationElement.patientMedicationId) {
-        medicationTrackerViewModel.loadMedicationTrackerInfo(medicationElement.patientMedicationId!!)
-    }
-
-    LaunchedEffect(tracker){
-        isChecked = tracker?.takenFlag == "Y"
-    }
 
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
@@ -227,22 +225,13 @@ fun MedicationElement(
                 .padding(horizontal = 4.dp)
         ) {
             Checkbox(
-                checked = isChecked,
+                checked = tracker?.takenFlag == "Y",
                 onCheckedChange = { newCheckedState ->
-                    isChecked = newCheckedState
                     tracker?.let {
                         medicationTrackerViewModel.updateTakenFlag(
                             it.patientMedicationId,
                             if (newCheckedState) "Y" else "N"
                         )
-                    } ?: run {
-                        val newTracker =
-                            MedicationTrackerInfo(
-                                medicationElement.patientMedicationId!!,
-                                medicationTrackerViewModel.currentDate,
-                                if (newCheckedState) "Y" else "N"
-                            )
-                        medicationTrackerViewModel.addTrackerToUpdate(newTracker)
                     }
                 },
                 colors = CheckboxDefaults.colors(
