@@ -27,6 +27,7 @@ import com.losrobotines.nuralign.feature_achievements.presentation.screens.Achie
 import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionScreenComponent
 import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
+import com.losrobotines.nuralign.feature_login.presentation.screens.login.ForgottenPasswordScreen
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.signup.SignUpScreenComponent
@@ -135,6 +136,10 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.CompanionScreen.route){
                                     val companionViewModel by viewModels<CompanionViewModel>()
                                     CompanionScreenComponent(companionViewModel)
+                                }
+                                composable(Routes.ForgottenPasswordScreen.route){
+                                    val viewmodel by viewModels<LoginViewModel>()
+                                    ForgottenPasswordScreen(navController, viewmodel)
                                 }
                                 composable(Routes.SettingsScreen.route) {
                                     SettingsScreenComponent(navController, loginViewModel)

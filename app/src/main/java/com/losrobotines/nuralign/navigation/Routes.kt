@@ -17,6 +17,7 @@ sealed class Routes(val route: String) {
 
     data object TestGraficos :Routes("TestGraficos")
     data object CompanionScreen : Routes("CompanionScreen")
+    data object ForgottenPasswordScreen : Routes("ForgottenPasswordScreen")
 
 
 }
