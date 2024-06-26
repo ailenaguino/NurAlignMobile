@@ -36,7 +36,7 @@ fun AddNewTherapistAlertDialog(
     val coroutineScope = rememberCoroutineScope()
     val newTherapist = TherapistInfo(
         id = null,
-        1,
+        therapistViewModel.patientId.value,
         therapistViewModel.therapistFirstName.value,
         therapistViewModel.therapistLastName.value,
         therapistViewModel.therapistEmail.value,

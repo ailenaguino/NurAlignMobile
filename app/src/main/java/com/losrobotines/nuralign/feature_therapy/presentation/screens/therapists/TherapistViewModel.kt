@@ -44,7 +44,8 @@ class TherapistViewModel @Inject constructor(
     val errorMessage: LiveData<String?> = _errorMessage
 
     init {
-        _patientId.value = 25
+        _patientId.value = 0
+        getCurrentPatientId()
         loadTherapistList()
     }
 
@@ -139,7 +140,7 @@ class TherapistViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 _patientId.value = result.getOrNull()!!
-                loadTherapistList()
+                //loadTherapistList()
             } else {
                 Log.e(
                     "TherapistViewModel",
