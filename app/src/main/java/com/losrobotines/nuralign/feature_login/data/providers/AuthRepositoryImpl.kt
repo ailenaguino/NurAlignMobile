@@ -17,7 +17,6 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             LoginState.Success(result.user!!)
         } catch (e: Exception) {
-            e.printStackTrace()
             LoginState.Failure(e)
         }
     }
@@ -28,9 +27,11 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
     ): LoginState<FirebaseUser> {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            LoginState.Success(result.user!!)
+            result.user.let {
+                it!!.sendEmailVerification().await()
+                LoginState.Success(result.user!!)
+            }
         } catch (e: Exception) {
-            e.printStackTrace()
             LoginState.Failure(e)
         }
     }
@@ -40,4 +41,10 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
     override fun logout() {
         firebaseAuth.signOut()
     }
+
+    override fun sendPasswordResetEmail(email: String) {
+        firebaseAuth.sendPasswordResetEmail(email)
+    }
+
+
 }

@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -36,6 +38,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults.containerColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -47,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -74,7 +78,9 @@ import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 const val USER_NAME = "user_name"
@@ -98,211 +104,219 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
     var userBirthDate by remember { mutableStateOf("") }
     var userSex by remember { mutableStateOf("Seleccione su sexo") }
 
-    val signupFlow = viewModel.signupFlow.collectAsState()
+    val message by viewModel.message.observeAsState("")
 
+    val signupFlow = viewModel.signupFlow.collectAsState()
 
     val context = LocalContext.current
     val preferencesManager = remember { PreferencesManager(context) }
 
-    SharedComponents().HalfCircleTop(title = "")
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1)
     ) {
-        Spacer(modifier = Modifier.height(49.dp))
-
-        Image(
-            painterResource(id = R.drawable.logo),
-            contentDescription = "LogoAPP",
-            modifier = Modifier
-                .size(250.dp)
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 75.dp)
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            OutlinedTextField(
-                value = userEmail,
-                onValueChange = { userEmail = it },
+        item {
+            SharedComponents().HalfCircleTop(title = "Registro")
+        }
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                label = { Text("Email"/*, color = mainColor*/) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            OutlinedTextField(
-                value = userPassword,
-                onValueChange = { userPassword = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                label = { Text("Contraseña"/*, color = mainColor*/) },
-                singleLine = true,
-                visualTransformation = if (passwordVisible)
-                    VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (passwordVisible)
-                        "Ocultar contraseña" else "Mostrar contraseña"
-
-                    IconButton(
-                        onClick = { passwordVisible = !passwordVisible },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Icon(imageVector = image, description, tint = secondaryColor)
-                    }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = mainColor,
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                label = { Text("Confirmar contraseña"/*, color = mainColor*/) },
-                singleLine = true,
-                visualTransformation = if (confirmPasswordVisible)
-                    VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon = {
-                    val image = if (confirmPasswordVisible)
-                        Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (confirmPasswordVisible)
-                        "Ocultar contraseña" else "Mostrar contraseña"
-
-                    IconButton(
-                        onClick = { confirmPasswordVisible = !confirmPasswordVisible },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Icon(imageVector = image, description, tint = secondaryColor)
-                    }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = mainColor,
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
-                )
-            )
-            MatchingPassword(userPassword, confirmPassword)
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            OutlinedTextField(
-                value = userFirstName,
-                onValueChange = { userFirstName = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                label = { Text("Nombre"/*, color = mainColor*/) },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = mainColor,
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            OutlinedTextField(
-                value = userLastName,
-                onValueChange = { userLastName = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(35.dp),
-                label = { Text("Apellido"/*, color = mainColor*/) },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = mainColor,
-                    focusedBorderColor = mainColor,
-                    unfocusedBorderColor = mainColor,
-                )
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            userBirthDate = SelectBirthday()
-
-            Spacer(modifier = Modifier.height(13.dp))
-
-            userSex = selectSexDropMenu()
-
-            Spacer(modifier = Modifier.height(55.dp))
-
-            Button(
-                onClick = {
-                    viewModel.signup(
-                        userEmail,
-                        userPassword,
-                        userFirstName,
-                        userLastName,
-                        userBirthDate,
-                        userSex
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 80.dp, end = 80.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = secondaryColor,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(15.dp)
+                    .fillMaxSize()
             ) {
-                Text("Crea tu cuenta")
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            ClickableText(
-                text = AnnotatedString("Ya estoy registrado"),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = {
-                    navController.navigate(Routes.LoginScreen.route)
-                },
-                style = TextStyle(
-                    fontSize = 17.sp,
-                    fontFamily = FontFamily.Default,
-                    color = mainColor
+                OutlinedTextField(
+                    value = userEmail,
+                    onValueChange = { userEmail = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    label = { Text("Email") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
                 )
-            )
 
-            Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
+                OutlinedTextField(
+                    value = userPassword,
+                    onValueChange = { userPassword = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    label = { Text("Contraseña") },
+                    singleLine = true,
+                    visualTransformation = if (passwordVisible)
+                        VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        val description = if (passwordVisible)
+                            "Ocultar contraseña" else "Mostrar contraseña"
+
+                        IconButton(
+                            onClick = { passwordVisible = !passwordVisible },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Icon(imageVector = image, description, tint = secondaryColor)
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = mainColor,
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    label = { Text("Confirmar contraseña") },
+                    singleLine = true,
+                    visualTransformation = if (confirmPasswordVisible)
+                        VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    trailingIcon = {
+                        val image = if (confirmPasswordVisible)
+                            Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        val description = if (confirmPasswordVisible)
+                            "Ocultar contraseña" else "Mostrar contraseña"
+
+                        IconButton(
+                            onClick = { confirmPasswordVisible = !confirmPasswordVisible },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Icon(imageVector = image, description, tint = secondaryColor)
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = mainColor,
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
+                )
+                MatchingPassword(userPassword, confirmPassword)
+
+                if ((userPassword == confirmPassword) && confirmPassword.isNotEmpty()) {
+                    PasswordIsValid(password = userPassword)
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                OutlinedTextField(
+                    value = userFirstName,
+                    onValueChange = { userFirstName = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    label = { Text("Nombre") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = mainColor,
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                OutlinedTextField(
+                    value = userLastName,
+                    onValueChange = { userLastName = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(35.dp),
+                    label = { Text("Apellido") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = mainColor,
+                        focusedBorderColor = mainColor,
+                        unfocusedBorderColor = mainColor,
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                userBirthDate = SelectBirthday()
+
+                Spacer(modifier = Modifier.height(13.dp))
+
+                userSex = selectSexDropMenu()
+
+                Spacer(modifier = Modifier.height(38.dp))
+
+                Button(
+                    onClick = {
+                        if (validatePassword(userPassword, confirmPassword) && validateFields(
+                                userEmail,
+                                userSex,
+                                userFirstName,
+                                userLastName,
+                                userBirthDate
+                            )
+                        ) {
+                            viewModel.signup(
+                                userEmail,
+                                userPassword,
+                                userFirstName,
+                                userLastName,
+                                userBirthDate,
+                                userSex
+                            )
+                        } else {
+                            Toast.makeText(context, "Coloque datos válidos", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 80.dp, end = 80.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = secondaryColor,
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(15.dp)
+                ) {
+                    Text("Creá tu cuenta")
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                ClickableText(
+                    text = AnnotatedString("Ya estoy registrado"),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onClick = {
+                        navController.navigate(Routes.LoginScreen.route)
+                    },
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = FontFamily.Default,
+                        color = mainColor
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+            }
         }
     }
+
     signupFlow.value?.let {
         when (it) {
-            is LoginState.Failure -> {
-                val context = LocalContext.current
-                Toast.makeText(context, it.exception.message, Toast.LENGTH_SHORT).show()
-            }
+            is LoginState.Failure -> Toast.makeText(context, "Ha surgido un error", Toast.LENGTH_SHORT).show()
 
             LoginState.Loading -> {
                 Column(
@@ -320,6 +334,7 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
             }
 
             is LoginState.Success -> {
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 preferencesManager.saveData(USER_NAME, userFirstName)
                 preferencesManager.saveData(USER_SEX, userSex)
                 preferencesManager.saveIntData(COMPANION, R.drawable.robotin_bebe)
@@ -327,6 +342,8 @@ fun SignUpScreenComponent(navController: NavController, viewModel: SignUpViewMod
                     navController.navigate(Routes.LoginScreen.route)
                 }
             }
+
+            LoginState.EmailNotVerified -> Toast.makeText(context, "Email no verificado", Toast.LENGTH_LONG).show()
         }
     }
 }
@@ -342,7 +359,7 @@ fun SelectBirthday(): String {
 
         OutlinedTextField(
             value = date.value,
-            label = { Text("Fecha de Nacimiento"/*, color = mainColor*/) },
+            label = { Text("Fecha de Nacimiento") },
             onValueChange = { date.value = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier
@@ -354,8 +371,10 @@ fun SelectBirthday(): String {
             colors = OutlinedTextFieldDefaults.colors(
                 cursorColor = mainColor,
                 focusedBorderColor = mainColor,
-                unfocusedBorderColor = mainColor,
-            )
+                unfocusedBorderColor = mainColor
+            ),
+            placeholder = { Text("Seleccioná la fecha en el calendario") },
+            readOnly = true
         )
         IconButton(
             onClick = { isOpen.value = true }
@@ -391,11 +410,12 @@ fun SelectBirthday(): String {
     return date.value
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDatePickerDialog(
     onAccept: (Long?) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     val state = rememberDatePickerState()
 
@@ -412,7 +432,13 @@ fun CustomDatePickerDialog(
             }
         }
     ) {
-        DatePicker(state = state)
+        DatePicker(state = state, dateValidator = { pickerDateMillis ->
+            val pickerDate =
+                pickerDateMillis.let {
+                    Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                }
+            pickerDate < LocalDate.now()
+        })
     }
 }
 
@@ -442,10 +468,17 @@ private fun selectSexDropMenu(): String {
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 shape = RoundedCornerShape(35.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    cursorColor = Color.Transparent, // Color del cursor
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = containerColor,
+                    unfocusedContainerColor = containerColor,
+                    disabledContainerColor = containerColor,
+                    cursorColor = Color.Transparent,
+                    focusedIndicatorColor = mainColor,
+                    unfocusedIndicatorColor = mainColor,
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedTextColor = secondaryColor,
+                    unfocusedTextColor = secondaryColor,
+                    disabledTextColor = secondaryColor
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -497,4 +530,39 @@ private fun MatchingPassword(password: String, confirmPassword: String) {
             )
         }
     }
+}
+
+@Composable
+fun PasswordIsValid(password: String) {
+    val passwordPattern = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}\$")
+    if (!passwordPattern.matches(password)) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "La contraseña debe tener al menos 6 dígitos, un número y una letra",
+                color = Color.Red,
+                fontStyle = FontStyle.Italic
+            )
+        }
+    }
+}
+
+fun validatePassword(password: String, confirmPassword: String): Boolean {
+    val passwordPattern = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}\$")
+    return if ((password == confirmPassword) && (passwordPattern.matches(password))) true else false
+}
+
+fun validateFields(
+    email: String,
+    sex: String,
+    name: String,
+    last: String,
+    birthday: String,
+): Boolean {
+    return !(email.isEmpty() || sex.isEmpty() || name.isEmpty() || last.isEmpty() || birthday.isEmpty())
 }

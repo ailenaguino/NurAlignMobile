@@ -3,6 +3,7 @@ package com.losrobotines.nuralign.feature_login.presentation.screens.login
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -22,6 +23,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -38,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -57,10 +61,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
+import com.losrobotines.nuralign.navigation.MainActivity
 import com.losrobotines.nuralign.navigation.Routes
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+import kotlinx.coroutines.delay
 
 
 @SuppressLint("PrivateResource", "NotConstructor")
@@ -72,7 +78,7 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
 
     val contextAplication = LocalContext.current.applicationContext
 
-
+    val message by viewModel.message.observeAsState("")
     val loginFlow = viewModel.loginFlow.collectAsState()
 
 
@@ -83,7 +89,7 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
     ) {
         Spacer(modifier = Modifier.height(49.dp))
         Image(
-            painterResource(id = R.drawable.logo),
+            painterResource(id = R.drawable.logo_white_background),
             contentDescription = "LogoAPP",
             modifier = Modifier
                 .size(290.dp)
@@ -144,6 +150,21 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
                     unfocusedBorderColor = mainColor,
                 )
             )
+            if(message.isNotEmpty()){
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Debes verificar tu email para poder iniciar sesión",
+                        color = Color.Red,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(45.dp))
 
@@ -154,8 +175,7 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
             ClickableText(
                 text = AnnotatedString("Olvidé mi contraseña"),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = {
-
+                onClick = {navController.navigate(Routes.ForgottenPasswordScreen.route)
                 },
                 style = TextStyle(
                     fontSize = 17.sp,
@@ -171,13 +191,11 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
-
+    val context = LocalContext.current
     loginFlow.value?.let {
         when (it) {
             is LoginState.Failure -> {
-                val context = LocalContext.current
-                Toast.makeText(context, it.exception.message, Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(context, "Ha surgido un error", Toast.LENGTH_SHORT).show()
             }
 
             LoginState.Loading -> {
@@ -197,9 +215,12 @@ fun LoginScreenComponent(navController: NavController, viewModel: LoginViewModel
 
             is LoginState.Success -> {
                 LaunchedEffect(Unit) {
-                    navController.navigate(Routes.HomeScreen.route)
+                    //navController.navigate(Routes.HomeScreen.route)
+                    context.startActivity(Intent(context, MainActivity::class.java))
                 }
             }
+
+            LoginState.EmailNotVerified -> {}
         }
     }
 
@@ -218,23 +239,21 @@ fun SignUpScreenButton(navController: NavController) {
             .padding(start = 50.dp, end = 50.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "Soy nuevo,\nquiero registrarme",
-                modifier = Modifier.fillMaxWidth(),
-                color = secondaryColor
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                Icons.Default.PlayArrow,
-                contentDescription = "Add Person Icon",
-                modifier = Modifier.size(24.dp),
-                tint = secondaryColor
-            )
+            Column(Modifier.weight(0.85f)) {
+                Text(text = "Soy nuevo,\nquiero registrarme", color = secondaryColor)
+            }
+            Column(Modifier.weight(0.15f), horizontalAlignment = Alignment.End) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    contentDescription = "registrarse",
+                    tint = secondaryColor
+                )
+            }
         }
     }
+
 }
 
 @Composable
