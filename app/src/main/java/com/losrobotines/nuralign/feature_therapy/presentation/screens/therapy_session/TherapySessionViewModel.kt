@@ -65,8 +65,8 @@ class TherapySessionViewModel @Inject constructor(
 
     private fun loadTherapists() {
         val newList = listOf(
-            TherapistInfo(2, "William", "Scottman", "wscottman@gmail.com", 1112344321, "N"),
-            TherapistInfo(3, "Bob", "Smith", "bsmith@gmail.com", 1132143214, "N")
+            TherapistInfo(2, 1,"William", "Scottman", "wscottman@gmail.com", 1112344321, "N"),
+            TherapistInfo(3, 1,"Bob", "Smith", "bsmith@gmail.com", 1132143214, "N")
         )
         _therapistList.value = newList
         //_therapistList.value = therapistViewModel.therapistList.value

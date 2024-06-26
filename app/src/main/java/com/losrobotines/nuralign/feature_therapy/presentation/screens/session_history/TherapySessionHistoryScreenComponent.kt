@@ -118,8 +118,10 @@ fun TherapySessionHistoryScreenComponent(
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                     item {
-                        sessionHistoryList.forEach {
-                            TherapySession(navController, therapySessionViewModel, it)
+                        Column {
+                            sessionHistoryList.forEach {
+                                TherapySession(navController, therapySessionViewModel, it)
+                            }
                         }
                     }
                 }

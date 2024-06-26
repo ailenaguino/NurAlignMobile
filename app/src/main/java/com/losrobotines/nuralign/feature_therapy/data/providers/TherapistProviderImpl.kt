@@ -19,9 +19,9 @@ class TherapistProviderImpl @Inject constructor(
     override suspend fun saveTherapistInfo(therapistInfo: TherapistInfo?): Boolean {
         try {
             val dto = mapDomainToData(therapistInfo!!)
-            apiService.insertTherapistInfo(dto)
+            val result = apiService.insertTherapistInfo(dto)
             Log.d("TherapistProvider", "DtO Insertado: $dto")
-            Log.d("TherapistProvider", "TherapistInfo Insertado: ${apiService.insertTherapistInfo(dto)}")
+            Log.d("TherapistProvider", "TherapistInfo Insertado: $result")
             return true
         } catch (e: Exception) {
             return false

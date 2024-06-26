@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -34,6 +36,7 @@ fun AddNewTherapistAlertDialog(
     val coroutineScope = rememberCoroutineScope()
     val newTherapist = TherapistInfo(
         id = null,
+        1,
         therapistViewModel.therapistFirstName.value,
         therapistViewModel.therapistLastName.value,
         therapistViewModel.therapistEmail.value,
@@ -142,6 +145,7 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 label = { Text("Email", color = secondaryColor) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = secondaryColor,
@@ -166,6 +170,7 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 label = { Text("Teléfono", color = secondaryColor) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = secondaryColor,
