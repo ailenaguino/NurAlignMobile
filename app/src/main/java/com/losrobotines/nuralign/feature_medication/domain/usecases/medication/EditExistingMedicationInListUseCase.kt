@@ -16,7 +16,7 @@ class EditExistingMedicationInListUseCase @Inject constructor(
     ): Result<Unit> {
         return try {
             val updatedMedication = medicationList.find {
-                it == oldMedicationInfo
+                it?.patientMedicationId == oldMedicationInfo.patientMedicationId
             }?.copy(
                 medicationName = newMedicationName.ifBlank { oldMedicationInfo.medicationName },
                 medicationGrammage = if (newMedicationGrammage != 0) {
@@ -24,9 +24,8 @@ class EditExistingMedicationInListUseCase @Inject constructor(
                 } else {
                     oldMedicationInfo.medicationGrammage
                 },
-                medicationOptionalFlag = newMedicationFlag.ifEmpty {
-                    oldMedicationInfo.medicationOptionalFlag
-                }
+                medicationOptionalFlag = newMedicationFlag.ifEmpty { oldMedicationInfo.medicationOptionalFlag }
+
             )
 
             if (updatedMedication != null) {

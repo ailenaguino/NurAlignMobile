@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.ui.shared.SharedComponents
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.launch
@@ -43,7 +43,9 @@ import kotlinx.coroutines.launch
 fun AddMedicationAlertDialog(
     onDismissRequest: () -> Unit,
     confirmButton: () -> Unit,
-    medicationViewModel: MedicationViewModel
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    medicationIdList: List<Short>
 ) {
     val coroutineScope = rememberCoroutineScope()
     val newMedication = MedicationInfo(
@@ -73,8 +75,14 @@ fun AddMedicationAlertDialog(
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             Button(onClick = {
+                if (medicationViewModel.medicationName.value.isBlank() || medicationViewModel.medicationGrammage.intValue <= 0) {
+
+                }
                 coroutineScope.launch {
-                    medicationViewModel.saveData(newMedication)
+                    val result = medicationViewModel.saveData(newMedication)
+                    if (result.isSuccess) {
+                        medicationTrackerViewModel.loadMedicationTrackerInfo(medicationIdList)
+                    }
                 }
                 confirmButton()
             }) {
@@ -93,9 +101,6 @@ fun AddMedicationAlertDialog(
 fun NewMedicationRow(medicationViewModel: MedicationViewModel) {
     Column {
         NewMedicationElement(medicationViewModel)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SharedComponents().SelectDayButtons()
         Spacer(modifier = Modifier.height(8.dp))
 
         NewOptional(medicationViewModel)

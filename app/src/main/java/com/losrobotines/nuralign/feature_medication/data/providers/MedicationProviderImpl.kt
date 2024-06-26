@@ -29,7 +29,7 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
     override suspend fun updateMedicationInfo(newMedicationInfo: MedicationInfo?): Boolean {
         try {
             val dto = mapDomainToData(newMedicationInfo!!)
-            apiService.updateMedicationInfo(dto.patientMedicationId!!, dto)
+            apiService.updateMedicationInfo(newMedicationInfo.patientId, dto)
             return true
         } catch (e: Exception) {
             return false
@@ -51,7 +51,6 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
             patientId = medicationInfo.patientId,
             name = medicationInfo.medicationName,
             grammage = medicationInfo.medicationGrammage,
-            //medicationDays = 10,
             flag = medicationInfo.medicationOptionalFlag
         )
     }
@@ -67,7 +66,6 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
                             patientId = med.patientId,
                             medicationName = med.name,
                             medicationGrammage = med.grammage,
-                            //medicationDays = med.medicationDays,
                             medicationOptionalFlag = med.flag
                         )
                     )

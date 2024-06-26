@@ -5,6 +5,5 @@ data class MedicationInfo(
     val patientId: Short,
     var medicationName: String,
     var medicationGrammage: Int,
-    //val medicationDays: Short,
-    var medicationOptionalFlag: String,
+    var medicationOptionalFlag: String = "N",
 )

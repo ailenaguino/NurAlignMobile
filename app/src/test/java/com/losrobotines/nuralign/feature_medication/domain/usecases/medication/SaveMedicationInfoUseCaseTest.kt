@@ -40,7 +40,6 @@ class SaveMedicationInfoUseCaseTest {
     fun `when a new medication is provided, save it`() =
         runBlocking {
             coEvery { userService.getPatientId() } returns Result.success(9)
-            coEvery { userService.saveMedicationInfo(any()) } returns Result.success(true)
             coEvery { userService.getMedicationList(any()) } returns Result.success(listProvided)
             coEvery { medicationProvider.saveMedicationInfo(any()) } returns true
             val result = saveMedListUseCase.invoke(MEDICATION_B)

@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.AddMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.EditMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
@@ -72,7 +71,7 @@ fun MedicationTrackerScreenComponent(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(medicationIdList) {
-        medicationIdList?.let{
+        medicationIdList?.let {
             medicationTrackerViewModel.loadMedicationTrackerInfo(it)
         }
     }
@@ -127,7 +126,7 @@ fun MedicationTrackerScreenComponent(
                             .padding(16.dp)
                     ) {
                         item {
-                            AddIcon(medicationViewModel)
+                            AddIcon(medicationViewModel, medicationTrackerViewModel, emptyList())
                             Spacer(modifier = Modifier.height(5.dp))
                         }
                         item {
@@ -160,7 +159,11 @@ fun MedicationTrackerScreenComponent(
                             Spacer(modifier = Modifier.height(5.dp))
                         }
                         item {
-                            AddIcon(medicationViewModel)
+                            AddIcon(
+                                medicationViewModel,
+                                medicationTrackerViewModel,
+                                medicationIdList!!
+                            )
                         }
                     }
                 }
@@ -245,7 +248,11 @@ fun MedicationElement(
 }
 
 @Composable
-fun AddIcon(medicationViewModel: MedicationViewModel) {
+fun AddIcon(
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    medicationIdList: List<Short>
+) {
     var openAlertDialog by remember { mutableStateOf(false) }
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
@@ -259,7 +266,9 @@ fun AddIcon(medicationViewModel: MedicationViewModel) {
             AddMedicationAlertDialog(
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = { openAlertDialog = false },
-                medicationViewModel = medicationViewModel
+                medicationViewModel = medicationViewModel,
+                medicationTrackerViewModel = medicationTrackerViewModel,
+                medicationIdList
             )
         }
         Spacer(modifier = Modifier.height(32.dp))

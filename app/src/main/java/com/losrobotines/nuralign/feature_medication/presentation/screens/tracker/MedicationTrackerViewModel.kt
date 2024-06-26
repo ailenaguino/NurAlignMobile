@@ -3,7 +3,6 @@ package com.losrobotines.nuralign.feature_medication.presentation.screens.tracke
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +22,7 @@ class MedicationTrackerViewModel @Inject constructor(
     private val userService: UserService,
     private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase,
     private val saveMedicationTrackerInfoUseCase: SaveMedicationTrackerInfoUseCase,
-    private val updateMedicationTrackerInfoUseCase: UpdateMedicationTrackerInfoUseCase
+    private val updateMedicationTrackerInfoUseCase: UpdateMedicationTrackerInfoUseCase,
 ) :
     ViewModel() {
 
@@ -34,7 +33,6 @@ class MedicationTrackerViewModel @Inject constructor(
     val patientMedicationId: State<Int?> = _patientMedicationId
 
     private val _currentDate = mutableStateOf(userService.getCurrentDate())
-    val currentDate: String = _currentDate.value
 
     private val _isLoading = MutableLiveData(false)
 
@@ -65,15 +63,14 @@ class MedicationTrackerViewModel @Inject constructor(
                         currentList.add(trackerList)
                     }
                 } else {
-                    //Este error sale cuando no se encuentra el seguimiento para una medicación
-                    //Es porque el get devuelve 500, cuando devuelva 204 no debería mostrar más este error.
-                    _errorMessage.postValue("Error al cargar el seguimiento de la toma de medicamentos")
-                    _isLoading.postValue(false)
+                    _errorMessage.value =
+                        "Error al cargar el seguimiento de la toma de medicamentos"
+                    _isLoading.value = false
                     currentList.add(null)
                 }
             }
-            _medicationTrackerList.postValue(currentList)
-            _isLoading.postValue(false)
+            _medicationTrackerList.value = currentList
+            _isLoading.value = false
         }
     }
 
@@ -83,29 +80,36 @@ class MedicationTrackerViewModel @Inject constructor(
 
             trackerToSaveOrUpdate.forEach { tracker ->
                 tracker?.let {
-                    val existingTracker = _medicationTrackerList.value?.find {
-                        it?.patientMedicationId == tracker.patientMedicationId
-                    }
-                    if (existingTracker == null) {
+                    val checkExistingTracker =
+                        userService.checkExistingTracker(
+                            tracker.patientMedicationId,
+                            _currentDate.value
+                        )
+
+                    if (!checkExistingTracker) {
                         val result = saveMedicationTrackerInfoUseCase(tracker)
+
                         if (result.isFailure) {
                             Log.e(
                                 "MedicationTrackerViewModel",
                                 "Error al guardar el seguimiento de la toma de medicamentos"
                             )
-                            _errorMessage.postValue("Error al guardar el seguimiento de la toma de medicamentos")
+                            _errorMessage.value =
+                                "Error al guardar el seguimiento de la toma de medicamentos"
                         }
                     } else {
                         val result = updateMedicationTrackerInfoUseCase(tracker)
+
                         if (result.isFailure) {
                             Log.e(
                                 "MedicationTrackerViewModel",
                                 "Error al actualizar el seguimiento de la toma de medicamentos"
                             )
-                            _errorMessage.postValue("Error al actualizar el seguimiento de la toma de medicamentos")
+                            _errorMessage.value =
+                                "Error al actualizar el seguimiento de la toma de medicamentos"
                         }
-                    }
 
+                    }
                     loadMedicationTrackerInfo(trackerToSaveOrUpdate.mapNotNull {
                         it?.patientMedicationId
                     })
@@ -128,7 +132,7 @@ class MedicationTrackerViewModel @Inject constructor(
                 val updatedList = currentTrackerList.toMutableList()
                 updatedList[index] = updatedTracker
 
-                _medicationTrackerList.postValue(updatedList)
+                _medicationTrackerList.value = updatedList
             }
         }
     }

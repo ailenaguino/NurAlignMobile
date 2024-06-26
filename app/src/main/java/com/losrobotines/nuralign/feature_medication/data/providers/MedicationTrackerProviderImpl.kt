@@ -1,48 +1,47 @@
 package com.losrobotines.nuralign.feature_medication.data.providers
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationTrackerApiService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
-import retrofit2.HttpException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class MedicationTrackerProviderImpl @Inject constructor(private val apiService: MedicationTrackerApiService) :
     MedicationTrackerProvider {
 
-    override suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
+    override suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Result<Unit> {
         return try {
             val dto = mapDomainToData(medicationTrackerInfo)
             val result = apiService.insertMedicationTrackerInfo(dto)
-            result.isSuccessful
+            if (result.isSuccessful){
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to save medication tracker data"))
+            }
         } catch (e: Exception) {
-            false
+            Result.failure(e)
         }
     }
 
     override suspend fun getMedicationTrackerData(
         patientMedicationId: Short,
         effectiveDate: String
-    ): MedicationTrackerInfo? {
+    ): Result<MedicationTrackerInfo?> {
         return try {
             val dto = apiService.getMedicationTrackerInfo(patientMedicationId, effectiveDate)
 
             if (dto.isSuccessful) {
-                mapDataToDomain(dto.body())
+                Result.success(mapDataToDomain(dto.body()))
+            } else if (dto.body()?.equals(null) == true) {
+                Log.e("MedicationTrackerProvider", "entro en body null")
+                Result.success(null)
             } else {
-                //Lo dejo así hasta que esté hecho que cuando no haya tracker en el día
-                //la API devuelva 204. Por el momento devuelve 500.
-                //Una vez que devuelva 204, el null pasa a devolver una Exception
-                null
+                Result.failure(Exception("Failed to get medication tracker data"))
             }
         } catch (e: Exception) {
             Log.e("MedicationTrackerProvider", e.message!!)
-            return null
+            Result.failure(Exception(e.message))
         }
     }
 

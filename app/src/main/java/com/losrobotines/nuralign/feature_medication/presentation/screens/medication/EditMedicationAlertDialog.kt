@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.launch
@@ -100,9 +99,6 @@ fun EditMedicationAlertDialog(
 fun EditMedicationRow(medicationViewModel: MedicationViewModel, medicationElement: MedicationInfo) {
     Column {
         EditMedicationElement(medicationViewModel, medicationElement)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SharedComponents().SelectDayButtons()
         Spacer(modifier = Modifier.height(8.dp))
 
         EditOptional(medicationViewModel, medicationElement)

@@ -10,20 +10,17 @@ class SaveMedicationInfoUseCase @Inject constructor(
     private val medicationProvider: MedicationProvider
 ) {
     suspend operator fun invoke(medicationInfo: MedicationInfo): Result<Unit> {
-        val preparedInfo = checkForDuplicatedMedication(medicationInfo)
+        val preparedInfo =
+            checkForDuplicatedMedication(medicationInfo)?.copy(medicationOptionalFlag = medicationInfo.medicationOptionalFlag.ifEmpty { "N" })
 
-        return if (preparedInfo != null) {
-            try {
-                val saveSuccessful = medicationProvider.saveMedicationInfo(preparedInfo)
-                if (saveSuccessful) {
-                    Result.success(Unit)
-                } else {
-                    Result.failure(Exception("Failed to save medication info"))
-                }
-            } catch (e: Exception) {
-                Result.failure(Exception("Duplicated medication"))
+        return try {
+            val result = medicationProvider.saveMedicationInfo(preparedInfo)
+            if (result) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to save medication info"))
             }
-        } else {
+        } catch (e: Exception) {
             Result.failure(Exception("Failed to save medication info"))
         }
     }

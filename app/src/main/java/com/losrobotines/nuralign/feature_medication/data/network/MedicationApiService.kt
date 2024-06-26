@@ -1,7 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.data.network
 
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
-import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,9 +22,9 @@ interface MedicationApiService {
     @DELETE("medications/{patientMedicationId}")
     suspend fun deleteMedicationInfo(@Path("patientMedicationId") patientMedicationId: Short): Response<Unit>
 
-    @PATCH("medications/patient/{patientMedicationId}")
+    @PATCH("medications/patient/{patientId}")
     suspend fun updateMedicationInfo(
-        @Path("patientMedicationId") patientMedicationId: Short,
+        @Path("patientId") patientId: Short,
         @Body body: MedicationDto
     ): Response<MedicationDto>
 }
