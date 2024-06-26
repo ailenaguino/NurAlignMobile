@@ -15,6 +15,7 @@ sealed class Routes(val route: String) {
     data object RoutineScreen : Routes("RoutineScreen")
     data object LoadingScreen : Routes("LoadingScreen")
     data object CompanionScreen : Routes("CompanionScreen")
+    data object ForgottenPasswordScreen : Routes("ForgottenPasswordScreen")
 
     data object WeeklySummary :Routes("WeeklySummary")
     data object WeeklySummaryMoodTracker : Routes("WeeklySummaryMoodTracker")

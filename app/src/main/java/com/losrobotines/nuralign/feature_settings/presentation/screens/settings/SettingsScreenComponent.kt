@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_settings.presentation.screens.settings
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
-import com.losrobotines.nuralign.navigation.Routes
+import com.losrobotines.nuralign.navigation.MainActivity
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -45,6 +49,8 @@ import com.losrobotines.nuralign.ui.theme.secondaryColor
 @SuppressLint("PrivateResource", "NotConstructor")
 @Composable
 fun SettingsScreenComponent(navigationController: NavHostController, viewModel: LoginViewModel) {
+    val context = LocalContext.current
+    val preferencesManager = remember { PreferencesManager(context) }
     LazyVerticalGrid(columns = GridCells.Fixed(1)) {
         item {
             SharedComponents().HalfCircleTop("Ajustes")
@@ -76,6 +82,7 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -87,7 +94,7 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                             .weight(0.8f)
                     ) {
                         Text(
-                            "Mostrar notificaciones generales",
+                            "Mostrar notificaciones",
                             color = secondaryColor,
                             fontSize = 16.sp,
                         )
@@ -96,11 +103,13 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                         contentAlignment = Alignment.CenterEnd,
                         modifier = Modifier.weight(0.2f)
                     ) {
-                        var checked by remember { mutableStateOf(false) }
+                        val notifications = preferencesManager.getBoolean("Notifications", true)
+                        var checked by remember { mutableStateOf(notifications) }
                         Switch(
                             checked = checked,
                             onCheckedChange = {
                                 checked = it
+                                preferencesManager.saveBooleanData("Notifications", it)
                             },
                             thumbContent = if (checked) {
                                 {
@@ -129,7 +138,7 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Text(
-                    "Datos Personales", style = TextStyle(
+                    "Cuenta", style = TextStyle(
                         fontSize = 30.sp,
                         fontFamily = FontFamily.Default,
                         color = secondaryColor
@@ -142,7 +151,7 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                         .height(3.dp)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-
+/*
                 Text(
                     text = "Editar datos personales",
                     color = secondaryColor,
@@ -152,7 +161,7 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                     }
                 )
                 Spacer(modifier = Modifier.height(200.dp))
-
+*/
                 Text(
                     text = "Cerrar sesión",
                     color = Color.Red,
@@ -160,7 +169,8 @@ fun SettingsScreenComponent(navigationController: NavHostController, viewModel: 
                     fontSize = 20.sp,
                     modifier = Modifier.clickable {
                         viewModel.logout()
-                        navigationController.navigate(Routes.LoginScreen.route)
+                        context.startActivity(Intent(context, MainActivity::class.java))
+                        //navigationController.navigate(Routes.LoginScreen.route)
                     }
                 )
             }

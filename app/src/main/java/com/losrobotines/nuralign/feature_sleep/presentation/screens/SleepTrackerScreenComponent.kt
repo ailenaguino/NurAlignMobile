@@ -300,7 +300,7 @@ fun SaveButton(sleepViewModel: SleepViewModel) {
             if (sleepViewModel.bedTime.value == "") {
                 Toast.makeText(context, "Complete todos los campos", Toast.LENGTH_SHORT).show()
             } else {
-                sleepViewModel.saveData()
+                sleepViewModel.saveData(context)
                 sleepViewModel.checkNextTracker()
             }
 
