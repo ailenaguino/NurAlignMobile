@@ -1,7 +1,10 @@
 package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation
 
+import android.content.Context
 import android.os.Looper
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
@@ -59,13 +62,15 @@ class MoodTrackerViewModelTest {
         service = mockk(relaxed = true)
         checkNextTrackerToBeCompletedUseCase = mockk(relaxed = true)
         updateMoodTrackerUseCase = mockk(relaxed = true)
+        val trackerIsSavedUseCase: TrackerIsSavedUseCase = mockk(relaxed = true)
         viewModel = MoodTrackerViewModel(
             saveMoodTrackerDataUseCase,
             getMoodTrackerInfoByDateUseCase,
             authRepository,
             service,
             checkNextTrackerToBeCompletedUseCase,
-            updateMoodTrackerUseCase
+            updateMoodTrackerUseCase,
+            trackerIsSavedUseCase
         )
         newTracker = mockk(relaxed = true)
     }
@@ -85,10 +90,10 @@ class MoodTrackerViewModelTest {
         val looper = mockk<Looper> {
             every { thread } returns Thread.currentThread()
         }
-
+        val mContextMock = mockk<Context>(relaxed = true)
         every { Looper.getMainLooper() } returns looper
         coEvery { getMoodTrackerInfoByDateUseCase(id, date) } returns null
-        viewModel.saveData()
+        viewModel.saveData(mContextMock)
         coVerify { saveMoodTrackerDataUseCase(tracker) }
     }
 
@@ -99,10 +104,10 @@ class MoodTrackerViewModelTest {
         val looper = mockk<Looper> {
             every { thread } returns Thread.currentThread()
         }
-
+        val mContextMock = mockk<Context>(relaxed = true)
         every { Looper.getMainLooper() } returns looper
         coEvery { getMoodTrackerInfoByDateUseCase(id, date) } returns tracker
-        viewModel.saveData()
+        viewModel.saveData(mContextMock)
         coVerify { updateMoodTrackerUseCase(newTracker) }
     }
 }

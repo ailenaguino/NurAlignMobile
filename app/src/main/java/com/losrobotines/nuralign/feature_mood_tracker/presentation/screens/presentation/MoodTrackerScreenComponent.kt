@@ -187,6 +187,7 @@ private fun saveButton(
     context: Context?,
     isVisibleSelectedAnimos: Boolean
 ) {
+    val ctx = LocalContext.current
     var isVisibleSelectedAnimos1 = isVisibleSelectedAnimos
     Spacer(modifier = Modifier.height(50.dp))
     Button(
@@ -199,7 +200,7 @@ private fun saveButton(
                 Toast.makeText(context, "Complete los campos", Toast.LENGTH_SHORT).show()
             } else {
                 isVisibleSelectedAnimos1 = true
-                moodTrackerViewModel.saveData()
+                moodTrackerViewModel.saveData(ctx)
                 moodTrackerViewModel.checkNextTracker()
             }
         },

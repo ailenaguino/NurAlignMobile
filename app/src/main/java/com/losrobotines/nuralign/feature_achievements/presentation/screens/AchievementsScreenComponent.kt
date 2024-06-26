@@ -75,37 +75,6 @@ fun AchievementsScreenComponent(
         items(achievementsList.size) { item ->
             Achievement(achievementsList[item])
         }
-        item {
-            ButtonToTryAchievements(
-                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.MOOD_TRACKER) },
-                color = turquoise
-            )
-        }
-        item {
-            ButtonToTryAchievements(
-                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.MEDICATION_TRACKER) },
-                color = green
-            )
-        }
-        item {
-            ButtonToTryAchievements(
-                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.SLEEP_TRACKER)},
-                color = purple
-            )
-        }
-        item {
-            ButtonToTryAchievements(
-                onClick = { achievementViewModel.trackerIsSaved(context, AchievementsViewModel.TrackerConstants.THERAPY_TRACKER) },
-                color = pink
-            )
-        }
-
-        item {
-            ButtonToTryAchievements(
-                onClick = { achievementViewModel.restartCounters() },
-                color = Color.Gray
-            )
-        }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_sleep.presentation.screens
 
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -11,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
@@ -38,6 +41,7 @@ class SleepViewModel @Inject constructor(
     private val service: UserService,
     private val formatTimeUseCase: FormatTimeUseCase,
     private val updateSleepTrackerUseCase: UpdateSleepTrackerUseCase,
+    private val trackerIsSavedUseCase: TrackerIsSavedUseCase
 ) :
     ViewModel() {
 
@@ -75,7 +79,7 @@ class SleepViewModel @Inject constructor(
     val patientId: State<Short> = _patientId
 
 
-    fun saveData() {
+    fun saveData(context: Context) {
         if (currentUserExists()) {
             viewModelScope.launch {
                 val resultId = service.getPatientId()
@@ -122,6 +126,7 @@ class SleepViewModel @Inject constructor(
                         if (result.isSuccess) {
                             loadSleepTrackerInfo()
                             _isSaved.value = true
+                            trackerIsSavedUseCase(context, AchievementsViewModel.TrackerConstants.SLEEP_TRACKER)
                         } else {
                             _errorMessage.value = "No se pudo guardar la información"
                         }

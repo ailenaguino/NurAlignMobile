@@ -1,6 +1,8 @@
 package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation
 
+import android.content.Context
 import android.os.Build
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +10,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
+import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
@@ -31,6 +36,7 @@ class MoodTrackerViewModel @Inject constructor(
     private val service: UserService,
     private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase,
     private val updateMoodTrackerUseCase: UpdateMoodTrackerUseCase,
+    private val trackerIsSavedUseCase: TrackerIsSavedUseCase
 ) : ViewModel() {
     private val _isSaved = MutableLiveData(false)
     var isSaved: LiveData<Boolean> = _isSaved
@@ -96,7 +102,7 @@ class MoodTrackerViewModel @Inject constructor(
     }
 
 
-    fun saveData() {
+    fun saveData(context: Context) {
         viewModelScope.launch {
             val resultId = service.getPatientId()
             val id = if (resultId.isSuccess) resultId.getOrNull() ?: 0 else {
@@ -124,6 +130,7 @@ class MoodTrackerViewModel @Inject constructor(
                     if (result.isSuccess) {
                         loadMoodTrackerInfo()
                         _isSaved.value = true
+                        trackerIsSavedUseCase(context, AchievementsViewModel.TrackerConstants.MOOD_TRACKER)
 
                     } else {
                         _errorMessage.value = "No se pudo guardar la información"
