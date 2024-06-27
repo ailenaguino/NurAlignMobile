@@ -9,7 +9,7 @@ class GetMoodTrackerInfoByDateUseCase @Inject constructor(private val moodTracke
 
     suspend operator fun invoke(patientId: Int, date: String): MoodTrackerInfo? {
         return try {
-            moodTrackerProvider.getTodaysTracker(patientId, date)
+            moodTrackerProvider.getMoodTrackerInfo(patientId, date)
         } catch (e: Exception) {
             return null
         }

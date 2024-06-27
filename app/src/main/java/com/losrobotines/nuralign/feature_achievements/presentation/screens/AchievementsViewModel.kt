@@ -18,6 +18,7 @@ import com.losrobotines.nuralign.feature_achievements.domain.usecases.FormatCorr
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.GetUserAchievementsUseCase
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.StartCounterUseCase
 import com.losrobotines.nuralign.navigation.MainActivity
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -98,7 +99,9 @@ class AchievementsViewModel @Inject constructor(
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1, notification)
 
+        if(PreferencesManager(context).getBoolean("Notifications", true)) {
+            notificationManager.notify(1, notification)
+        }
     }
 }

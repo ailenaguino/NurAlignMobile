@@ -2,7 +2,7 @@ package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.pres
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,22 +10,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
+import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
+import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.GetMoodTrackerInfoByDateUseCase
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.SaveMoodTrackerDataUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.UpdateMoodTrackerUseCase
+import com.losrobotines.nuralign.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -34,7 +33,10 @@ class MoodTrackerViewModel @Inject constructor(
     private val saveMoodTrackerDataUseCase: SaveMoodTrackerDataUseCase,
     private val getMoodTrackerInfoByDateUseCase: GetMoodTrackerInfoByDateUseCase,
     private val authRepository: AuthRepository,
-    private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase
+    private val service: UserService,
+    private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase,
+    private val updateMoodTrackerUseCase: UpdateMoodTrackerUseCase,
+    private val trackerIsSavedUseCase: TrackerIsSavedUseCase
 ) : ViewModel() {
     private val _isSaved = MutableLiveData(false)
     var isSaved: LiveData<Boolean> = _isSaved
@@ -71,14 +73,14 @@ class MoodTrackerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (currentUserExists()) {
-                    val patientId = patientId()
-                    val currentDate = getCurrentDate()
-                    val info = getMoodTrackerInfoByDateUseCase(patientId.toInt(), currentDate)
-
-                    Log.d("MoodTrackerViewModel", "Fecha actual: $currentDate")
-                    Log.d("MoodTrackerViewModel", "Datos obtenidos: $info")
-
-                    if (info != null && info.effectiveDate == currentDate) {
+                    val result = service.getPatientId()
+                    val id = if (result.isSuccess) result.getOrNull() ?: 0 else {
+                        _errorMessage.value = "Ha habido un error"
+                        0
+                    }
+                    val currentDate = service.getCurrentDate()
+                    val info = getMoodTrackerInfoByDateUseCase(id.toInt(), currentDate)
+                    if (info != null) {
                         highestValue.intValue = info.highestValue.toInt()
                         highestNote.value = info.highestNote
                         lowestValue.intValue = info.lowestValue.toInt()
@@ -88,49 +90,84 @@ class MoodTrackerViewModel @Inject constructor(
                         anxiousValue.intValue = info.anxiousValue.toInt()
                         anxiousNote.value = info.anxiousNote
                         effectiveDate.value = LocalDate.parse(info.effectiveDate)
-                        _isSaved.value = true
-                        Log.d("MoodTrackerViewModel", "Datos cargados correctamente")
-                    } else {
-                        resetData()
-                        Log.d("MoodTrackerViewModel", "No hay datos para la fecha actual, restableciendo datos")
                     }
                 } else {
                     resetData()
-                    Log.d("MoodTrackerViewModel", "Usuario no encontrado, restableciendo datos")
+                    _errorMessage.value = "El usuario no se encuentra logueado"
                 }
             } catch (e: Exception) {
-                Log.e("MoodTrackerViewModel", "Error loading mood tracker info: ${e.message}")
-                _errorMessage.value = "Error al cargar el seguimiento del estado de ánimo"
+                _errorMessage.value = "Ha habido un error"
             }
         }
     }
 
 
-    fun saveData() {
+    fun saveData(context: Context) {
         viewModelScope.launch {
-            try {
-                saveMoodTrackerDataUseCase.invoke(
-                    MoodTrackerInfo(
-                        patientId = patientId(),
-                        effectiveDate = getCurrentDate(),
-                        highestValue = highestValue.intValue.toString(),
-                        lowestValue = lowestValue.intValue.toString(),
-                        highestNote = highestNote.value,
-                        lowestNote = lowestNote.value,
-                        irritableValue = irritableValue.intValue.toString(),
-                        irritableNote = irritableNote.value,
-                        anxiousValue = anxiousValue.intValue.toString(),
-                        anxiousNote = anxiousNote.value
+            val resultId = service.getPatientId()
+            val id = if (resultId.isSuccess) resultId.getOrNull() ?: 0 else {
+                _errorMessage.value = "Ha habido un error"
+                0
+            }
+            val currentDate = service.getCurrentDate()
+            val trackerExists = getMoodTrackerInfoByDateUseCase(id.toInt(), currentDate)
+            if (trackerExists == null) {
+                try {
+                    val result = saveMoodTrackerDataUseCase(
+                        MoodTrackerInfo(
+                            patientId = id,
+                            effectiveDate = currentDate,
+                            highestValue = highestValue.intValue.toString(),
+                            lowestValue = lowestValue.intValue.toString(),
+                            highestNote = highestNote.value,
+                            lowestNote = lowestNote.value,
+                            irritableValue = irritableValue.intValue.toString(),
+                            irritableNote = irritableNote.value,
+                            anxiousValue = anxiousValue.intValue.toString(),
+                            anxiousNote = anxiousNote.value
+                        )
                     )
-                )
-                _isSaved.value = true
-                Log.d("MoodTrackerViewModel", "Datos guardados correctamente")
-            } catch (e: Exception) {
-                Log.e("MoodTrackerViewModel", "Error saving mood tracker info: ${e.message}")
-                _errorMessage.value = "Error al guardar el seguimiento del estado de ánimo"
+                    if (result.isSuccess) {
+                        loadMoodTrackerInfo()
+                        _isSaved.value = true
+                        trackerIsSavedUseCase(context, AchievementsViewModel.TrackerConstants.MOOD_TRACKER)
+
+                    } else {
+                        _errorMessage.value = "No se pudo guardar la información"
+                    }
+                } catch (e: Exception) {
+                    _errorMessage.value = "Ha habido un error"
+                }
+            } else {
+                try {
+                    val result = updateMoodTrackerUseCase(
+                        MoodTrackerInfo(
+                            patientId = id,
+                            effectiveDate = currentDate,
+                            highestValue = highestValue.intValue.toString(),
+                            lowestValue = lowestValue.intValue.toString(),
+                            highestNote = highestNote.value,
+                            lowestNote = lowestNote.value,
+                            irritableValue = irritableValue.intValue.toString(),
+                            irritableNote = irritableNote.value,
+                            anxiousValue = anxiousValue.intValue.toString(),
+                            anxiousNote = anxiousNote.value
+                        )
+                    )
+                    if (result.isSuccess) {
+                        loadMoodTrackerInfo()
+                        _isSaved.value = true
+
+                    } else {
+                        _errorMessage.value = "No se pudo guardar la información"
+                    }
+                } catch (e: Exception) {
+                    _errorMessage.value = "Ha habido un error"
+                }
             }
         }
     }
+
     private fun resetData() {
         highestValue.intValue = -1
         highestNote.value = ""
@@ -143,16 +180,6 @@ class MoodTrackerViewModel @Inject constructor(
         effectiveDate.value = null
         _isSaved.value = false
     }
-    private fun getCurrentDate(): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return formatter.format(Date())
-    }
-
-    private suspend fun patientId(): Short {
-        val uid = authRepository.currentUser!!.uid
-        val doc = Firebase.firestore.collection("users").document(uid).get().await()
-        return doc.getLong("id")!!.toShort()
-    }
 
     private fun currentUserExists(): Boolean {
         return authRepository.currentUser != null
@@ -160,7 +187,17 @@ class MoodTrackerViewModel @Inject constructor(
 
     fun checkNextTracker() {
         viewModelScope.launch {
-            _route.value = checkNextTrackerToBeCompletedUseCase(patientId().toInt())
+            val result = service.getPatientId()
+            val id = if (result.isSuccess) result.getOrNull() ?: 0 else {
+                _errorMessage.value = "Ha habido un error"
+                0
+            }
+            delay(1000)
+            if (_isSaved.value!!) {
+                _route.value = checkNextTrackerToBeCompletedUseCase(id.toInt())
+                if (_route.value != Routes.HomeScreen.route) _isVisible.value =
+                    true else _errorMessage.value = "Ya completaste todos los seguimientos!"
+            }
         }
     }
 
