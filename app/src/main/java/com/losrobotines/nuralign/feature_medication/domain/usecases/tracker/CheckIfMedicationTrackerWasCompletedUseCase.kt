@@ -8,7 +8,7 @@ import javax.inject.Inject
 class CheckIfMedicationTrackerWasCompletedUseCase @Inject constructor(private val medicationTrackerProvider: MedicationTrackerProvider) {
     suspend operator fun invoke(domainId: Int): Boolean {
         val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
-        //val result = medicationTrackerProvider.getTodaysTracker(domainId, date)
-        return true //(result != null)
+        val result = medicationTrackerProvider.getMedicationTrackerData(domainId.toShort(), date)
+        return (result.getOrNull() != null)
     }
 }

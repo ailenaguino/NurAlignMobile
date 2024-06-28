@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -299,11 +300,11 @@ fun SaveButton(
     medicationTrackerViewModel: MedicationTrackerViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Button(
         onClick = {
-            medicationTrackerViewModel.saveOrUpdateMedicationTracker()
+            medicationTrackerViewModel.saveOrUpdateMedicationTracker(context)
             medicationTrackerViewModel.checkNextTracker()
-            medicationTrackerViewModel.setIsVisible(true)
         },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor),
         modifier = modifier
@@ -347,9 +348,6 @@ fun goToNextTracker(
     route: String,
     medicationTrackerViewModel: MedicationTrackerViewModel,
 ) {
-    if (route == "") {
-        //loading circle visible
-    }
     medicationTrackerViewModel.setIsVisible(false)
     navController.navigate(route)
 }
