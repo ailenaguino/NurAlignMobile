@@ -58,7 +58,7 @@ fun WeeklySummarySleepTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
             columns = GridCells.Fixed(1)
         ) {
             item {
-                SharedComponents().HalfCircleTop(title = "Estadisticas del Sueño")
+                SharedComponents().HalfCircleTop(title = "Estadística del Sueño")
             }
             item {
                 LargeFloatingActionButton(

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @SuppressLint("NewApi")
@@ -58,12 +59,24 @@ class WeeklySummaryViewModel @Inject constructor(
     val moodAveragesLabels: StateFlow<MoodTrackerAveragesLabels?> get() = _moodAveragesLabels
 
     init {
-        loadMoodTrackerInfo()
-        loadSleepTrackerInfo()
-        loadMedicationTrackerInfo()
-        loadMoodAveragesLabels()
+        updateData()
     }
-
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateData() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                loadMoodTrackerInfo()
+                loadSleepTrackerInfo()
+                loadMedicationTrackerInfo()
+                loadMoodAveragesLabels()
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al actualizar la información"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadMedicationTrackerInfo() {
@@ -72,7 +85,6 @@ class WeeklySummaryViewModel @Inject constructor(
                 val patientId = userService.getPatientId().getOrNull()?.toInt() ?: 0
                 val info = getWeeklyMedicationTrackerInfoUseCase(patientId.toShort())
                 Log.d("MedicationTrackerInfo", info.toString())
-
                 _medicationTrackerInfoList.value = info
             } catch (e: Exception) {
                 _errorMessage.value = "Error al cargar la información del medicationTracker"
@@ -90,7 +102,6 @@ class WeeklySummaryViewModel @Inject constructor(
                 val patientId = userService.getPatientId().getOrNull()?.toInt() ?: 0
                 val info = getWeeklyMoodTrackerInfoUseCase(patientId.toShort())
 
-                // Filtrar la lista para omitir el día más reciente si no está completo
                 _moodTrackerInfoList.value = info.filterNotNull()
             } catch (e: Exception) {
                 _errorMessage.value = "Error al cargar la informacion del moodTracker"
@@ -141,20 +152,21 @@ class WeeklySummaryViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getAverageSleepHours(): Double {
-        return calculateAverageSleepHoursUseCase(_sleepTrackerInfoList.value)
+        val average = calculateAverageSleepHoursUseCase(_sleepTrackerInfoList.value)
+        return Math.round(average * 10) / 10.0
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun formatDate(dateString: String): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDate.parse(dateString, formatter)
-        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM")
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM", Locale("es", "Arg"))
         return date.format(outputFormatter)
     }
 
-
-
-
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
 
 
 }
