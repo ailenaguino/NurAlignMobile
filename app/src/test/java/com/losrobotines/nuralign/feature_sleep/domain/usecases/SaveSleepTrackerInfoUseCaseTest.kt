@@ -1,23 +1,22 @@
 package com.losrobotines.nuralign.feature_sleep.domain.usecases
 
-import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
 import io.mockk.Awaits
-import io.mockk.Runs
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-/*
+
 class SaveSleepTrackerInfoUseCaseTest {
-    private lateinit var authRepository: AuthRepository
     private lateinit var sleepTrackerProvider: SleepTrackerProvider
     private lateinit var formatTimeUseCase: FormatTimeUseCase
     private lateinit var saveSleepTrackerInfoUseCase: SaveSleepTrackerInfoUseCase
@@ -26,9 +25,14 @@ class SaveSleepTrackerInfoUseCaseTest {
     fun setUp() {
         sleepTrackerProvider = mockk(relaxed = true)
         formatTimeUseCase = mockk(relaxed = true)
-        authRepository = mockk(relaxed = true)
-        saveSleepTrackerInfoUseCase = SaveSleepTrackerInfoUseCase(authRepository,formatTimeUseCase, sleepTrackerProvider)
+        saveSleepTrackerInfoUseCase = SaveSleepTrackerInfoUseCase(formatTimeUseCase, sleepTrackerProvider)
     }
+
+    @AfterEach
+    fun tearDown() {
+        clearAllMocks()
+    }
+
 
     @Disabled
     @Test
@@ -36,7 +40,7 @@ class SaveSleepTrackerInfoUseCaseTest {
         // Given
         val patientId: Short = 1
         val currentDate = "2024-06-07"
-        val sleepHours = 8
+        val sleepHours: Short = 8
         val bedTime = "22:00"
         val negativeThoughts = true
         val anxiousBeforeSleep = false
@@ -49,7 +53,7 @@ class SaveSleepTrackerInfoUseCaseTest {
         val expectedSleepInfo = SleepInfo(
             patientId,
             currentDate,
-            sleepHours.toShort(),
+            sleepHours,
             formattedBedTime,
             "T",
             "F",
@@ -74,4 +78,4 @@ class SaveSleepTrackerInfoUseCaseTest {
         // Then
         coVerify(exactly = 1) { sleepTrackerProvider.saveSleepData(expectedSleepInfo) }
     }
-}*/
+}
