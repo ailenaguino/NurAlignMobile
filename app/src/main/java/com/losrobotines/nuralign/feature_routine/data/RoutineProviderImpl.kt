@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_routine.data
 
-import android.util.Log
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineEntity
 import com.losrobotines.nuralign.feature_routine.domain.models.Routine
