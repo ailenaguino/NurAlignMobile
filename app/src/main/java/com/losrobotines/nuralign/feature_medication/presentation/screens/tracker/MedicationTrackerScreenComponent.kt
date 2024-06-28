@@ -288,7 +288,8 @@ fun EditMedication(medicationToEdit: MedicationInfo, medicationViewModel: Medica
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = { openAlertDialog = false },
                 medicationElement = medicationToEdit,
-                medicationViewModel = medicationViewModel
+                medicationViewModel = medicationViewModel,
+                onDelete = { openAlertDialog = false }
             )
         }
     }

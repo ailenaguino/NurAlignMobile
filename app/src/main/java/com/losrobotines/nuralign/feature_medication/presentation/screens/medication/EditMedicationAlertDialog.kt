@@ -53,7 +53,8 @@ fun EditMedicationAlertDialog(
     onDismissRequest: () -> Unit,
     confirmButton: () -> Unit,
     medicationElement: MedicationInfo,
-    medicationViewModel: MedicationViewModel
+    medicationViewModel: MedicationViewModel,
+    onDelete: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -71,7 +72,7 @@ fun EditMedicationAlertDialog(
             }
         },
         text = {
-            EditMedicationRow(medicationViewModel, medicationElement)
+            EditMedicationRow(medicationViewModel, medicationElement, onDelete)
         },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
@@ -96,7 +97,11 @@ fun EditMedicationAlertDialog(
 }
 
 @Composable
-fun EditMedicationRow(medicationViewModel: MedicationViewModel, medicationElement: MedicationInfo) {
+fun EditMedicationRow(
+    medicationViewModel: MedicationViewModel,
+    medicationElement: MedicationInfo,
+    onDelete: () -> Unit
+) {
     Column {
         EditMedicationElement(medicationViewModel, medicationElement)
         Spacer(modifier = Modifier.height(8.dp))
@@ -105,7 +110,7 @@ fun EditMedicationRow(medicationViewModel: MedicationViewModel, medicationElemen
         Divider(color = secondaryColor, thickness = 2.dp)
         Spacer(modifier = Modifier.height(8.dp))
 
-        RemoveMedication(medicationElement, medicationViewModel)
+        RemoveMedication(medicationElement, medicationViewModel, onDelete)
 
         Spacer(modifier = Modifier.height(8.dp))
         Divider(color = secondaryColor, thickness = 2.dp)
@@ -224,7 +229,11 @@ fun EditOptional(
 }
 
 @Composable
-fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: MedicationViewModel) {
+fun RemoveMedication(
+    medicationElement: MedicationInfo,
+    medicationViewModel: MedicationViewModel,
+    onDelete: () -> Unit
+) {
     val showDialog = remember { mutableStateOf(false) }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
         ClickableText(
@@ -266,6 +275,7 @@ fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: Med
                         onClick = {
                             medicationViewModel.removeMedicationFromList(medicationElement)
                             showDialog.value = false
+                            onDelete()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red,

@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_medication.data.providers
 
-import android.util.Log
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
@@ -13,8 +12,8 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
     override suspend fun saveMedicationInfo(medicationInfo: MedicationInfo?): Boolean {
         return try {
             if (medicationInfo != null) {
-                val dto = mapDomainToData(medicationInfo)
-                apiService.insertMedicationInfoIntoDatabase(dto)
+                val dto = mapDomainToData(medicationInfo).copy(enabledFlag = "Y")
+                apiService.insertMedicationInfo(dto)
                 true
             } else {
                 false
@@ -26,7 +25,6 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
 
     override suspend fun getMedicationList(patientId: Short): List<MedicationInfo?> {
         val dto = apiService.getMedicationList(patientId)
-        Log.d("MedicationProvider", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
     }
 
@@ -65,15 +63,17 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         dto.let {
             for (med in it) {
                 if (med != null) {
-                    list.add(
-                        MedicationInfo(
-                            patientMedicationId = med.patientMedicationId,
-                            patientId = med.patientId,
-                            medicationName = med.name,
-                            medicationGrammage = med.grammage,
-                            medicationOptionalFlag = med.flag
+                    if (med.enabledFlag == "Y") {
+                        list.add(
+                            MedicationInfo(
+                                patientMedicationId = med.patientMedicationId,
+                                patientId = med.patientId,
+                                medicationName = med.name,
+                                medicationGrammage = med.grammage,
+                                medicationOptionalFlag = med.flag
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
