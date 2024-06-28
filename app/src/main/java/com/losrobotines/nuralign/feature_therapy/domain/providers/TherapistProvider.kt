@@ -7,4 +7,5 @@ interface TherapistProvider {
     suspend fun saveTherapistInfo(therapistInfo: TherapistInfo?): Boolean
     suspend fun updateTherapistInfo(therapistInfo: TherapistInfo?): Boolean
     suspend fun deleteTherapistInfo(patientId: Short, therapistId: Short): Boolean
+    suspend fun getTherapistInfo(therapistId: Short):TherapistInfo
 }

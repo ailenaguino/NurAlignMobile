@@ -17,7 +17,7 @@ interface TherapistApiService {
     @POST("therapists")
     suspend fun insertTherapistInfo(@Body body: TherapistDto): Response<TherapistDto>
 
-    @GET("patientTherapist/patient/{patientId}")
+    @GET("patientTherapist/{patientId}")
     suspend fun getTherapistList(@Path("patientId") patientId: Short): List<TherapistDto?>
 
     @DELETE("patientTherapist/patient/{patientId}/therapist/{therapistId}")
@@ -31,4 +31,7 @@ interface TherapistApiService {
         @Path("therapistId") therapistId: Short,
         @Body body: TherapistDto
     ): Response<TherapistDto>
+
+    @GET("therapists/{therapistId}")
+    suspend fun getTherapistInfo(@Path("therapistId") therapistId: Short):TherapistDto
 }

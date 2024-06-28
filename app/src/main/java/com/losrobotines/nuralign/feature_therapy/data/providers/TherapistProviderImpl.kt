@@ -11,8 +11,18 @@ class TherapistProviderImpl @Inject constructor(
     private val apiService: TherapistApiService
 ) : TherapistProvider {
     override suspend fun getTherapistList(patientId: Short): List<TherapistInfo?> {
+        val therapistList = mutableListOf<TherapistInfo>()
         val dto = apiService.getTherapistList(patientId)
         Log.d("TherapistProvider", "DtO Obtenido: $dto")
+        dto.forEach {
+            val r = getTherapistInfo(it?.therapistId!!)
+            therapistList.add(r)
+        }
+        return therapistList
+    }
+
+    override suspend fun getTherapistInfo(therapistId: Short): TherapistInfo{
+        val dto = apiService.getTherapistInfo(therapistId)
         return mapDataToDomain(dto)
     }
 
@@ -31,7 +41,7 @@ class TherapistProviderImpl @Inject constructor(
     override suspend fun updateTherapistInfo(therapistInfo: TherapistInfo?): Boolean {
         try {
             val dto = mapDomainToData(therapistInfo!!)
-            apiService.updateTherapistInfo(dto.id!!, dto)
+            apiService.updateTherapistInfo(dto.therapistId!!, dto)
             return true
         } catch (e: Exception) {
             return false
@@ -49,7 +59,7 @@ class TherapistProviderImpl @Inject constructor(
 
     private fun mapDomainToData(therapistInfo: TherapistInfo): TherapistDto {
         return TherapistDto(
-            id = therapistInfo.id,
+            therapistId = therapistInfo.therapistId,
             patientId = therapistInfo.patientId,
             name = therapistInfo.name,
             lastName = therapistInfo.lastName,
@@ -66,8 +76,8 @@ class TherapistProviderImpl @Inject constructor(
                 if (therapist != null) {
                     list.add(
                         TherapistInfo(
-                            id = therapist.id,
-                            patientId = therapist.patientId,
+                            therapistId = therapist.therapistId,
+                            patientId = therapist.patientId?:0,
                             name = therapist.name,
                             lastName = therapist.lastName,
                             email = therapist.email,
@@ -79,5 +89,17 @@ class TherapistProviderImpl @Inject constructor(
             }
         }
         return list
+    }
+
+    private fun mapDataToDomain(therapist: TherapistDto): TherapistInfo {
+        return TherapistInfo(
+            therapistId = therapist.id,
+            patientId = therapist.patientId?:0,
+            name = therapist.name,
+            lastName = therapist.lastName,
+            email = therapist.email,
+            phoneNumber = therapist.phoneNumber,
+            registeredFlag = therapist.registeredFlag
+        )
     }
 }

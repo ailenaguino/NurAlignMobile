@@ -64,12 +64,14 @@ class TherapySessionViewModel @Inject constructor(
     }
 
     private fun loadTherapists() {
-        val newList = listOf(
-            TherapistInfo(2, 1,"William", "Scottman", "wscottman@gmail.com", 1112344321, "N"),
-            TherapistInfo(3, 1,"Bob", "Smith", "bsmith@gmail.com", 1132143214, "N")
-        )
-        _therapistList.value = newList
-        //_therapistList.value = therapistViewModel.therapistList.value
+        viewModelScope.launch {
+            val result = userService.getTherapistList(_patientId.value)
+            if (result.isSuccess) {
+                _therapistList.value = result.getOrNull()!!
+            } else {
+                _errorMessage.value = "Error al cargar los terapeutas"
+            }
+        }
     }
 
     fun updateSelectedDate(date: String) {
@@ -141,7 +143,7 @@ class TherapySessionViewModel @Inject constructor(
     fun saveTherapySession() {
         _therapySessionInfo.value = TherapySessionInfo(
             patientId = _patientId.value,
-            therapistId = _selectedTherapist.value!!.id!!,
+            therapistId = _selectedTherapist.value!!.therapistId!!,
             sessionDate = formatDate(_selectedDate.value!!),
             sessionTime = formatTime(_selectedTime.value!!),
             preSessionNotes = _preSessionNotes.value,
@@ -155,7 +157,7 @@ class TherapySessionViewModel @Inject constructor(
 
         if (_therapistList.value != null) {
             _therapistList.value!!.forEach { therapist ->
-                if (therapist!!.id == therapySessionInfo.therapistId) {
+                if (therapist!!.therapistId == therapySessionInfo.therapistId) {
                     therapist.let {
                         _selectedTherapist.value = it
                     }

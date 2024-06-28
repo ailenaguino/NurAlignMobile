@@ -80,7 +80,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TherapySessionScreenComponent(
     navController: NavController,
-    therapySessionViewModel: TherapySessionViewModel
+    therapySessionViewModel: TherapySessionViewModel,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -344,7 +344,7 @@ fun SessionDateAndTime(therapySessionViewModel: TherapySessionViewModel) {
 @Composable
 fun CustomTimePickerDialog(
     therapySessionViewModel: TherapySessionViewModel,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     val state = rememberTimePickerState()
 
@@ -394,7 +394,7 @@ fun CustomTimePickerDialog(
 @Composable
 fun CustomDatePickerDialog(
     therapySessionViewModel: TherapySessionViewModel,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     val state = rememberDatePickerState()
     val context = LocalContext.current
@@ -597,11 +597,21 @@ fun SessionFeel(therapySessionViewModel: TherapySessionViewModel) {
 @Composable
 fun SaveButton(
     therapySessionViewModel: TherapySessionViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     Button(
         onClick = {
-            therapySessionViewModel.checkLogs()
+            if (therapySessionViewModel.selectedDate.value.isNullOrEmpty() || therapySessionViewModel.selectedTime.value.isNullOrEmpty() || therapySessionViewModel.selectedTherapist.value == null) {
+                Toast.makeText(
+                    context,
+                    "Por favor complete los campos de terapeuta, fecha y hora",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                therapySessionViewModel.checkLogs()
+                therapySessionViewModel.saveTherapySession()
+            }
         },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor),
         modifier = modifier
