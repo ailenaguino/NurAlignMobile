@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.tracker
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -8,12 +9,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.SaveMedicationTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.UpdateMedicationTrackerInfoUseCase
+import com.losrobotines.nuralign.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +28,7 @@ class MedicationTrackerViewModel @Inject constructor(
     private val checkNextTrackerToBeCompletedUseCase: CheckNextTrackerToBeCompletedUseCase,
     private val saveMedicationTrackerInfoUseCase: SaveMedicationTrackerInfoUseCase,
     private val updateMedicationTrackerInfoUseCase: UpdateMedicationTrackerInfoUseCase,
+    private val trackerIsSavedUseCase: TrackerIsSavedUseCase
 ) :
     ViewModel() {
 
@@ -38,6 +44,8 @@ class MedicationTrackerViewModel @Inject constructor(
 
     private val _isVisible = MutableLiveData(false)
     var isVisible: LiveData<Boolean> = _isVisible
+
+    private val _isSaved = MutableLiveData(false)
 
     private val _route = MutableLiveData("")
     var route: LiveData<String> = _route
@@ -74,7 +82,7 @@ class MedicationTrackerViewModel @Inject constructor(
         }
     }
 
-    fun saveOrUpdateMedicationTracker() {
+    fun saveOrUpdateMedicationTracker(context: Context) {
         viewModelScope.launch {
             val trackerToSaveOrUpdate = _medicationTrackerList.value ?: emptyList()
 
@@ -96,6 +104,12 @@ class MedicationTrackerViewModel @Inject constructor(
                             )
                             _errorMessage.value =
                                 "Error al guardar el seguimiento de la toma de medicamentos"
+                        } else {
+                            _isSaved.value = true
+                            trackerIsSavedUseCase(
+                                context,
+                                AchievementsViewModel.TrackerConstants.MEDICATION_TRACKER
+                            )
                         }
                     } else {
                         val result = updateMedicationTrackerInfoUseCase(tracker)
@@ -107,6 +121,8 @@ class MedicationTrackerViewModel @Inject constructor(
                             )
                             _errorMessage.value =
                                 "Error al actualizar el seguimiento de la toma de medicamentos"
+                        } else {
+                            _isSaved.value = true
                         }
 
                     }
@@ -139,8 +155,18 @@ class MedicationTrackerViewModel @Inject constructor(
 
     fun checkNextTracker() {
         viewModelScope.launch {
-            _route.value =
-                checkNextTrackerToBeCompletedUseCase(_patientMedicationId.intValue)
+            val result = userService.getPatientId()
+            val id = if (result.isSuccess) result.getOrNull() ?: 0 else {
+                _errorMessage.value = "Ha habido un error"
+                0
+            }
+            delay(1000)
+            if (_isSaved.value!!) {
+                _route.value =
+                    checkNextTrackerToBeCompletedUseCase(id.toInt())
+                if (_route.value != Routes.HomeScreen.route) _isVisible.value =
+                    true else _errorMessage.value = "Ya completaste todos los seguimientos!"
+            }
         }
     }
 

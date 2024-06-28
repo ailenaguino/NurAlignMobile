@@ -26,7 +26,9 @@ import com.losrobotines.nuralign.feature_achievements.presentation.screens.Achie
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionScreenComponent
 import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
+import com.losrobotines.nuralign.feature_home.domain.usecases.ResetDatabaseUseCase
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
+import com.losrobotines.nuralign.feature_home.presentation.screens.HomeViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.ForgottenPasswordScreen
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginScreenComponent
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
@@ -112,7 +114,8 @@ class MainActivity : ComponentActivity() {
                                     LoginScreenComponent(navController, loginViewModel)
                                 }
                                 composable(Routes.HomeScreen.route) {
-                                    HomeScreenComponent(navController)
+                                    val homeViewModel by viewModels<HomeViewModel>()
+                                    HomeScreenComponent(navController, homeViewModel)
                                 }
                                 composable(Routes.MoodTrackerScreen.route) {
                                     val moodTrackerViewModel by viewModels<MoodTrackerViewModel>()
