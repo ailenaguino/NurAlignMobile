@@ -51,13 +51,4 @@ class UpdateMedicationTrackerInfoUseCaseTest {
         coVerify { medicationTrackerProvider.updateMedicationTrackerData(MEDICATION_TRACKER_B) }
         assertEquals(MEDICATION_TRACKER_B, result.getOrNull())
     }
-
-    @Disabled
-    @Test
-    fun `when medication tracker for a day already exists then update it`() = runBlocking { }
-
-    @Disabled
-    @Test
-    fun `when medication tracker for non-existent medication is provided then return failure`() =
-        runBlocking { }
 }

@@ -11,12 +11,16 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
     MedicationProvider {
 
     override suspend fun saveMedicationInfo(medicationInfo: MedicationInfo?): Boolean {
-        try {
-            val dto = mapDomainToData(medicationInfo!!)
-            apiService.insertMedicationInfoIntoDatabase(dto)
-            return true
+        return try {
+            if (medicationInfo != null) {
+                val dto = mapDomainToData(medicationInfo)
+                apiService.insertMedicationInfoIntoDatabase(dto)
+                true
+            } else {
+                false
+            }
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 
@@ -36,9 +40,10 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         }
     }
 
-    override suspend fun deleteMedicationInfo(patientMedicationId: Short): Boolean {
+    override suspend fun deleteMedicationInfo(medicationInfo: MedicationInfo): Boolean {
         try {
-            apiService.deleteMedicationInfo(patientMedicationId)
+            val dto = mapDomainToData(medicationInfo).copy(enabledFlag = "N")
+            apiService.deleteMedicationInfo(medicationInfo.patientId, dto)
             return true
         } catch (e: Exception) {
             return false

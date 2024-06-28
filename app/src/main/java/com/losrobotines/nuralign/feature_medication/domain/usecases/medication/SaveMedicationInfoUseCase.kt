@@ -1,12 +1,10 @@
 package com.losrobotines.nuralign.feature_medication.domain.usecases.medication
 
-import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
 import javax.inject.Inject
 
 class SaveMedicationInfoUseCase @Inject constructor(
-    private val userService: UserService,
     private val medicationProvider: MedicationProvider
 ) {
     suspend operator fun invoke(medicationInfo: MedicationInfo): Result<Unit> {
@@ -26,19 +24,17 @@ class SaveMedicationInfoUseCase @Inject constructor(
     }
 
     private suspend fun checkForDuplicatedMedication(medicationInfo: MedicationInfo): MedicationInfo? {
-        val patientId = userService.getPatientId().getOrNull() ?: return null
         val result =
-            userService.getMedicationList(patientId)
+            medicationProvider.getMedicationList(medicationInfo.patientId)
 
-        return if (result.isSuccess) {
-            val medicationList = result.getOrNull()
-            if (medicationList != null && !isDuplicated(medicationInfo, medicationList)) {
+        return if (result.isEmpty()) {
+            if (!isDuplicated(medicationInfo, result)) {
                 medicationInfo
             } else {
                 null
             }
         } else {
-            null
+            medicationInfo
         }
     }
 

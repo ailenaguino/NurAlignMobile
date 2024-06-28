@@ -10,6 +10,6 @@ interface MedicationProvider {
 
     suspend fun updateMedicationInfo(newMedicationInfo: MedicationInfo?): Boolean
 
-    suspend fun deleteMedicationInfo(patientMedicationId: Short): Boolean
+    suspend fun deleteMedicationInfo(medicationInfo: MedicationInfo): Boolean
 
 }

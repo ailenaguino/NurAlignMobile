@@ -19,8 +19,11 @@ interface MedicationApiService {
     @GET("medications/patient/{patientId}")
     suspend fun getMedicationList(@Path("patientId") patientId: Short): List<MedicationDto?>
 
-    @DELETE("medications/{patientMedicationId}")
-    suspend fun deleteMedicationInfo(@Path("patientMedicationId") patientMedicationId: Short): Response<Unit>
+    @PATCH("medications/{patientMedicationId}")
+    suspend fun deleteMedicationInfo(
+        @Path("patientMedicationId") patientMedicationId: Short,
+        @Body body: MedicationDto
+    ): Response<Unit>
 
     @PATCH("medications/patient/{patientId}")
     suspend fun updateMedicationInfo(
