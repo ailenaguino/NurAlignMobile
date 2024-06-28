@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
+import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.CalculateAverageSleepHoursUseCase
@@ -19,6 +20,7 @@ import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeekl
 import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklySleepTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.MoodTrackerAveragesLabels
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMedicationListInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +38,8 @@ class WeeklySummaryViewModel @Inject constructor(
     private val getWeeklySleepTrackerInfoUseCase: GetWeeklySleepTrackerInfoUseCase,
     private val getWeeklyMedicationTrackerInfoUseCase: GetWeeklyMedicationTrackerInfoUseCase,
     private val calculateAverageSleepHoursUseCase: CalculateAverageSleepHoursUseCase,
-    private val calculateWeeklyMoodAveragesUseCase: CalculateWeeklyMoodAveragesUseCase
+    private val calculateWeeklyMoodAveragesUseCase: CalculateWeeklyMoodAveragesUseCase,
+    private val getWeeklyMedicationListInfoUseCase: GetWeeklyMedicationListInfoUseCase
 ) : ViewModel() {
 
     private val _moodTrackerInfoList = MutableStateFlow<List<MoodTrackerInfo?>>(emptyList())
@@ -54,22 +57,24 @@ class WeeklySummaryViewModel @Inject constructor(
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage: LiveData<String?> = _errorMessage
 
-
     private val _moodAveragesLabels = MutableStateFlow<MoodTrackerAveragesLabels?>(null)
     val moodAveragesLabels: StateFlow<MoodTrackerAveragesLabels?> get() = _moodAveragesLabels
+
+    private val _medicationList = MutableStateFlow<List<MedicationInfo?>>(emptyList())
+    val medicationList: StateFlow<List<MedicationInfo?>> get() = _medicationList
 
     init {
         updateData()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateData() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                loadMedication()
                 loadMoodTrackerInfo()
                 loadSleepTrackerInfo()
-                loadMedicationTrackerInfo()
-                loadMoodAveragesLabels()
             } catch (e: Exception) {
                 _errorMessage.value = "Error al actualizar la información"
             } finally {
@@ -78,14 +83,42 @@ class WeeklySummaryViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun loadMedicationTrackerInfo() {
+    private fun loadMedication() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val patientId = userService.getPatientId().getOrNull()?.toInt() ?: 0
-                val info = getWeeklyMedicationTrackerInfoUseCase(patientId.toShort())
-                Log.d("MedicationTrackerInfo", info.toString())
-                _medicationTrackerInfoList.value = info
+                val info = getWeeklyMedicationListInfoUseCase(patientId.toShort())
+                Log.d("Medication", info.toString())
+                _medicationList.value = info
+
+                loadMedicationTrackerInfo(info.mapNotNull { it?.patientMedicationId })
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al cargar la información del medication"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun loadMedicationTrackerInfo(medicationIds: List<Short>) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val trackerInfoList = mutableListOf<MedicationTrackerInfo?>()
+
+                medicationIds.forEach { medicationId ->
+                    try {
+                        val infoList = getWeeklyMedicationTrackerInfoUseCase(medicationId)
+                        Log.d("MedicationTrackerInfo", "MedId: $medicationId Info: $infoList")
+                        trackerInfoList.addAll(infoList)
+                    } catch (e: Exception) {
+                        Log.e("MedicationTrackerInfo", "Error loading tracker info for medId: $medicationId", e)
+                        trackerInfoList.add(null)
+                    }
+                }
+                _medicationTrackerInfoList.value = trackerInfoList
             } catch (e: Exception) {
                 _errorMessage.value = "Error al cargar la información del medicationTracker"
             } finally {
@@ -94,23 +127,21 @@ class WeeklySummaryViewModel @Inject constructor(
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadMoodTrackerInfo() {
         viewModelScope.launch {
             try {
                 val patientId = userService.getPatientId().getOrNull()?.toInt() ?: 0
                 val info = getWeeklyMoodTrackerInfoUseCase(patientId.toShort())
-
                 _moodTrackerInfoList.value = info.filterNotNull()
             } catch (e: Exception) {
                 _errorMessage.value = "Error al cargar la informacion del moodTracker"
             } finally {
                 _isLoading.value = false
             }
+            loadMoodAveragesLabels()
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadSleepTrackerInfo() {
@@ -118,7 +149,6 @@ class WeeklySummaryViewModel @Inject constructor(
             try {
                 val patientId = userService.getPatientId().getOrNull()?.toInt() ?: 0
                 val info = getWeeklySleepTrackerInfoUseCase(patientId.toShort())
-
                 _sleepTrackerInfoList.value = info
             } catch (e: Exception) {
                 _errorMessage.value = "Error al cargar la informacion del sleepTracker"
@@ -149,7 +179,6 @@ class WeeklySummaryViewModel @Inject constructor(
         return date.format(displayFormatter)
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun getAverageSleepHours(): Double {
         val average = calculateAverageSleepHoursUseCase(_sleepTrackerInfoList.value)
@@ -167,6 +196,4 @@ class WeeklySummaryViewModel @Inject constructor(
     fun clearErrorMessage() {
         _errorMessage.value = null
     }
-
-
 }

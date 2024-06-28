@@ -20,6 +20,8 @@ import androidx.compose.material.Text
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -36,6 +38,9 @@ import com.losrobotines.nuralign.ui.theme.mainColor
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeeklySummaryMedicationTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
+    val medicationList by weeklySummaryViewModel.medicationList.collectAsState()
+    val medicationTrackerList by weeklySummaryViewModel.medicationTrackerInfoList.collectAsState()
+
     val medicationTrackerInfoList = listOf(
         MedicationTrackerInfo(1, "2024-06-23", "Y"),
         MedicationTrackerInfo(1, "2024-06-22", "N"),
@@ -68,7 +73,7 @@ fun WeeklySummaryMedicationTracker(weeklySummaryViewModel: WeeklySummaryViewMode
         MedicationInfo(3, 1, "Medication C", 75, "Y"),
     )
 
-    val organizedData = organizeMedicationData(medicationTrackerInfoList, medicationInfoList)
+    val organizedData = organizeMedicationData(medicationTrackerList, medicationList)
 
     Column() {
         LazyVerticalGrid(
@@ -89,7 +94,7 @@ fun WeeklySummaryMedicationTracker(weeklySummaryViewModel: WeeklySummaryViewMode
                 ) {
                     SharedComponents().fabCompanion(
                         listOf(
-                            "Medication",
+                            "Resumen de la toma de medicación de tu última semana",
                             "Clickeame para esconder mi diálogo"
                         )
                     )
@@ -153,33 +158,33 @@ fun MedicationStatusItem(
             Image(
                 painterResource(id = R.drawable.check),
                 contentDescription = "Tomado",
-                modifier = Modifier.size(25.dp)
+                modifier = Modifier.size(30.dp)
             )
         } else {
             Image(
                 painterResource(id = R.drawable.error),
                 contentDescription = "No Tomado",
-                modifier = Modifier.size(25.dp).padding(bottom = 3.dp)
-            )
+                modifier = Modifier.size(30.dp))
         }
 
     }
 }
 fun organizeMedicationData(
-    medicationTrackerList: List<MedicationTrackerInfo>,
-    medicationList: List<MedicationInfo>
+    medicationTrackerList: List<MedicationTrackerInfo?>,
+    medicationList: List<MedicationInfo?>
 ): Map<String, List<Pair<String, Boolean>>> {
     val organizedData = mutableMapOf<String, List<Pair<String, Boolean>>>()
 
     medicationTrackerList.forEach { tracker ->
+        if (tracker == null) return@forEach
         val date = tracker.effectiveDate
         val medicationsForDate =
-            medicationList.filter { it.patientMedicationId == tracker.patientMedicationId }
+            medicationList.filter { it?.patientMedicationId == tracker.patientMedicationId }
         medicationsForDate.forEach { medication ->
             val taken = tracker.takenFlag == "Y"
-            val medicationStatus = Pair(medication.medicationName, taken)
+            val medicationStatus = Pair(medication?.medicationName, taken)
             val dailyList = organizedData.getOrDefault(date, emptyList())
-            organizedData[date] = dailyList + medicationStatus
+            organizedData[date] = (dailyList + medicationStatus) as List<Pair<String, Boolean>>
         }
     }
 

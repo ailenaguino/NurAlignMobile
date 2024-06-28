@@ -18,7 +18,6 @@ class GetWeeklySleepTrackerInfoUseCase @Inject constructor(
 
         for (i in 0 until 7) {
             val date = dateFormat.format(calendar.time)
-            Log.d("SleepTrackerUseCase", "Obteniendo datos para la fecha $date")
             val trackerInfo = weeklySummaryProvider.getSleepTracker(patientId, date)
             trackerList.add(trackerInfo)
             calendar.add(Calendar.DAY_OF_YEAR, -1)
