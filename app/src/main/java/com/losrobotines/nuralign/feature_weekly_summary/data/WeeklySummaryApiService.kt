@@ -25,9 +25,9 @@ interface WeeklySummaryApiService {
     ): Response<SleepTrackerDto?>
 
 
-    @GET("medicationTracker/{patientId}")
+    @GET("medicationTracker/{patientMedicationId}")
     suspend fun getMedicationTrackerInfo(
-        @Path("patientId") patientId: Short,
+        @Path("patientMedicationId") patientMedicationId: Short,
         @Query("effectiveDate") effectiveDate: String
     ): Response<MedicationTrackerDto?>
 

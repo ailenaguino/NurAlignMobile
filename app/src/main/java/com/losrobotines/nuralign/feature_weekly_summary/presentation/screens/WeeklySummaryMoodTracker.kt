@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,10 +38,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.MoodTrackerAveragesLabels
 import com.losrobotines.nuralign.feature_weekly_summary.presentation.WeeklySummaryViewModel
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
+
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -60,26 +63,19 @@ fun WeeklySummaryMoodTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
                 SharedComponents().HalfCircleTop(title = "  Estadística del\nestado del ánimo")
             }
             item {
-                LargeFloatingActionButton(
-                    onClick = {},
-                    shape = RoundedCornerShape(10.dp),
-                    containerColor = mainColor,
-                    modifier = Modifier.padding(start = 8.dp, end = 9.dp),
-                    elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 7.dp
-                    )
-                ) {
-                    val moodMessage = "En tu semana tuviste un promedio de ánimo:\nElevado: ${moodAveragesLabels?.highestValueLabel},"
-                    val moodMessage2 ="Deprimido: ${moodAveragesLabels?.lowestValueLabel},\nIrritable: ${moodAveragesLabels?.irritableValueLabel},\nAnsioso: ${moodAveragesLabels?.anxiousValueLabel}"
+                RobotinMoodTracker(moodAveragesLabels)
+            }
 
-                    SharedComponents().fabCompanion(
-                        listOf(
-                            moodMessage,
-                            moodMessage2,
-                            "Clickeame para esconder mi diálogo"
-                        )
-                    )
-                }
+            item {
+                MoodLegend(
+                    colors = listOf(
+                        Color(0xff91c776),
+                        Color(0xff9ebadc),
+                        Color(0xffdec278),
+                        Color(0xffc381ba)
+                    ),
+                    labels = listOf("Elevado", "Deprimido", "Irritable", "Ansioso")
+                )
             }
         }
 
@@ -92,10 +88,61 @@ fun WeeklySummaryMoodTracker(weeklySummaryViewModel: WeeklySummaryViewModel) {
         Spacer(modifier = Modifier.height(10.dp))
 
 
-        MoodBarChartList(moodTrackerInfoList,weeklySummaryViewModel)
+        MoodBarChartList(moodTrackerInfoList, weeklySummaryViewModel)
     }
+}
+@Composable
+fun MoodLegend(colors: List<Color>, labels: List<String>) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().padding(top=10.dp, bottom = 10.dp)
+    ) {
+        Spacer(modifier = Modifier.width(5.dp))
+        colors.forEachIndexed { index, color ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(16.dp).height(16.dp)
+                        .background(color)
+                        .border(1.dp, Color.Black)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = labels[index],
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+}
+@Composable
+private fun RobotinMoodTracker(moodAveragesLabels: MoodTrackerAveragesLabels?) {
+    LargeFloatingActionButton(
+        onClick = {},
+        shape = RoundedCornerShape(10.dp),
+        containerColor = mainColor,
+        modifier = Modifier.padding(start = 8.dp, end = 9.dp),
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 7.dp
+        )
+    ) {
+        val moodMessage =
+            "En tu semana tuviste un promedio de ánimo:\nElevado: ${moodAveragesLabels?.highestValueLabel},"
+        val moodMessage2 =
+            "Deprimido: ${moodAveragesLabels?.lowestValueLabel},\nIrritable: ${moodAveragesLabels?.irritableValueLabel},\nAnsioso: ${moodAveragesLabels?.anxiousValueLabel}"
 
-
+        SharedComponents().fabCompanion(
+            listOf(
+                moodMessage,
+                moodMessage2,
+                "Clickeame para esconder mi diálogo"
+            )
+        )
+    }
 }
 
 

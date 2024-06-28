@@ -67,7 +67,7 @@ fun AddActivityAlertDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Nueva medicación",
+                    text = "Nueva actividad",
                     textAlign = TextAlign.Center
                 )
             }

@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_routine.presentation
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -62,6 +63,7 @@ import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -187,6 +189,7 @@ private fun saveRoutine(
         Button(
             onClick = {
                 val bedTime = routineViewModel.bedTimeRoutine.value
+
                 if (bedTime.isNullOrEmpty()) {
                     Toast.makeText(
                         context,
@@ -195,64 +198,9 @@ private fun saveRoutine(
                     ).show()
                     return@Button
                 }
-
                 val selectedBedTime = routineViewModel.parseTime(bedTime)
-                if (selectedBedTime == null) {
-                    Toast.makeText(
-                        context,
-                        "La hora de dormir es inválida",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@Button
-                }
 
-                val prompt = NotificationPrompts.getMotivationalMessage(name)
-
-                scope.launch {
-                    routineViewModel.generateNotificationMessage(prompt)
-                        ?.let { motivationalMessage ->
-                            routineViewModel.notification.scheduledNotification(
-                                context = context,
-                                selectedTime = selectedBedTime,
-                                title = "Robotin",
-                                content = motivationalMessage,
-                                destination = "SleepTrackerScreen",
-                                notificationId = 1
-                            )
-                        }
-
-                    routineViewModel.activities.value?.forEachIndexed { index, activity ->
-                        val selectedActivityTime = routineViewModel.parseTime(activity.time)
-                        if (selectedActivityTime == null) {
-                            Toast.makeText(
-                                context,
-                                "La hora de la actividad ${activity.name} es inválida",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@forEachIndexed
-                        }
-
-                        Log.d("RoutineViewModel", "selectedActivityTime: $selectedActivityTime")
-                        Log.d("RoutineViewModel", "${activity.days}")
-                        val activityMessage =
-                            NotificationPrompts.getActivityMessage(activity.name, name)
-                        routineViewModel.generateNotificationMessage(activityMessage)
-                            ?.let { activityNotificationMessage ->
-                                routineViewModel.notification.scheduledNotification(
-                                    context = context,
-                                    selectedTime = selectedActivityTime,
-                                    title = "Robotin",
-                                    content = activityNotificationMessage,
-                                    destination = "HomeScreen",
-                                    notificationId = index + 2,
-                                    selectedDays = activity.days ?: emptyList()
-                                )
-                            }
-                    }
-
-                    routineViewModel.saveRoutine()
-                    routineViewModel.setIsSavedRoutine(true)
-                }
+                generateNotification(name, scope, routineViewModel, context, selectedBedTime)
 
                 Toast.makeText(context, "Rutina guardada", Toast.LENGTH_SHORT).show()
             },
@@ -267,6 +215,64 @@ private fun saveRoutine(
         {
             Text("Guardar")
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@SuppressLint("CoroutineCreationDuringComposition")
+private fun generateNotification(
+    name: String,
+    scope: CoroutineScope,
+    routineViewModel: RoutineViewModel,
+    context: Context,
+    selectedBedTime: LocalTime?
+) {
+    val prompt = NotificationPrompts.getMotivationalMessage(name)
+
+    scope.launch {
+        routineViewModel.generateNotificationMessage(prompt)
+            ?.let { motivationalMessage ->
+                if (selectedBedTime != null) {
+                    routineViewModel.notification.scheduledNotification(
+                        context = context,
+                        selectedTime = selectedBedTime,
+                        title = "Robotin",
+                        content = motivationalMessage,
+                        destination = "SleepTrackerScreen",
+                        notificationId = 1
+                    )
+                }
+            }
+
+        routineViewModel.activities.value?.forEachIndexed { index, activity ->
+            val selectedActivityTime = routineViewModel.parseTime(activity.time)
+            if (selectedActivityTime == null) {
+                Toast.makeText(
+                    context,
+                    "La hora de la actividad ${activity.name} es inválida",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@forEachIndexed
+            }
+
+            val activityMessage =
+                NotificationPrompts.getActivityMessage(activity.name, name)
+            routineViewModel.generateNotificationMessage(activityMessage)
+                ?.let { activityNotificationMessage ->
+                    routineViewModel.notification.scheduledNotification(
+                        context = context,
+                        selectedTime = selectedActivityTime,
+                        title = "Robotin",
+                        content = activityNotificationMessage,
+                        destination = "HomeScreen",
+                        notificationId = index + 2,
+                        selectedDays = activity.days ?: emptyList()
+                    )
+                }
+        }
+
+        routineViewModel.saveRoutine()
+        routineViewModel.setIsSavedRoutine(true)
     }
 }
 
@@ -353,7 +359,7 @@ fun AddRoutineButton(routineViewModel: RoutineViewModel) {
             onClick = { openAlertDialog = true },
             colors = ButtonDefaults.buttonColors(containerColor = mainColor)
         ) {
-            Text(text = "Agregar medicación")
+            Text(text = "Agregar actividad")
         }
         if (openAlertDialog) {
             AddActivityAlertDialog(
