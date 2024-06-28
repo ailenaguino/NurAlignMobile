@@ -2,6 +2,7 @@ package com.losrobotines.nuralign.feature_therapy.domain.usecases
 
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
+import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.EditExistingTherapistInListUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify

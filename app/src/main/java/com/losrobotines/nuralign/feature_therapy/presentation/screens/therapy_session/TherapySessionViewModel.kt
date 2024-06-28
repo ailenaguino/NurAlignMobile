@@ -1,8 +1,6 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_session
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
@@ -12,18 +10,20 @@ import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapySessionInfo
-import com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists.TherapistViewModel
+import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapy_session.EditTherapySessionUseCase
+import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapy_session.SaveTherapySessionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalTime
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class TherapySessionViewModel @Inject constructor(
-    private val userService: UserService
+    private val userService: UserService,
+    private val saveTherapySessionUseCase: SaveTherapySessionUseCase,
+    private val editTherapySessionUseCase: EditTherapySessionUseCase
 ) : ViewModel() {
     private val _patientId = mutableStateOf<Short>(0)
     val patientId: State<Short> = _patientId
@@ -38,19 +38,19 @@ class TherapySessionViewModel @Inject constructor(
     val therapySessionInfo: LiveData<TherapySessionInfo> = _therapySessionInfo
 
     private val _selectedDate = MutableLiveData<String>()
-    var selectedDate: LiveData<String> = _selectedDate
+    val selectedDate = _selectedDate
 
     private val _selectedTime = MutableLiveData<String>()
-    var selectedTime: LiveData<String> = _selectedTime
+    val selectedTime = _selectedTime
 
     private val _preSessionNotes = MutableLiveData<String>()
-    val preSessionNotes: LiveData<String> = _preSessionNotes
+    val preSessionNotes = _preSessionNotes
 
     private val _postSessionNotes = MutableLiveData<String>()
-    val postSessionNotes: LiveData<String> = _postSessionNotes
+    val postSessionNotes = _postSessionNotes
 
     private val _sessionFeel = MutableLiveData<String>()
-    val sessionFeel: LiveData<String> = _sessionFeel
+    val sessionFeel = _sessionFeel
 
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage: LiveData<String?> = _errorMessage
@@ -141,15 +141,38 @@ class TherapySessionViewModel @Inject constructor(
     }
 
     fun saveTherapySession() {
-        _therapySessionInfo.value = TherapySessionInfo(
-            patientId = _patientId.value,
-            therapistId = _selectedTherapist.value!!.therapistId!!,
-            sessionDate = formatDate(_selectedDate.value!!),
-            sessionTime = formatTime(_selectedTime.value!!),
-            preSessionNotes = _preSessionNotes.value,
-            postSessionNotes = _postSessionNotes.value,
-            sessionFeel = _sessionFeel.value
-        )
+        viewModelScope.launch {
+            saveSession()
+            val therapySessionInfo = _therapySessionInfo.value!!
+            if (therapySessionInfo.id == null) {
+                val result = saveTherapySessionUseCase(therapySessionInfo)
+
+                if (result.isSuccess) {
+                    _errorMessage.value = "Sesión guardada correctamente"
+                    clearSessionState()
+                } else {
+                    Log.e("TherapySessionViewModel", "Error saving therapy session")
+                    _errorMessage.value = "Error al guardar la sesión"
+                }
+            } else {
+                val result = editTherapySessionUseCase(
+                    selectedDate.value!!,
+                    selectedTime.value!!.toShort(),
+                    preSessionNotes.value ?: "",
+                    postSessionNotes.value ?: "",
+                    sessionFeel.value ?: "",
+                    therapySessionInfo
+                )
+
+                if (result.isSuccess) {
+                    _errorMessage.value = "Sesión editada correctamente"
+                    clearSessionState()
+                } else {
+                    Log.e("TherapySessionViewModel", "Error editing therapy session")
+                    _errorMessage.value = "Error al editar la sesión"
+                }
+            }
+        }
     }
 
     fun loadTherapySessionToEdit(therapySessionInfo: TherapySessionInfo) {
@@ -172,13 +195,24 @@ class TherapySessionViewModel @Inject constructor(
         _sessionFeel.value = therapySessionInfo.sessionFeel ?: ""
     }
 
-    fun checkLogs() {
-        Log.d("TherapySessionViewModel", "therapistList ${_therapistList.value}")
-        Log.d("TherapySessionViewModel", "selectedTherapist ${_selectedTherapist.value}")
-        Log.d("TherapySessionViewModel", "selectedDate ${formatDate(_selectedDate.value!!)}")
-        Log.d("TherapySessionViewModel", "selectedTime ${formatTime(_selectedTime.value!!)}")
-        Log.d("TherapySessionViewModel", "preSessionNotes ${_preSessionNotes.value}")
-        Log.d("TherapySessionViewModel", "postSessionNotes ${_postSessionNotes.value}")
-        Log.d("TherapySessionViewModel", "sessionFeel ${_sessionFeel.value}")
+    private fun saveSession() {
+        val session = TherapySessionInfo(
+            patientId = _patientId.value,
+            therapistId = _selectedTherapist.value?.therapistId!!,
+            sessionDate = formatDate(selectedDate.value!!),
+            sessionTime = formatTime(selectedTime.value!!),
+            preSessionNotes = preSessionNotes.value,
+            postSessionNotes = postSessionNotes.value,
+            sessionFeel = sessionFeel.value
+        )
+        _therapySessionInfo.value = session
+    }
+
+    private fun clearSessionState() {
+        selectedDate.value = ""
+        selectedTime.value = ""
+        preSessionNotes.value = ""
+        postSessionNotes.value = ""
+        sessionFeel.value = ""
     }
 }

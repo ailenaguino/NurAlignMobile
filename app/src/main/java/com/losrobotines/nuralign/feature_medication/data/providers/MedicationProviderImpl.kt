@@ -67,7 +67,6 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
                             patientId = med.patientId,
                             medicationName = med.name,
                             medicationGrammage = med.grammage,
-                            //medicationDays = med.medicationDays,
                             medicationOptionalFlag = med.flag
                         )
                     )

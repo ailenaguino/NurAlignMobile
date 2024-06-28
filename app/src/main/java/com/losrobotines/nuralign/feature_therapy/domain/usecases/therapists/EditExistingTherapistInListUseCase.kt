@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_therapy.domain.usecases
+package com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists
 
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider

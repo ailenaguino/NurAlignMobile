@@ -10,9 +10,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
-import com.losrobotines.nuralign.feature_therapy.domain.usecases.EditExistingTherapistInListUseCase
-import com.losrobotines.nuralign.feature_therapy.domain.usecases.RemoveTherapistFromListUseCase
-import com.losrobotines.nuralign.feature_therapy.domain.usecases.SaveTherapistInfoUseCase
+import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.EditExistingTherapistInListUseCase
+import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.RemoveTherapistFromListUseCase
+import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.SaveTherapistInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

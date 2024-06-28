@@ -609,7 +609,6 @@ fun SaveButton(
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                therapySessionViewModel.checkLogs()
                 therapySessionViewModel.saveTherapySession()
             }
         },

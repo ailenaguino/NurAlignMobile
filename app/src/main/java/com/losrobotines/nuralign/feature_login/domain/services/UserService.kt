@@ -8,7 +8,9 @@ import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrac
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationProvider
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
+import com.losrobotines.nuralign.feature_therapy.domain.models.TherapySessionInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
+import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapySessionProvider
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -21,7 +23,8 @@ class UserService @Inject constructor(
     private val authRepository: AuthRepository,
     private val medicationProvider: MedicationProvider,
     private val medicationTrackerProvider: MedicationTrackerProvider,
-    private val therapistProvider: TherapistProvider
+    private val therapistProvider: TherapistProvider,
+    private val therapySessionProvider: TherapySessionProvider
 ) {
     suspend fun getPatientId(): Result<Short?> {
         return try {
@@ -73,6 +76,25 @@ class UserService @Inject constructor(
             Result.success(therapistProvider.getTherapistList(id))
         } catch (e: Exception) {
             Result.failure(Exception("Failed to get therapist list: ${e.message}"))
+        }
+    }
+
+    suspend fun getTherapySessionList(
+        patientId: Short,
+        therapistId: Short
+    ): Result<List<TherapySessionInfo?>> {
+        return try {
+            Result.success(therapySessionProvider.getTherapySessionList(patientId, therapistId))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get therapy session list: ${e.message}"))
+        }
+    }
+
+    suspend fun getTherapySessionInfo(id: Short): Result<TherapySessionInfo?> {
+        return try {
+            Result.success(therapySessionProvider.getTherapySessionInfo(id))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get therapy session info: ${e.message}"))
         }
     }
 }

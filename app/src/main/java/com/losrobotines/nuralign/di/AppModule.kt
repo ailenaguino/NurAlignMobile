@@ -33,8 +33,11 @@ import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
 import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_therapy.data.network.TherapistApiService
+import com.losrobotines.nuralign.feature_therapy.data.network.TherapySessionApiService
 import com.losrobotines.nuralign.feature_therapy.data.providers.TherapistProviderImpl
+import com.losrobotines.nuralign.feature_therapy.data.providers.TherapySessionProviderImpl
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
+import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapySessionProvider
 import com.losrobotines.nuralign.gemini.GeminiContentGenerator
 import dagger.Module
 import dagger.Provides
@@ -99,7 +102,10 @@ object AppModule {
     }
 
     @Provides
-    fun provideAchievementRespository(achievementDao: AchievementDao, counterDao: CounterDao): AchievementRepository {
+    fun provideAchievementRespository(
+        achievementDao: AchievementDao,
+        counterDao: CounterDao
+    ): AchievementRepository {
         return AchievementRepositoryImpl(achievementDao, counterDao)
     }
 
@@ -179,5 +185,15 @@ object AppModule {
     fun provideRoutineProvider(dao: RoutineDao): RoutineProvider {
         return RoutineProviderImpl(dao)
 
+    }
+
+    @Provides
+    fun provideTherapySessionApiService(retrofit: Retrofit): TherapySessionApiService {
+        return retrofit.create(TherapySessionApiService::class.java)
+    }
+
+    @Provides
+    fun provideTherapySessionProvider(therapySessionApiService: TherapySessionApiService): TherapySessionProvider {
+        return TherapySessionProviderImpl(therapySessionApiService)
     }
 }
