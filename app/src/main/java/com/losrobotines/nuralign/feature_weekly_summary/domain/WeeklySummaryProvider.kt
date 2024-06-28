@@ -15,6 +15,6 @@ interface WeeklySummaryProvider {
 
     suspend fun getMedicationTracker(patientId: Short, date: String): MedicationTrackerInfo?
 
-    suspend fun getMedicationListInfo(patientId: Short, medicationId: Short): MedicationInfo?
+    suspend fun getMedicationListInfo(patientId: Short): List<MedicationInfo?>
 
 }

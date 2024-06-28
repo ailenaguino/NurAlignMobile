@@ -193,13 +193,14 @@ class MainActivity : ComponentActivity() {
                                     permissionManager.requestPermissions()
                                     val currentIntent = intent
                                     val destination = currentIntent?.getStringExtra("destination")
-                                    if (destination != null) {
+                                /*    if (destination != null) {
                                         when (destination) {
                                             "SleepTrackerScreen" -> {
                                                 navController.navigate(Routes.SleepTrackerScreen.route)
-                                            }
+                                           }
                                         }
                                     }
+                                    */
                                 }
                             }
                         }

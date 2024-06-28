@@ -19,7 +19,6 @@ class GetWeeklyMoodTrackerInfoUseCase @Inject constructor(
 
         for (i in 0 until 7) {
             val date = dateFormat.format(calendar.time)
-            Log.d("MoodTrackerUseCase", "Obteniendo datos para la fecha $date")
             val trackerInfo = weeklySummaryProvider.getMoodTracker(patientId, date)
             trackerList.add(trackerInfo)
             calendar.add(Calendar.DAY_OF_YEAR, -1)
