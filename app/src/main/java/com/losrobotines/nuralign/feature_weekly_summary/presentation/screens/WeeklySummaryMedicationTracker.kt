@@ -3,6 +3,7 @@ package com.losrobotines.nuralign.feature_weekly_summary.presentation.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -74,7 +75,7 @@ fun WeeklySummaryMedicationTracker(weeklySummaryViewModel: WeeklySummaryViewMode
             columns = GridCells.Fixed(1)
         ) {
             item {
-                SharedComponents().HalfCircleTop(title = "  Estadística del\nestado del ánimo")
+                SharedComponents().HalfCircleTop(title = "     Estadística de la\n  toma de medicacion")
             }
             item {
                 LargeFloatingActionButton(
@@ -88,7 +89,7 @@ fun WeeklySummaryMedicationTracker(weeklySummaryViewModel: WeeklySummaryViewMode
                 ) {
                     SharedComponents().fabCompanion(
                         listOf(
-                          "Medication",
+                            "Medication",
                             "Clickeame para esconder mi diálogo"
                         )
                     )
@@ -96,7 +97,7 @@ fun WeeklySummaryMedicationTracker(weeklySummaryViewModel: WeeklySummaryViewMode
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        MedicationChart(organizedData = organizedData, weeklySummaryViewModel)
+        MedicationChart(organizedData, weeklySummaryViewModel)
     }
 }
 
@@ -138,6 +139,7 @@ fun MedicationStatusItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
@@ -145,20 +147,19 @@ fun MedicationStatusItem(
         Text(
             text = name,
             fontSize = 18.sp,
-            modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         if (taken) {
             Image(
                 painterResource(id = R.drawable.check),
                 contentDescription = "Tomado",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(25.dp)
             )
         } else {
             Image(
                 painterResource(id = R.drawable.error),
                 contentDescription = "No Tomado",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(25.dp).padding(bottom = 3.dp)
             )
         }
 
@@ -184,7 +185,3 @@ fun organizeMedicationData(
 
     return organizedData
 }
-
-
-
-

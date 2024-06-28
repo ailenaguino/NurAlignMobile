@@ -17,8 +17,8 @@ class CheckNextTrackerToBeCompletedUseCase @Inject constructor(
             Routes.MoodTrackerScreen.route
         } else if(!sleepTrackerUseCase(domainId)) {
             Routes.SleepTrackerScreen.route
-//        } else if(!medicationTrackerUseCase(domainId)){
-//            Routes.MedicationTrackerScreen.route
+        } else if(!medicationTrackerUseCase(domainId)){
+            Routes.MedicationTrackerScreen.route
         } else {
             Routes.HomeScreen.route
         }

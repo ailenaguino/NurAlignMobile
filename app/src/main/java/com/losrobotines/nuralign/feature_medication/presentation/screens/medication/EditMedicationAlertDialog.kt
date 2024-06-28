@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.medication
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +59,7 @@ fun EditMedicationAlertDialog(
     onDelete: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(horizontal = 15.dp),
@@ -77,10 +80,18 @@ fun EditMedicationAlertDialog(
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             Button(onClick = {
-                coroutineScope.launch {
-                    medicationViewModel.editExistingMedication(medicationElement)
+                if (medicationViewModel.medicationName.value.isBlank() || medicationViewModel.medicationGrammage.intValue <= 0) {
+                    Toast.makeText(
+                        context,
+                        "Por favor complete los campos de Nombre y Dosis",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    coroutineScope.launch {
+                        medicationViewModel.editExistingMedication(medicationElement)
+                    }
+                    confirmButton()
                 }
-                confirmButton()
             }) {
                 Text("Guardar cambios")
             }
