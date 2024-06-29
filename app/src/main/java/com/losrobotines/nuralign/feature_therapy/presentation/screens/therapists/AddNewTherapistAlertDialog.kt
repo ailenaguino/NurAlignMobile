@@ -1,6 +1,7 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists
 
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,7 @@ fun AddNewTherapistAlertDialog(
         therapistViewModel.therapistPhone.intValue,
         registeredFlag = "N"
     )
+    val context = LocalContext.current
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(horizontal = 15.dp),
@@ -63,10 +66,16 @@ fun AddNewTherapistAlertDialog(
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             Button(onClick = {
-                coroutineScope.launch {
+                if (therapistViewModel.therapistFirstName.value.isBlank() || therapistViewModel.therapistLastName.value.isBlank()) {
+                    Toast.makeText(
+                        context,
+                        "Por favor, complete los campos de Nombre y Apellido del terapeuta",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
                     therapistViewModel.saveData(newTherapist)
+                    confirmButton()
                 }
-                confirmButton()
             }) {
                 Text("Guardar")
             }
@@ -131,8 +140,8 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .height(60.dp)
                 .padding(horizontal = 4.dp)
@@ -154,8 +163,8 @@ fun NewTherapistElement(therapistViewModel: TherapistViewModel) {
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .height(60.dp)
                 .padding(horizontal = 4.dp)

@@ -76,4 +76,9 @@ class TherapySessionHistoryViewModel @Inject constructor(
             }
         }
     }
+
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
+
 }

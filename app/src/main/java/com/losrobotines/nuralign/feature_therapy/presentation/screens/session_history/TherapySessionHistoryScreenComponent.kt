@@ -1,7 +1,6 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.session_history
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,8 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -30,6 +27,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -147,6 +145,7 @@ fun TherapySessionHistoryScreenComponent(
                 }
             }
         }
+        SnackbarError(therapySessionHistoryViewModel, snackbarHostState)
     }
 }
 
@@ -324,6 +323,21 @@ fun SessionFeel(therapySessionInfo: TherapySessionInfo) {
                         shape = RoundedCornerShape(10.dp)
                     )
             )
+        }
+    }
+}
+
+@Composable
+fun SnackbarError(
+    therapySessionHistoryViewModel: TherapySessionHistoryViewModel,
+    snackbarHostState: SnackbarHostState
+) {
+    val errorMessage by therapySessionHistoryViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            therapySessionHistoryViewModel.clearErrorMessage()
         }
     }
 }

@@ -31,11 +31,10 @@ class TherapySessionViewModel @Inject constructor(
     private val _therapistList = MutableLiveData<List<TherapistInfo?>>()
     var therapistList: LiveData<List<TherapistInfo?>> = _therapistList
 
-    private val _selectedTherapist = MutableLiveData<TherapistInfo>()
-    val selectedTherapist: LiveData<TherapistInfo> = _selectedTherapist
+    private val _selectedTherapist = MutableLiveData<TherapistInfo?>()
+    val selectedTherapist: LiveData<TherapistInfo?> = _selectedTherapist
 
     private val _therapySessionInfo = MutableLiveData<TherapySessionInfo>()
-    val therapySessionInfo: LiveData<TherapySessionInfo> = _therapySessionInfo
 
     private val _selectedDate = MutableLiveData<String>()
     val selectedDate = _selectedDate
@@ -53,7 +52,10 @@ class TherapySessionViewModel @Inject constructor(
     val sessionFeel = _sessionFeel
 
     private val _errorMessage = MutableLiveData<String?>(null)
-    val errorMessage: LiveData<String?> = _errorMessage
+    val errorMessage = _errorMessage
+
+    private val _isEditingSession = MutableLiveData(false)
+    val isEditingSession = _isEditingSession
 
     init {
         getCurrentPatientId()
@@ -126,6 +128,10 @@ class TherapySessionViewModel @Inject constructor(
         _sessionFeel.value = feel
     }
 
+    fun updateIsEditingSession(isEditing: Boolean) {
+        _isEditingSession.value = isEditing
+    }
+
     private fun getCurrentPatientId() {
         viewModelScope.launch {
             val result = userService.getPatientId()
@@ -177,6 +183,7 @@ class TherapySessionViewModel @Inject constructor(
 
     fun loadTherapySessionToEdit(therapySessionInfo: TherapySessionInfo) {
         _therapySessionInfo.value = therapySessionInfo
+        _isEditingSession.value = true
 
         if (_therapistList.value != null) {
             _therapistList.value!!.forEach { therapist ->
@@ -209,11 +216,16 @@ class TherapySessionViewModel @Inject constructor(
         _therapySessionInfo.value = session
     }
 
-    private fun clearSessionState() {
+    fun clearSessionState() {
+        _selectedTherapist.value = null
         selectedDate.value = ""
         selectedTime.value = ""
         preSessionNotes.value = ""
         postSessionNotes.value = ""
         sessionFeel.value = ""
+    }
+
+    fun clearErrorMessage() {
+        _errorMessage.value = null
     }
 }

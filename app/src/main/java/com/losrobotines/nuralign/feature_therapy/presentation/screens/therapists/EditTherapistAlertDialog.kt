@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -53,7 +55,7 @@ fun EditTherapistAlertDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${therapistInfo.name} - ${therapistInfo.lastName}",
+                    text = "${therapistInfo.name} ${therapistInfo.lastName}",
                     textAlign = TextAlign.Center
                 )
             }
@@ -90,6 +92,8 @@ fun EditTherapistRow(
 ) {
     Column {
         EditTherapistElement(therapistViewModel, therapistInfo)
+        Spacer(modifier = Modifier.height(8.dp))
+        /*
         Divider(color = secondaryColor, thickness = 2.dp)
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -97,6 +101,7 @@ fun EditTherapistRow(
 
         Spacer(modifier = Modifier.height(8.dp))
         Divider(color = secondaryColor, thickness = 2.dp)
+        */
     }
 }
 
@@ -110,11 +115,12 @@ fun EditTherapistElement(
     val therapistEmail = remember { mutableStateOf(therapistInfo.email) }
     val therapistPhone = remember { mutableIntStateOf(therapistInfo.phoneNumber) }
 
-
-    Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .height(60.dp)
                 .padding(horizontal = 4.dp)
@@ -137,8 +143,9 @@ fun EditTherapistElement(
                 )
             )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .height(60.dp)
                 .padding(horizontal = 4.dp)
@@ -161,8 +168,9 @@ fun EditTherapistElement(
                 )
             )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .height(60.dp)
                 .padding(horizontal = 4.dp)
@@ -178,6 +186,7 @@ fun EditTherapistElement(
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 label = { Text("Email", color = secondaryColor) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = secondaryColor,
@@ -185,8 +194,9 @@ fun EditTherapistElement(
                 )
             )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .height(60.dp)
                 .padding(horizontal = 4.dp)
@@ -203,6 +213,7 @@ fun EditTherapistElement(
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 label = { Text("Teléfono", color = secondaryColor) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = secondaryColor,
@@ -213,6 +224,7 @@ fun EditTherapistElement(
     }
 }
 
+/*
 @Composable
 fun RemoveTherapist(
     therapistInfo: TherapistInfo,
@@ -280,3 +292,4 @@ fun RemoveTherapist(
         }
     }
 }
+ */
