@@ -87,6 +87,7 @@ fun TherapySessionScreenComponent(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val isEditingSession by therapySessionViewModel.isEditingSession.observeAsState(false)
+    val context = LocalContext.current
 
     BackHandler {
         if (isEditingSession) {
@@ -622,7 +623,7 @@ fun SaveButton(
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                therapySessionViewModel.saveTherapySession()
+                therapySessionViewModel.saveTherapySession(context)
             }
         },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor),
@@ -633,7 +634,10 @@ fun SaveButton(
 }
 
 @Composable
-fun SnackbarError(therapySessionViewModel: TherapySessionViewModel, snackbarHostState: SnackbarHostState) {
+fun SnackbarError(
+    therapySessionViewModel: TherapySessionViewModel,
+    snackbarHostState: SnackbarHostState
+) {
     val errorMessage by therapySessionViewModel.errorMessage.observeAsState()
 
     LaunchedEffect(errorMessage) {
