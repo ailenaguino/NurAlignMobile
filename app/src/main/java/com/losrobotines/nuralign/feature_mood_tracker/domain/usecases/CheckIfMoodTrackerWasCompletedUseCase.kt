@@ -1,6 +1,6 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases
+package com.losrobotines.nuralign.feature_mood_tracker.domain.usecases
 
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_mood_tracker.domain.MoodTrackerProvider
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject

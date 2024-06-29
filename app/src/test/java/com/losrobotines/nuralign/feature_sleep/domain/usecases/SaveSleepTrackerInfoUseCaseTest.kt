@@ -2,30 +2,33 @@ package com.losrobotines.nuralign.feature_sleep.domain.usecases
 
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo
-import io.mockk.Awaits
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
+private val SLEEP_INFO =
+    SleepInfo(1, "2024-06-07", 8, "22:00", "T", "F", "T", "Good sleep")
 
 class SaveSleepTrackerInfoUseCaseTest {
     private lateinit var sleepTrackerProvider: SleepTrackerProvider
     private lateinit var formatTimeUseCase: FormatTimeUseCase
-    private lateinit var saveSleepTrackerInfoUseCase: SaveSleepTrackerInfoUseCase
+    private lateinit var useCase: SaveSleepTrackerInfoUseCase
+    private lateinit var sleepInfo: SleepInfo
 
     @BeforeEach
     fun setUp() {
         sleepTrackerProvider = mockk(relaxed = true)
         formatTimeUseCase = mockk(relaxed = true)
-        saveSleepTrackerInfoUseCase = SaveSleepTrackerInfoUseCase(formatTimeUseCase, sleepTrackerProvider)
+        useCase =
+            SaveSleepTrackerInfoUseCase(formatTimeUseCase, sleepTrackerProvider)
+        sleepInfo = SLEEP_INFO
     }
 
     @AfterEach
@@ -33,49 +36,26 @@ class SaveSleepTrackerInfoUseCaseTest {
         clearAllMocks()
     }
 
-
-    @Disabled
     @Test
-    fun `execute calls saveSleepData on sleepTrackerProvider`() = runBlocking {
-        // Given
-        val patientId: Short = 1
-        val currentDate = "2024-06-07"
-        val sleepHours: Short = 8
-        val bedTime = "22:00"
-        val negativeThoughts = true
-        val anxiousBeforeSleep = false
-        val sleptThroughNight = true
-        val additionalNotes = "Good sleep"
+    fun `when a sleep tracker is provided then save it`() = runBlocking {
+        coEvery { sleepTrackerProvider.getSleepData(any(), any()) } returns null
+        coEvery { formatTimeUseCase.removeColonFromTime(sleepInfo.bedTime) } returns "2200"
 
-        val formattedBedTime = "2200"
-        every { formatTimeUseCase.removeColonFromTime(bedTime) } returns formattedBedTime
-
-        val expectedSleepInfo = SleepInfo(
-            patientId,
-            currentDate,
-            sleepHours,
-            formattedBedTime,
-            "T",
-            "F",
-            "T",
-            additionalNotes
+        val result = useCase.invoke(
+            sleepInfo.patientId,
+            sleepInfo.effectiveDate,
+            sleepInfo.sleepHours,
+            sleepInfo.bedTime,
+            negativeThoughts = true,
+            anxiousBeforeSleep = false,
+            sleptThroughNight = true,
+            sleepInfo.sleepNotes
         )
+        coVerify { sleepTrackerProvider.saveSleepData(any()) }
+        assertTrue(result.isSuccess)
 
-        coEvery { sleepTrackerProvider.saveSleepData(expectedSleepInfo) } just Awaits
-
-        // When
-        saveSleepTrackerInfoUseCase(
-            patientId,
-            currentDate,
-            sleepHours,
-            bedTime,
-            negativeThoughts,
-            anxiousBeforeSleep,
-            sleptThroughNight,
-            additionalNotes
-        )
-
-        // Then
-        coVerify(exactly = 1) { sleepTrackerProvider.saveSleepData(expectedSleepInfo) }
+        coEvery { sleepTrackerProvider.getSleepData(1, "2024-06-07") } returns sleepInfo
+        val updatedSleepInfo = sleepTrackerProvider.getSleepData(1, "2024-06-07")
+        assertEquals(sleepInfo, updatedSleepInfo)
     }
 }

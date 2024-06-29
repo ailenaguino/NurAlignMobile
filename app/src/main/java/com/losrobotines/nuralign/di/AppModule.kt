@@ -19,9 +19,9 @@ import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationP
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
 import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.SaveMedicationTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.UpdateMedicationTrackerInfoUseCase
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_mood_tracker.data.MoodTrackerProviderImpl
+import com.losrobotines.nuralign.feature_mood_tracker.data.network.MoodTrackerApiService
+import com.losrobotines.nuralign.feature_mood_tracker.domain.MoodTrackerProvider
 import com.losrobotines.nuralign.feature_weekly_summary.data.WeeklySummaryApiService
 import com.losrobotines.nuralign.feature_weekly_summary.data.WeeklySummaryProviderImpl
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider

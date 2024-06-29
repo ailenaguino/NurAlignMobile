@@ -5,8 +5,8 @@ import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.data.dto.MoodTrackerDto
+import com.losrobotines.nuralign.feature_mood_tracker.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import com.losrobotines.nuralign.feature_sleep.domain.models.SleepInfo

@@ -50,8 +50,8 @@ import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.AddMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.EditMedicationAlertDialog
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.utils.getDayOfWeek
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor

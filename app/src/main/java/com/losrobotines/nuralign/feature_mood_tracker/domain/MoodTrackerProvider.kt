@@ -1,6 +1,6 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain
+package com.losrobotines.nuralign.feature_mood_tracker.domain
 
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.domain.models.MoodTrackerInfo
 
 interface MoodTrackerProvider {
 

@@ -1,8 +1,7 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation
+package com.losrobotines.nuralign.feature_mood_tracker.presentation
 
 import android.content.Context
 import android.os.Build
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -12,14 +11,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
-import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
 import com.losrobotines.nuralign.feature_home.domain.usecases.CheckNextTrackerToBeCompletedUseCase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.GetMoodTrackerInfoByDateUseCase
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.SaveMoodTrackerDataUseCase
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.usecases.UpdateMoodTrackerUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.domain.usecases.GetMoodTrackerInfoByDateUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.domain.usecases.SaveMoodTrackerDataUseCase
+import com.losrobotines.nuralign.feature_mood_tracker.domain.usecases.UpdateMoodTrackerUseCase
 import com.losrobotines.nuralign.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

@@ -1,6 +1,6 @@
 package com.losrobotines.nuralign.feature_weeklySummary.usecases
 
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.CalculateWeeklyMoodAveragesUseCase
 import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMoodTrackerInfoUseCase
 import io.mockk.clearAllMocks

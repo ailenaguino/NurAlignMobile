@@ -2,7 +2,7 @@ package com.losrobotines.nuralign.feature_weekly_summary.data
 
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
+import com.losrobotines.nuralign.feature_mood_tracker.data.dto.MoodTrackerDto
 import com.losrobotines.nuralign.feature_sleep.data.dto.SleepTrackerDto
 import retrofit2.Response
 import retrofit2.http.GET

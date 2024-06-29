@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils
+package com.losrobotines.nuralign.feature_mood_tracker.presentation.utils
 
 fun getDayOfWeek(day: Int) : String{
     return when(day){

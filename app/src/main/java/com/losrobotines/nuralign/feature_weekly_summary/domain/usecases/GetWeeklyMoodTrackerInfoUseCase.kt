@@ -1,7 +1,6 @@
 package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
 
-import android.util.Log
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
+import com.losrobotines.nuralign.feature_mood_tracker.domain.models.MoodTrackerInfo
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import java.text.SimpleDateFormat
 import java.util.Calendar

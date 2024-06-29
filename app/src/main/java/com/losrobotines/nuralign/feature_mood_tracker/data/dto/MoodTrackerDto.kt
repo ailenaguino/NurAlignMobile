@@ -1,4 +1,4 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto
+package com.losrobotines.nuralign.feature_mood_tracker.data.dto
 
 import com.google.gson.annotations.SerializedName
 

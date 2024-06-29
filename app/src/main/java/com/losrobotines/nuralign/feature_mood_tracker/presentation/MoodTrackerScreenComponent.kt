@@ -1,9 +1,8 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation
+package com.losrobotines.nuralign.feature_mood_tracker.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,15 +54,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.losrobotines.nuralign.R
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.models.MoodTrackerInfo
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getDayOfWeek
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.utils.getMonth
-import com.losrobotines.nuralign.feature_sleep.presentation.screens.SleepViewModel
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.utils.getDayOfWeek
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.utils.getMonth
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import kotlinx.coroutines.delay
-import java.time.LocalDateTime
 import java.util.Calendar
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

@@ -1,6 +1,6 @@
-package com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network
+package com.losrobotines.nuralign.feature_mood_tracker.data.network
 
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.dto.MoodTrackerDto
+import com.losrobotines.nuralign.feature_mood_tracker.data.dto.MoodTrackerDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

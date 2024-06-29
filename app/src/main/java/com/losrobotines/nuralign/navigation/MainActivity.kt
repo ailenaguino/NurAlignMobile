@@ -27,7 +27,6 @@ import com.losrobotines.nuralign.feature_achievements.presentation.screens.Achie
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionScreenComponent
 import com.losrobotines.nuralign.feature_companion.presentation.screens.CompanionViewModel
-import com.losrobotines.nuralign.feature_home.domain.usecases.ResetDatabaseUseCase
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeViewModel
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.ForgottenPasswordScreen
@@ -39,8 +38,8 @@ import com.losrobotines.nuralign.feature_login.presentation.utils.LoginState
 import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
 import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerScreenComponent
 import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerScreenComponent
-import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.presentation.MoodTrackerViewModel
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.MoodTrackerScreenComponent
+import com.losrobotines.nuralign.feature_mood_tracker.presentation.MoodTrackerViewModel
 import com.losrobotines.nuralign.feature_weekly_summary.presentation.WeeklySummaryViewModel
 import com.losrobotines.nuralign.feature_weekly_summary.presentation.screens.WeeklySummaryMedicationTracker
 import com.losrobotines.nuralign.feature_weekly_summary.presentation.screens.WeeklySummaryMoodTracker
