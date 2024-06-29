@@ -8,11 +8,13 @@ import com.losrobotines.nuralign.feature_achievements.presentation.screens.Achie
 import com.losrobotines.nuralign.feature_login.presentation.screens.login.LoginViewModel
 import com.losrobotines.nuralign.feature_settings.presentation.screens.settings.SettingsScreenComponent
 import com.losrobotines.nuralign.feature_home.presentation.screens.HomeScreenComponent
+import com.losrobotines.nuralign.feature_home.presentation.screens.HomeViewModel
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    homeViewModel: HomeViewModel
 ) {
 
     NavHost(navController, startDestination = Destinations.Home.route) {
@@ -20,7 +22,7 @@ fun NavigationGraph(
 
         }
         composable(Destinations.Home.route) {
-          HomeScreenComponent(navController)
+          HomeScreenComponent(navController, homeViewModel)
         }
         composable(Destinations.Configuracion.route) {
             SettingsScreenComponent(

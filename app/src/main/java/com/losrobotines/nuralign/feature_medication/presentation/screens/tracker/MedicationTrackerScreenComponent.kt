@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,19 +65,28 @@ fun MedicationTrackerScreenComponent(
     medicationTrackerViewModel: MedicationTrackerViewModel
 ) {
     val medicationList by medicationViewModel.medicationList.observeAsState()
+    val medicationIdList = medicationList?.mapNotNull { it?.patientMedicationId }
     val isLoading by medicationViewModel.isLoading.observeAsState(initial = false)
     val route by medicationTrackerViewModel.route.observeAsState("")
     val isVisible by medicationTrackerViewModel.isVisible.observeAsState(false)
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(medicationIdList) {
+        medicationIdList?.let {
+            medicationTrackerViewModel.loadMedicationTrackerInfo(it)
+        }
+    }
 
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         }
     ) { paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 LazyVerticalGrid(columns = GridCells.Fixed(1)) {
                     item {
@@ -117,7 +127,7 @@ fun MedicationTrackerScreenComponent(
                             .padding(16.dp)
                     ) {
                         item {
-                            AddIcon(medicationViewModel)
+                            AddIcon(medicationViewModel, medicationTrackerViewModel, emptyList())
                             Spacer(modifier = Modifier.height(5.dp))
                         }
                         item {
@@ -150,7 +160,11 @@ fun MedicationTrackerScreenComponent(
                             Spacer(modifier = Modifier.height(5.dp))
                         }
                         item {
-                            AddIcon(medicationViewModel)
+                            AddIcon(
+                                medicationViewModel,
+                                medicationTrackerViewModel,
+                                medicationIdList!!
+                            )
                         }
                     }
                 }
@@ -179,12 +193,11 @@ fun MedicationElement(
     medicationViewModel: MedicationViewModel,
     medicationTrackerViewModel: MedicationTrackerViewModel
 ) {
-    val tracker by medicationTrackerViewModel.medicationTrackerInfo.observeAsState()
-    var isChecked by remember { mutableStateOf(tracker?.takenFlag == "Y") }
-
-    LaunchedEffect(medicationElement.patientMedicationId) {
-        medicationTrackerViewModel.loadMedicationTrackerInfo(medicationElement.patientMedicationId!!)
-    }
+    val medicationTrackerList by medicationTrackerViewModel.medicationTrackerList.observeAsState(
+        emptyList()
+    )
+    val tracker =
+        medicationTrackerList.find { it?.patientMedicationId == medicationElement.patientMedicationId }
 
     Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
@@ -216,12 +229,13 @@ fun MedicationElement(
                 .padding(horizontal = 4.dp)
         ) {
             Checkbox(
-                checked = isChecked,
-                onCheckedChange = {
-                    isChecked = it
-                    val updatedTracker = tracker?.copy(takenFlag = if (it) "Y" else "N")
-                    if (updatedTracker != null) {
-                        medicationTrackerViewModel.updateMedicationTrackerInfo(updatedTracker)
+                checked = tracker?.takenFlag == "Y",
+                onCheckedChange = { newCheckedState ->
+                    tracker?.let {
+                        medicationTrackerViewModel.updateTakenFlag(
+                            it.patientMedicationId,
+                            if (newCheckedState) "Y" else "N"
+                        )
                     }
                 },
                 colors = CheckboxDefaults.colors(
@@ -235,7 +249,11 @@ fun MedicationElement(
 }
 
 @Composable
-fun AddIcon(medicationViewModel: MedicationViewModel) {
+fun AddIcon(
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    medicationIdList: List<Short>
+) {
     var openAlertDialog by remember { mutableStateOf(false) }
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
@@ -249,7 +267,9 @@ fun AddIcon(medicationViewModel: MedicationViewModel) {
             AddMedicationAlertDialog(
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = { openAlertDialog = false },
-                medicationViewModel = medicationViewModel
+                medicationViewModel = medicationViewModel,
+                medicationTrackerViewModel = medicationTrackerViewModel,
+                medicationIdList
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -269,7 +289,8 @@ fun EditMedication(medicationToEdit: MedicationInfo, medicationViewModel: Medica
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = { openAlertDialog = false },
                 medicationElement = medicationToEdit,
-                medicationViewModel = medicationViewModel
+                medicationViewModel = medicationViewModel,
+                onDelete = { openAlertDialog = false }
             )
         }
     }
@@ -280,12 +301,11 @@ fun SaveButton(
     medicationTrackerViewModel: MedicationTrackerViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Button(
         onClick = {
-            //medicationTrackerViewModel.saveMedicationTrackerInfo(medicationTrackerElement)
-            medicationTrackerViewModel.saveAllChanges()
+            medicationTrackerViewModel.saveOrUpdateMedicationTracker(context)
             medicationTrackerViewModel.checkNextTracker()
-            medicationTrackerViewModel.setIsVisible(true)
         },
         colors = ButtonDefaults.buttonColors(containerColor = mainColor),
         modifier = modifier
@@ -329,15 +349,16 @@ fun goToNextTracker(
     route: String,
     medicationTrackerViewModel: MedicationTrackerViewModel,
 ) {
-    if (route == "") {
-        //loading circle visible
-    }
     medicationTrackerViewModel.setIsVisible(false)
     navController.navigate(route)
 }
 
 @Composable
-fun SnackbarError(medicationViewModel: MedicationViewModel, medicationTrackerViewModel: MedicationTrackerViewModel, snackbarHostState: SnackbarHostState) {
+fun SnackbarError(
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    snackbarHostState: SnackbarHostState
+) {
     val errorMessage by medicationViewModel.errorMessage.observeAsState()
     val errorMessageTracker by medicationTrackerViewModel.errorMessage.observeAsState()
 

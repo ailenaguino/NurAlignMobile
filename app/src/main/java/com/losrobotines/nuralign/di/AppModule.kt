@@ -22,6 +22,9 @@ import com.losrobotines.nuralign.feature_medication.domain.usecases.tracker.Upda
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.MoodTrackerProviderImpl
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.data.network.MoodTrackerApiService
 import com.losrobotines.nuralign.feature_mood_tracker.presentation.screens.domain.MoodTrackerProvider
+import com.losrobotines.nuralign.feature_weekly_summary.data.WeeklySummaryApiService
+import com.losrobotines.nuralign.feature_weekly_summary.data.WeeklySummaryProviderImpl
+import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
 import com.losrobotines.nuralign.feature_routine.data.RoutineProviderImpl
 import com.losrobotines.nuralign.feature_routine.data.database.RoutineDao
 import com.losrobotines.nuralign.feature_routine.domain.RoutineProvider
@@ -29,9 +32,6 @@ import com.losrobotines.nuralign.feature_routine.domain.notification.Notificatio
 import com.losrobotines.nuralign.feature_sleep.data.SleepTrackerProviderImpl
 import com.losrobotines.nuralign.feature_sleep.data.network.SleepApiService
 import com.losrobotines.nuralign.feature_sleep.domain.SleepTrackerProvider
-import com.losrobotines.nuralign.feature_sleep.domain.usecases.FormatTimeUseCase
-import com.losrobotines.nuralign.feature_sleep.domain.usecases.GetSleepDataUseCase
-import com.losrobotines.nuralign.feature_sleep.domain.usecases.SaveSleepTrackerInfoUseCase
 import com.losrobotines.nuralign.feature_therapy.data.network.TherapistApiService
 import com.losrobotines.nuralign.feature_therapy.data.network.TherapySessionApiService
 import com.losrobotines.nuralign.feature_therapy.data.providers.TherapistProviderImpl
@@ -109,27 +109,6 @@ object AppModule {
         return AchievementRepositoryImpl(achievementDao, counterDao)
     }
 
-
-    //USE CASES
-    @Provides
-    fun provideFormatTimeUseCase(): FormatTimeUseCase {
-        return FormatTimeUseCase()
-    }
-
-    @Provides
-    fun provideSaveSleepDataUseCase(
-        sleepTrackerProvider: SleepTrackerProvider, authRepository: AuthRepository,
-        formatTimeUseCase: FormatTimeUseCase,
-    ): SaveSleepTrackerInfoUseCase {
-        return SaveSleepTrackerInfoUseCase(authRepository, formatTimeUseCase, sleepTrackerProvider)
-    }
-
-    @Provides
-    fun provideGetSleepDataUseCase(sleepTrackerProvider: SleepTrackerProvider): GetSleepDataUseCase {
-        return GetSleepDataUseCase(sleepTrackerProvider)
-    }
-
-
     @Provides
     @Singleton
     fun provideGeminiContentGenerator(): GeminiContentGenerator {
@@ -196,4 +175,16 @@ object AppModule {
     fun provideTherapySessionProvider(therapySessionApiService: TherapySessionApiService): TherapySessionProvider {
         return TherapySessionProviderImpl(therapySessionApiService)
     }
+
+    @Provides
+    @Singleton
+    fun provideWeeklySummary(retrofit: Retrofit): WeeklySummaryApiService {
+        return retrofit.create(WeeklySummaryApiService::class.java)
+    }
+
+    @Provides
+    fun provideWeeklySummaryProvider(weeklySummaryApiService: WeeklySummaryApiService): WeeklySummaryProvider {
+        return WeeklySummaryProviderImpl(weeklySummaryApiService)
+    }
+
 }

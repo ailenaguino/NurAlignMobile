@@ -9,7 +9,7 @@ class CheckIfSleepTrackerWasCompletedUseCase @Inject constructor(private val sle
 
     suspend operator fun invoke(domainId: Int): Boolean{
         val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
-        val result = sleepTrackerProvider.getTodaysTracker(domainId,date)
+        val result = sleepTrackerProvider.getSleepData(domainId, date)
         return (result != null)
     }
 }

@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_login.domain.services
 
+import android.util.Log
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.losrobotines.nuralign.feature_login.domain.providers.AuthRepository
@@ -52,22 +53,34 @@ class UserService @Inject constructor(
         }
     }
 
-    suspend fun saveMedicationInfo(medicationInfo: MedicationInfo): Result<Boolean> {
-        return try {
-            Result.success(medicationProvider.saveMedicationInfo(medicationInfo))
-        } catch (e: Exception) {
-            Result.failure(Exception("Failed to save medication info: ${e.message}"))
-        }
-    }
-
     suspend fun getMedicationTrackerData(
         id: Short,
         effectiveDate: String
     ): Result<MedicationTrackerInfo?> {
         return try {
-            Result.success(medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate))
+            val result = medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate)
+            if (result.isSuccess) {
+                result
+            } else if (result.isFailure
+                && result.exceptionOrNull()?.message == "End of input at line 1 column 1 path \$"
+            ) {
+                Result.success(null)
+            } else {
+                Result.failure(Exception("No tracker data for medication $id on $effectiveDate"))
+            }
         } catch (e: Exception) {
             Result.failure(Exception("Failed to get medication tracker data: ${e.message}"))
+        }
+    }
+
+    suspend fun checkExistingTracker(id: Short, effectiveDate: String): Boolean {
+        return try {
+            val result = medicationTrackerProvider.getMedicationTrackerData(id, effectiveDate)
+
+            result.isSuccess
+        } catch (e: Exception) {
+            Log.e("UserService", e.message!!)
+            false
         }
     }
 

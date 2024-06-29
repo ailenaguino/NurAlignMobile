@@ -9,7 +9,7 @@ class CheckIfMoodTrackerWasCompletedUseCase @Inject constructor(private val mood
 
     suspend operator fun invoke(domainId: Int): Boolean{
         val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
-        val result = moodTrackerProvider.getTodaysTracker(domainId,date)
+        val result = moodTrackerProvider.getMoodTrackerInfo(domainId,date)
         return (result != null)
     }
 }

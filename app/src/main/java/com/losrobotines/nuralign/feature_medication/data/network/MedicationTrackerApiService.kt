@@ -16,21 +16,16 @@ interface MedicationTrackerApiService {
     @POST("medicationTracker")
     suspend fun insertMedicationTrackerInfo(@Body medicationTrackerInfo: MedicationTrackerDto): Response<MedicationTrackerDto>
 
-    @GET("medicationTracker/{patientId}")
+    @GET("medicationTracker/{patientMedicationId}")
     suspend fun getMedicationTrackerInfo(
-        @Path("patientId") patientId: Short,
+        @Path("patientMedicationId") patientMedicationId: Short,
         @Query("effectiveDate") effectiveDate: String
     ): Response<MedicationTrackerDto?>
 
-    @PATCH("medicationTracker/{patientId}")
+    @PATCH("medicationTracker/{patientMedicationId}")
     suspend fun updateMedicationTrackerInfo(
-        @Path("patientId") patientId: Short,
-        @Query("effectiveDate") effectiveDate: String
+        @Path("patientMedicationId") patientMedicationId: Short,
+        @Query("effectiveDate") effectiveDate: String,
+        @Body medicationTrackerInfo: MedicationTrackerDto
     ): Response<MedicationTrackerDto>?
-
-    @GET("medicationTracker")
-    suspend fun getTodaysTracker(
-        @Query("patientId") patientId: Short,
-        @Query("date") date: String,
-    ): Array<MedicationTrackerDto>?
 }

@@ -7,6 +7,6 @@ import javax.inject.Inject
 class GetSleepTrackerInfoByDateUseCase @Inject constructor(private val sleepTrackerProvider: SleepTrackerProvider) {
 
     suspend operator fun invoke(patientId : Int, date: String): SleepInfo?{
-        return sleepTrackerProvider.getTodaysTracker(patientId, date)
+        return sleepTrackerProvider.getSleepData(patientId, date)
     }
 }

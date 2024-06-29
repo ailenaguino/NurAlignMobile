@@ -1,38 +1,47 @@
 package com.losrobotines.nuralign.feature_medication.data.providers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Log
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationTrackerDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationTrackerApiService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationTrackerInfo
 import com.losrobotines.nuralign.feature_medication.domain.providers.MedicationTrackerProvider
-import retrofit2.HttpException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class MedicationTrackerProviderImpl @Inject constructor(private val apiService: MedicationTrackerApiService) :
     MedicationTrackerProvider {
 
-    override suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Boolean {
+    override suspend fun saveMedicationTrackerData(medicationTrackerInfo: MedicationTrackerInfo): Result<Unit> {
         return try {
             val dto = mapDomainToData(medicationTrackerInfo)
             val result = apiService.insertMedicationTrackerInfo(dto)
-            result.isSuccessful
+            if (result.isSuccessful){
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to save medication tracker data"))
+            }
         } catch (e: Exception) {
-            false
+            Result.failure(e)
         }
     }
 
     override suspend fun getMedicationTrackerData(
-        patientId: Short,
+        patientMedicationId: Short,
         effectiveDate: String
-    ): MedicationTrackerInfo? {
-        val dto = apiService.getMedicationTrackerInfo(patientId, effectiveDate)
-        return if (dto.isSuccessful) {
-            mapDataToDomain(dto.body()!!)
-        } else {
-            throw Exception("Failed to get data")
+    ): Result<MedicationTrackerInfo?> {
+        return try {
+            val dto = apiService.getMedicationTrackerInfo(patientMedicationId, effectiveDate)
+
+            if (dto.isSuccessful) {
+                Result.success(mapDataToDomain(dto.body()))
+            } else if (dto.body()?.equals(null) == true) {
+                Log.e("MedicationTrackerProvider", "entro en body null")
+                Result.success(null)
+            } else {
+                Result.failure(Exception("Failed to get medication tracker data"))
+            }
+        } catch (e: Exception) {
+            Log.e("MedicationTrackerProvider", e.message!!)
+            Result.failure(Exception(e.message))
         }
     }
 
@@ -40,24 +49,14 @@ class MedicationTrackerProviderImpl @Inject constructor(private val apiService: 
         return try {
             val dto = mapDomainToData(medicationTrackerInfo)
             val result =
-                apiService.updateMedicationTrackerInfo(dto.patientMedicationId, dto.effectiveDate)
+                apiService.updateMedicationTrackerInfo(
+                    dto.patientMedicationId,
+                    dto.effectiveDate,
+                    dto
+                )
             result!!.isSuccessful
         } catch (e: Exception) {
             false
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun getTodaysTracker(patientId: Int, date: String): MedicationTrackerInfo? {
-        try {
-            val response = apiService.getTodaysTracker(patientId.toShort(), date)
-            return mapDataToDomain(response?.find {
-                it.effectiveDate == LocalDate.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        && it.takenFlag.isNotBlank()
-            })
-        } catch (e: HttpException) {
-            return null
         }
     }
 

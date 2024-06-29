@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.medication
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,13 +29,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.ui.shared.SharedComponents
+import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.launch
@@ -43,9 +45,12 @@ import kotlinx.coroutines.launch
 fun AddMedicationAlertDialog(
     onDismissRequest: () -> Unit,
     confirmButton: () -> Unit,
-    medicationViewModel: MedicationViewModel
+    medicationViewModel: MedicationViewModel,
+    medicationTrackerViewModel: MedicationTrackerViewModel,
+    medicationIdList: List<Short>
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val newMedication = MedicationInfo(
         patientMedicationId = null,
         medicationViewModel.patientId.value,
@@ -73,10 +78,21 @@ fun AddMedicationAlertDialog(
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             Button(onClick = {
-                coroutineScope.launch {
-                    medicationViewModel.saveData(newMedication)
+                if (medicationViewModel.medicationName.value.isBlank() || medicationViewModel.medicationGrammage.intValue <= 0) {
+                    Toast.makeText(
+                        context,
+                        "Por favor complete los campos de Nombre y Dosis",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }else{
+                    coroutineScope.launch {
+                        val result = medicationViewModel.saveData(newMedication)
+                        if (result.isSuccess) {
+                            medicationTrackerViewModel.loadMedicationTrackerInfo(medicationIdList)
+                        }
+                    }
+                    confirmButton()
                 }
-                confirmButton()
             }) {
                 Text("Guardar")
             }
@@ -93,9 +109,6 @@ fun AddMedicationAlertDialog(
 fun NewMedicationRow(medicationViewModel: MedicationViewModel) {
     Column {
         NewMedicationElement(medicationViewModel)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SharedComponents().SelectDayButtons()
         Spacer(modifier = Modifier.height(8.dp))
 
         NewOptional(medicationViewModel)

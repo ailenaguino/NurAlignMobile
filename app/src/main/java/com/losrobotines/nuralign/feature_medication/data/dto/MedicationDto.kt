@@ -7,6 +7,6 @@ data class MedicationDto(
     @SerializedName("patientId") val patientId: Short,
     @SerializedName("name") val name: String,
     @SerializedName("grammage") val grammage: Int,
-    //@SerializedName("days") val days: Short,
-    @SerializedName("flag") val flag: String
+    @SerializedName("flag") val flag: String,
+    @SerializedName("enabledFlag") val enabledFlag: String? = "Y"
 )

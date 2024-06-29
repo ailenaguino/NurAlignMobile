@@ -11,7 +11,7 @@ class RemoveMedicationFromListUseCase @Inject constructor(
         medicationInfo: MedicationInfo
     ): Result<Unit> {
         return try {
-            medicationProvider.deleteMedicationInfo(medicationInfo.patientMedicationId!!)
+            medicationProvider.deleteMedicationInfo(medicationInfo)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

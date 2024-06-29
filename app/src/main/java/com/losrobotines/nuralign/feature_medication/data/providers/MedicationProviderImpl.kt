@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_medication.data.providers
 
-import android.util.Log
 import com.losrobotines.nuralign.feature_medication.data.dto.MedicationDto
 import com.losrobotines.nuralign.feature_medication.data.network.MedicationApiService
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
@@ -11,34 +10,38 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
     MedicationProvider {
 
     override suspend fun saveMedicationInfo(medicationInfo: MedicationInfo?): Boolean {
-        try {
-            val dto = mapDomainToData(medicationInfo!!)
-            apiService.insertMedicationInfoIntoDatabase(dto)
-            return true
+        return try {
+            if (medicationInfo != null) {
+                val dto = mapDomainToData(medicationInfo).copy(enabledFlag = "Y")
+                apiService.insertMedicationInfo(dto)
+                true
+            } else {
+                false
+            }
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 
     override suspend fun getMedicationList(patientId: Short): List<MedicationInfo?> {
         val dto = apiService.getMedicationList(patientId)
-        Log.d("MedicationProvider", "DtO Obtenido: $dto")
         return mapDataToDomain(dto)
     }
 
     override suspend fun updateMedicationInfo(newMedicationInfo: MedicationInfo?): Boolean {
         try {
             val dto = mapDomainToData(newMedicationInfo!!)
-            apiService.updateMedicationInfo(dto.patientMedicationId!!, dto)
+            apiService.updateMedicationInfo(newMedicationInfo.patientId, dto)
             return true
         } catch (e: Exception) {
             return false
         }
     }
 
-    override suspend fun deleteMedicationInfo(patientMedicationId: Short): Boolean {
+    override suspend fun deleteMedicationInfo(medicationInfo: MedicationInfo): Boolean {
         try {
-            apiService.deleteMedicationInfo(patientMedicationId)
+            val dto = mapDomainToData(medicationInfo).copy(enabledFlag = "N")
+            apiService.deleteMedicationInfo(medicationInfo.patientId, dto)
             return true
         } catch (e: Exception) {
             return false
@@ -51,7 +54,6 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
             patientId = medicationInfo.patientId,
             name = medicationInfo.medicationName,
             grammage = medicationInfo.medicationGrammage,
-            //medicationDays = 10,
             flag = medicationInfo.medicationOptionalFlag
         )
     }
@@ -61,15 +63,17 @@ class MedicationProviderImpl @Inject constructor(private val apiService: Medicat
         dto.let {
             for (med in it) {
                 if (med != null) {
-                    list.add(
-                        MedicationInfo(
-                            patientMedicationId = med.patientMedicationId,
-                            patientId = med.patientId,
-                            medicationName = med.name,
-                            medicationGrammage = med.grammage,
-                            medicationOptionalFlag = med.flag
+                    if (med.enabledFlag == "Y") {
+                        list.add(
+                            MedicationInfo(
+                                patientMedicationId = med.patientMedicationId,
+                                patientId = med.patientId,
+                                medicationName = med.name,
+                                medicationGrammage = med.grammage,
+                                medicationOptionalFlag = med.flag
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

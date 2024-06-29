@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.losrobotines.nuralign.feature_achievements.data.database.entities.AchievementEntity
+import dagger.Provides
 
 @Dao
 interface AchievementDao {

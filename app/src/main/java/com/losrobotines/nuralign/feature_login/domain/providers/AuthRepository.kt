@@ -14,4 +14,6 @@ interface AuthRepository {
     fun getCurrentUserId(): String?
 
     fun logout()
+
+    fun sendPasswordResetEmail(email:String)
 }

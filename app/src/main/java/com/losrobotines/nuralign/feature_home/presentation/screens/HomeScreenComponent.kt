@@ -39,8 +39,9 @@ import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 
 private const val FIRST_TIME = "first_time"
+
 @Composable
-fun HomeScreenComponent(navController: NavController) {
+fun HomeScreenComponent(navController: NavController, homeViewModel: HomeViewModel) {
     val homeItemsListTrackers = listOf(
         HomeItemData.Mood,
         HomeItemData.Medication,
@@ -55,21 +56,21 @@ fun HomeScreenComponent(navController: NavController) {
         HomeItemData.Routine
     )
     val context = LocalContext.current
-    val notification = Notification()
     val preferencesManager = remember { PreferencesManager(context) }
 
     if (preferencesManager.getBoolean(FIRST_TIME, true)) {
         preferencesManager.saveBooleanData(FIRST_TIME, false)
+        homeViewModel.resetDatabase()
         context.startActivity(Intent(context, FirstTimeActivity::class.java))
     } else {
         val name = preferencesManager.getString(USER_NAME, "Usuario")
         val sex = preferencesManager.getString(USER_SEX, MASCULINO)
-        val saludo = when(sex){
+        val saludo = when (sex) {
             FEMENINO -> "Bienvenida"
             MASCULINO -> "Bienvenido"
             else -> "Bienvenidx"
         }
-        Column() {
+        Column {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1)
             ) {
@@ -101,17 +102,27 @@ fun HomeScreenComponent(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
-                item{
-                    Text(text = "Seguimientos:", fontSize = 18.sp, color = secondaryColor, modifier = Modifier.padding(4.dp))
+                item {
+                    Text(
+                        text = "Seguimientos:",
+                        fontSize = 18.sp,
+                        color = secondaryColor,
+                        modifier = Modifier.padding(4.dp)
+                    )
                 }
-                item{}
+                item {}
                 items(homeItemsListTrackers.size) { item ->
                     HomeCardItem(homeItemsListTrackers[item], navController)
                 }
-                item{
-                    Text(text = "Otros:", fontSize = 18.sp, color = secondaryColor, modifier = Modifier.padding(4.dp))
+                item {
+                    Text(
+                        text = "Otros:",
+                        fontSize = 18.sp,
+                        color = secondaryColor,
+                        modifier = Modifier.padding(4.dp)
+                    )
                 }
-                item{}
+                item {}
                 items(homeItemsListOthers.size) { item ->
                     HomeCardItem(homeItemsListOthers[item], navController)
                 }
@@ -150,11 +161,14 @@ private fun HomeCardItem(homeItemData: HomeItemData, navController: NavControlle
                 3 -> {
                     navController.navigate(Routes.TherapistScreen.route)
                 }
-                //*************************************************************
-                4 ->{
-                    navController.navigate(Routes.TestGraficos.route)
+
+                4 -> {
+                    navController.navigate(Routes.WeeklySummary.route)
                 }
-                //*********************************************
+
+                5 -> {
+                    navController.navigate(Routes.CompanionScreen.route)
+                }
 
                 6 -> {
                     navController.navigate(Routes.AchievementsScreen.route)

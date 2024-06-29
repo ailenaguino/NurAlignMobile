@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_medication.presentation.screens.medication
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
-import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
 import kotlinx.coroutines.launch
@@ -54,9 +55,11 @@ fun EditMedicationAlertDialog(
     onDismissRequest: () -> Unit,
     confirmButton: () -> Unit,
     medicationElement: MedicationInfo,
-    medicationViewModel: MedicationViewModel
+    medicationViewModel: MedicationViewModel,
+    onDelete: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(horizontal = 15.dp),
@@ -72,15 +75,23 @@ fun EditMedicationAlertDialog(
             }
         },
         text = {
-            EditMedicationRow(medicationViewModel, medicationElement)
+            EditMedicationRow(medicationViewModel, medicationElement, onDelete)
         },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             Button(onClick = {
-                coroutineScope.launch {
-                    medicationViewModel.editExistingMedication(medicationElement)
+                if (medicationViewModel.medicationName.value.isBlank() || medicationViewModel.medicationGrammage.intValue <= 0) {
+                    Toast.makeText(
+                        context,
+                        "Por favor complete los campos de Nombre y Dosis",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    coroutineScope.launch {
+                        medicationViewModel.editExistingMedication(medicationElement)
+                    }
+                    confirmButton()
                 }
-                confirmButton()
             }) {
                 Text("Guardar cambios")
             }
@@ -97,19 +108,20 @@ fun EditMedicationAlertDialog(
 }
 
 @Composable
-fun EditMedicationRow(medicationViewModel: MedicationViewModel, medicationElement: MedicationInfo) {
+fun EditMedicationRow(
+    medicationViewModel: MedicationViewModel,
+    medicationElement: MedicationInfo,
+    onDelete: () -> Unit
+) {
     Column {
         EditMedicationElement(medicationViewModel, medicationElement)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SharedComponents().SelectDayButtons()
         Spacer(modifier = Modifier.height(8.dp))
 
         EditOptional(medicationViewModel, medicationElement)
         Divider(color = secondaryColor, thickness = 2.dp)
         Spacer(modifier = Modifier.height(8.dp))
 
-        RemoveMedication(medicationElement, medicationViewModel)
+        RemoveMedication(medicationElement, medicationViewModel, onDelete)
 
         Spacer(modifier = Modifier.height(8.dp))
         Divider(color = secondaryColor, thickness = 2.dp)
@@ -228,7 +240,11 @@ fun EditOptional(
 }
 
 @Composable
-fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: MedicationViewModel) {
+fun RemoveMedication(
+    medicationElement: MedicationInfo,
+    medicationViewModel: MedicationViewModel,
+    onDelete: () -> Unit
+) {
     val showDialog = remember { mutableStateOf(false) }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
         ClickableText(
@@ -270,6 +286,7 @@ fun RemoveMedication(medicationElement: MedicationInfo, medicationViewModel: Med
                         onClick = {
                             medicationViewModel.removeMedicationFromList(medicationElement)
                             showDialog.value = false
+                            onDelete()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red,

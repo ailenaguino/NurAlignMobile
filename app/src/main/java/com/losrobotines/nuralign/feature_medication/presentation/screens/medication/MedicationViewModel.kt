@@ -15,6 +15,7 @@ import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.R
 import com.losrobotines.nuralign.feature_medication.domain.usecases.medication.SaveMedicationInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +33,7 @@ class MedicationViewModel @Inject constructor(
 
     var medicationName = mutableStateOf("")
     val medicationGrammage = mutableIntStateOf(0)
-    val medicationOptionalFlag = mutableStateOf("N")
+    val medicationOptionalFlag = mutableStateOf("")
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -62,27 +63,35 @@ class MedicationViewModel @Inject constructor(
         }
     }
 
-    fun saveData(medicationInfo: MedicationInfo) {
-        viewModelScope.launch {
+    fun saveData(medicationInfo: MedicationInfo): Result<Unit> {
+        return runBlocking {
             val result = saveMedicationInfoUseCase(medicationInfo)
             if (result.isSuccess) {
                 loadMedicationList()
                 _saveStatus.value = Result.success(Unit)
                 clearMedicationState()
+                Result.success(Unit)
             } else {
                 Log.e("MedicationViewModel", "Error saving ${medicationInfo.medicationName}")
                 _errorMessage.value =
                     "Error al guardar la medicación ${medicationInfo.medicationName}"
+                Result.failure(Exception("Failed to save medication"))
             }
         }
     }
 
     fun editExistingMedication(medicationElement: MedicationInfo) {
         viewModelScope.launch {
+            val updatedMedication = medicationElement.copy(
+                medicationName = medicationName.value,
+                medicationGrammage = medicationGrammage.intValue,
+                medicationOptionalFlag = medicationOptionalFlag.value
+            )
+
             val result = editExistingMedicationInListUseCase(
-                medicationName.value,
-                medicationGrammage.intValue,
-                medicationOptionalFlag.value,
+                updatedMedication.medicationName,
+                updatedMedication.medicationGrammage,
+                updatedMedication.medicationOptionalFlag,
                 medicationElement,
                 _medicationList.value!!
             )
