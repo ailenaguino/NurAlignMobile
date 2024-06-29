@@ -56,6 +56,7 @@ fun EditMedicationAlertDialog(
     confirmButton: () -> Unit,
     medicationElement: MedicationInfo,
     medicationViewModel: MedicationViewModel,
+    onDelete: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -74,7 +75,7 @@ fun EditMedicationAlertDialog(
             }
         },
         text = {
-            EditMedicationRow(medicationViewModel, medicationElement)
+            EditMedicationRow(medicationViewModel, medicationElement, onDelete)
         },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
@@ -85,7 +86,7 @@ fun EditMedicationAlertDialog(
                         "Por favor complete los campos de Nombre y Dosis",
                         Toast.LENGTH_LONG
                     ).show()
-                }else{
+                } else {
                     coroutineScope.launch {
                         medicationViewModel.editExistingMedication(medicationElement)
                     }
@@ -94,215 +95,213 @@ fun EditMedicationAlertDialog(
             }) {
                 Text("Guardar cambios")
             }
-            },
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismissRequest()
+                medicationViewModel.clearMedicationState()
+            }) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+@Composable
+fun EditMedicationRow(
+    medicationViewModel: MedicationViewModel,
+    medicationElement: MedicationInfo,
+    onDelete: () -> Unit
+) {
+    Column {
+        EditMedicationElement(medicationViewModel, medicationElement)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        EditOptional(medicationViewModel, medicationElement)
+        Divider(color = secondaryColor, thickness = 2.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        RemoveMedication(medicationElement, medicationViewModel, onDelete)
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Divider(color = secondaryColor, thickness = 2.dp)
+
+    }
+}
+
+@Composable
+fun EditMedicationElement(
+    medicationViewModel: MedicationViewModel,
+    medicationElement: MedicationInfo
+) {
+    val medicationName = remember { mutableStateOf(medicationElement.medicationName) }
+    val medicationGrammage = remember { mutableIntStateOf(medicationElement.medicationGrammage) }
+    Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
+
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier
+                .weight(0.7f)
+                .padding(horizontal = 4.dp)
+        ) {
+            OutlinedTextField(
+                value = medicationName.value,
+                onValueChange = {
+                    medicationName.value = it
+                    medicationViewModel.medicationName.value = it
+                },
+                modifier = Modifier
+                    .height(80.dp)
+                    .width(250.dp),
+                shape = RoundedCornerShape(20.dp),
+                singleLine = true,
+                label = { Text("Nombre", color = secondaryColor) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = secondaryColor,
+                    unfocusedBorderColor = secondaryColor
+                )
+            )
+        }
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier
+                .weight(0.3f)
+                .padding(horizontal = 4.dp)
+        ) {
+            OutlinedTextField(
+                value = medicationGrammage.intValue.toString(),
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 0
+                    medicationGrammage.intValue = newValue
+                    medicationViewModel.medicationGrammage.intValue = newValue
+                },
+                modifier = Modifier
+                    .height(80.dp)
+                    .width(250.dp),
+                shape = RoundedCornerShape(20.dp),
+                singleLine = true,
+                label = { Text("Dosis", color = secondaryColor) },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = secondaryColor,
+                    unfocusedBorderColor = secondaryColor
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun EditOptional(
+    medicationViewModel: MedicationViewModel,
+    medicationElement: MedicationInfo
+) {
+    val checkedValue = remember { mutableStateOf(medicationElement.medicationOptionalFlag == "Y") }
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.weight(0.7f)) {
+            Text(text = "Opcional", color = secondaryColor, fontSize = 16.sp)
+        }
+
+        Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
+            Switch(
+                checked = checkedValue.value,
+                onCheckedChange = {
+                    checkedValue.value = it
+                    medicationViewModel.medicationOptionalFlag.value = if (it) "Y" else "N"
+                },
+                thumbContent = if (checkedValue.value) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "si",
+                            tint = secondaryColor,
+                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                        )
+                    }
+                } else {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Clear,
+                            contentDescription = "no",
+                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                        )
+                    }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = mainColor
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun RemoveMedication(
+    medicationElement: MedicationInfo,
+    medicationViewModel: MedicationViewModel,
+    onDelete: () -> Unit
+) {
+    val showDialog = remember { mutableStateOf(false) }
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+        ClickableText(
+            AnnotatedString("Eliminar medicación."),
+            onClick = { showDialog.value = true },
+            modifier = Modifier
+                .fillMaxWidth(),
+            style = TextStyle(
+                textAlign = TextAlign.Center,
+                textDecoration = TextDecoration.Underline,
+                color = Color.Red,
+                fontSize = 24.sp
+            )
+        )
+
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            "Confirmar Eliminación",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                },
+                text = {
+                    Text(
+                        "¿Estás seguro de eliminar esta medicación?",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            medicationViewModel.removeMedicationFromList(medicationElement)
+                            showDialog.value = false
+                            onDelete()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Eliminar")
+                    }
+                },
                 dismissButton = {
-                    Button(onClick = {
-                        onDismissRequest()
-                        medicationViewModel.clearMedicationState()
-                    }) {
+                    Button(onClick = { showDialog.value = false }) {
                         Text("Cancelar")
                     }
                 }
             )
         }
-
-        @Composable
-        fun EditMedicationRow(
-            medicationViewModel: MedicationViewModel,
-            medicationElement: MedicationInfo,
-        ) {
-            Column {
-                EditMedicationElement(medicationViewModel, medicationElement)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                EditOptional(medicationViewModel, medicationElement)
-                Divider(color = secondaryColor, thickness = 2.dp)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                RemoveMedication(medicationElement, medicationViewModel)
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider(color = secondaryColor, thickness = 2.dp)
-
-            }
-        }
-
-        @Composable
-        fun EditMedicationElement(
-            medicationViewModel: MedicationViewModel,
-            medicationElement: MedicationInfo,
-        ) {
-            val medicationName = remember { mutableStateOf(medicationElement.medicationName) }
-            val medicationGrammage =
-                remember { mutableIntStateOf(medicationElement.medicationGrammage) }
-            Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
-
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier
-                        .weight(0.7f)
-                        .padding(horizontal = 4.dp)
-                ) {
-                    OutlinedTextField(
-                        value = medicationName.value,
-                        onValueChange = {
-                            medicationName.value = it
-                            medicationViewModel.medicationName.value = it
-                        },
-                        modifier = Modifier
-                            .height(80.dp)
-                            .width(250.dp),
-                        shape = RoundedCornerShape(20.dp),
-                        singleLine = true,
-                        label = { Text("Nombre", color = secondaryColor) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = secondaryColor,
-                            unfocusedBorderColor = secondaryColor
-                        )
-                    )
-                }
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .padding(horizontal = 4.dp)
-                ) {
-                    OutlinedTextField(
-                        value = medicationGrammage.intValue.toString(),
-                        onValueChange = {
-                            val newValue = it.toIntOrNull() ?: 0
-                            medicationGrammage.intValue = newValue
-                            medicationViewModel.medicationGrammage.intValue = newValue
-                        },
-                        modifier = Modifier
-                            .height(80.dp)
-                            .width(250.dp),
-                        shape = RoundedCornerShape(20.dp),
-                        singleLine = true,
-                        label = { Text("Dosis", color = secondaryColor) },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = secondaryColor,
-                            unfocusedBorderColor = secondaryColor
-                        )
-                    )
-                }
-            }
-        }
-
-        @Composable
-        fun EditOptional(
-            medicationViewModel: MedicationViewModel,
-            medicationElement: MedicationInfo,
-        ) {
-            val checkedValue =
-                remember { mutableStateOf(medicationElement.medicationOptionalFlag == "Y") }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(contentAlignment = Alignment.BottomStart, modifier = Modifier.weight(0.7f)) {
-                    Text(text = "Opcional", color = secondaryColor, fontSize = 16.sp)
-                }
-
-                Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(0.3f)) {
-                    Switch(
-                        checked = checkedValue.value,
-                        onCheckedChange = {
-                            checkedValue.value = it
-                            medicationViewModel.medicationOptionalFlag.value = if (it) "Y" else "N"
-                        },
-                        thumbContent = if (checkedValue.value) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = "si",
-                                    tint = secondaryColor,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        } else {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Clear,
-                                    contentDescription = "no",
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedTrackColor = mainColor
-                        )
-                    )
-                }
-            }
-        }
-
-        @Composable
-        fun RemoveMedication(
-            medicationElement: MedicationInfo,
-            medicationViewModel: MedicationViewModel,
-        ) {
-            val showDialog = remember { mutableStateOf(false) }
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-                ClickableText(
-                    AnnotatedString("Eliminar medicación."),
-                    onClick = { showDialog.value = true },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    style = TextStyle(
-                        textAlign = TextAlign.Center,
-                        textDecoration = TextDecoration.Underline,
-                        color = Color.Red,
-                        fontSize = 24.sp
-                    )
-                )
-
-                if (showDialog.value) {
-                    AlertDialog(
-                        onDismissRequest = { showDialog.value = false },
-                        title = {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    "Confirmar Eliminación",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        },
-                        text = {
-                            Text(
-                                "¿Estás seguro de eliminar esta medicación?",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                            )
-                        },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    medicationViewModel.removeMedicationFromList(medicationElement)
-                                    showDialog.value = false
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Red,
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Text("Eliminar")
-                            }
-                        },
-                        dismissButton = {
-                            Button(onClick = { showDialog.value = false }) {
-                                Text("Cancelar")
-                            }
-                        }
-                    )
-                }
-            }
-        }
+    }
+}

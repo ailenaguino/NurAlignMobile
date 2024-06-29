@@ -9,6 +9,7 @@ import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.feature_achievements.domain.models.Counter
 import com.losrobotines.nuralign.feature_achievements.presentation.screens.Channel
 import com.losrobotines.nuralign.navigation.MainActivity
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 import javax.inject.Inject
 
 class TrackerIsSavedUseCase @Inject constructor(
@@ -62,7 +63,8 @@ class TrackerIsSavedUseCase @Inject constructor(
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1, notification)
-
+        if(PreferencesManager(context).getBoolean("Notifications", true)) {
+            notificationManager.notify(1, notification)
+        }
     }
 }
