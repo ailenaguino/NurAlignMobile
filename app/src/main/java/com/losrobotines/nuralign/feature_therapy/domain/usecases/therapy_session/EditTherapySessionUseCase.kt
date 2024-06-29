@@ -8,23 +8,9 @@ import javax.inject.Inject
 class EditTherapySessionUseCase @Inject constructor(
     private val therapySessionProvider: TherapySessionProvider
 ) {
-    suspend operator fun invoke(
-        effectiveDate: String,
-        sessionTime: Short,
-        preSessionNotes: String,
-        postSessionNotes: String,
-        sessionFeel: String,
-        therapySessionInfo: TherapySessionInfo
-    ): Result<Unit> {
+    suspend operator fun invoke(therapySessionInfo: TherapySessionInfo): Result<Unit> {
         return try {
-            val updatedSession = therapySessionInfo.copy(
-                sessionDate = effectiveDate,
-                sessionTime = sessionTime,
-                preSessionNotes = preSessionNotes,
-                postSessionNotes = postSessionNotes,
-                sessionFeel = sessionFeel
-            )
-            therapySessionProvider.updateTherapySessionInfo(updatedSession)
+            therapySessionProvider.updateTherapySessionInfo(therapySessionInfo)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

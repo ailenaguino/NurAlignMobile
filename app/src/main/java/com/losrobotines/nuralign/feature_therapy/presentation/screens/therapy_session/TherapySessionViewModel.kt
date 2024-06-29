@@ -82,14 +82,17 @@ class TherapySessionViewModel @Inject constructor(
         _selectedTime.value = time
     }
 
-    private fun formatDate(date: String): String {
+    private fun formatDate(date: String): String? {
         val originalFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        val input = originalFormat.parse(date)
-        val formattedDate = targetFormat.format(input!!)
-
-        return formattedDate
+        val pattern = Regex("\\d{2}/\\d{2}/\\d{4}")
+        if (date.matches(pattern)) {
+            val input = originalFormat.parse(date)
+            val formattedDate = targetFormat.format(input!!)
+            return formattedDate
+        } else {
+            return date
+        }
     }
 
     private fun formatTime(time: String): Short {
@@ -156,12 +159,9 @@ class TherapySessionViewModel @Inject constructor(
                 }
             } else {
                 val result = editTherapySessionUseCase(
-                    selectedDate.value!!,
-                    selectedTime.value!!.toShort(),
-                    preSessionNotes.value ?: "",
-                    postSessionNotes.value ?: "",
-                    sessionFeel.value ?: "",
-                    therapySessionInfo
+                    therapySessionInfo.copy(
+                        sessionTime = formatTime(_selectedTime.value!!)
+                    )
                 )
 
                 if (result.isSuccess) {
@@ -197,9 +197,10 @@ class TherapySessionViewModel @Inject constructor(
 
     private fun saveSession() {
         val session = TherapySessionInfo(
+            id = _therapySessionInfo.value?.id,
             patientId = _patientId.value,
             therapistId = _selectedTherapist.value?.therapistId!!,
-            sessionDate = formatDate(selectedDate.value!!),
+            sessionDate = formatDate(selectedDate.value!!)!!,
             sessionTime = formatTime(selectedTime.value!!),
             preSessionNotes = preSessionNotes.value,
             postSessionNotes = postSessionNotes.value,

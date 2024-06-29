@@ -1,5 +1,7 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.session_history
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,11 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,6 +35,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,31 +55,9 @@ fun TherapySessionHistoryScreenComponent(
     therapySessionHistoryViewModel: TherapySessionHistoryViewModel,
     therapySessionViewModel: TherapySessionViewModel
 ) {
-    //val sessionHistoryList by therapySessionHistoryViewModel.sessionHistoryList.observeAsState()
-    //val sessionTherapist by therapySessionHistoryViewModel.sessionTherapist.observeAsState()
+    val sessionHistoryList by therapySessionHistoryViewModel.sessionHistoryList.observeAsState()
     val selectedTherapist by therapySessionHistoryViewModel.selectedTherapist.observeAsState()
-    val sessionHistoryList: List<TherapySessionInfo>
-    val therapySession1 = TherapySessionInfo(
-        patientId = 1,
-        therapistId = 2,
-        sessionDate = "24/06/2024",
-        sessionTime = 1200,
-        preSessionNotes = "Ni ganas de ir hoy a la sesión",
-        postSessionNotes = "Al final estuvo buena la sesión",
-        sessionFeel = "5"
-    )
-    val therapySession2 = TherapySessionInfo(
-        patientId = 1,
-        therapistId = 2,
-        sessionDate = "25/06/2024",
-        sessionTime = 1845,
-        preSessionNotes = "Me cortaron la luz y se me rompió la compu, estoy re enojado",
-        postSessionNotes = "",
-        sessionFeel = ""
-    )
-    sessionHistoryList = listOf(therapySession1, therapySession2)
-
-
+    val isLoading by therapySessionHistoryViewModel.isLoading.observeAsState(initial = false)
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -108,19 +94,53 @@ fun TherapySessionHistoryScreenComponent(
                             )
                         }
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        TherapistNameTitle(selectedTherapist!!)
-                        Spacer(modifier = Modifier.height(10.dp))
+                }
+                if (isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
-                    item {
-                        TherapySessionHistoryTitle()
-                        Spacer(modifier = Modifier.height(10.dp))
+                } else if (sessionHistoryList.isNullOrEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            TherapistNameTitle(selectedTherapist!!)
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "No tienes sesiones con este terapeuta.", modifier = Modifier
+                                        .fillMaxWidth(),
+                                    color = secondaryColor,
+                                    fontSize = 24.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
                     }
-                    item {
-                        Column {
-                            sessionHistoryList.forEach {
-                                TherapySession(navController, therapySessionViewModel, it)
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        item {
+                            TherapySessionHistoryTitle()
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                        item {
+                            Column {
+                                sessionHistoryList?.forEach {
+                                    TherapySession(navController, therapySessionViewModel, it!!)
+                                }
                             }
                         }
                     }
@@ -169,9 +189,9 @@ fun TherapySession(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
-        Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 contentAlignment = Alignment.CenterStart,
                 modifier = Modifier
@@ -196,7 +216,7 @@ fun TherapySession(
                     .weight(0.2f)
                     .padding(horizontal = 4.dp)
             ) {
-                Text("Botón")
+                SessionFeel(therapySessionInfo)
             }
             Box(
                 contentAlignment = Alignment.CenterEnd,
@@ -227,5 +247,83 @@ fun GoToTherapySession(
             contentDescription = "ir",
             tint = secondaryColor
         )
+    }
+}
+
+@Composable
+fun SessionFeel(therapySessionInfo: TherapySessionInfo) {
+    val selectedOption = therapySessionInfo.sessionFeel
+    when (selectedOption) {
+        "1" -> {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color(0xff9ebadc),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            )
+        }
+
+        "2" -> {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color(0xff678bb7),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            )
+        }
+
+        "3" -> {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color(0xff385f8e),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            )
+        }
+
+        "4" -> {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color(0xff1b477c),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            )
+        }
+
+        "5" -> {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color(0xff001e41),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            )
+        }
+
+        else -> {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(40.dp)
+                    .background(
+                        color = Color(0xffD3D3D3),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            )
+        }
     }
 }

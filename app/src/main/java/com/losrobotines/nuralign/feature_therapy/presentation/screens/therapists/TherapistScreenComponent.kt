@@ -134,11 +134,9 @@ fun TherapistScreenComponent(
                     ) {
                         item {
                             CreateNewTherapySession(navController)
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
                         item {
                             MyTherapistsTitle()
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
                         items(therapistList!!.size) {
                             TherapistElement(
@@ -162,7 +160,7 @@ fun TherapistScreenComponent(
 
 @Composable
 private fun MyTherapistsTitle() {
-    Column(modifier = Modifier.padding(25.dp)) {
+    Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Mis terapeutas", fontSize = 24.sp, color = secondaryColor)
         Divider(color = secondaryColor, thickness = 2.dp)
     }
@@ -175,7 +173,7 @@ private fun TherapistElement(
     therapistViewModel: TherapistViewModel,
     therapySessionHistoryViewModel: TherapySessionHistoryViewModel
 ) {
-    Row(modifier = Modifier.height(60.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier

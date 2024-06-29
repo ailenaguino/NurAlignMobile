@@ -13,19 +13,19 @@ import retrofit2.http.Query
 interface TherapySessionApiService {
 
     @Headers("Content-Type: application/json")
-    @POST("therapySessions")
+    @POST("therapySession")
     suspend fun insertTherapySessionInfo(@Body body: TherapySessionDto): Response<TherapySessionDto>
 
-    @GET("therapySessions/patient/{patientId}/therapist/{therapistId}")
+    @GET("therapySession/patient/{patientId}/therapist/{therapistId}")
     suspend fun getTherapySessionList(
         @Path("patientId") patientId: Short,
         @Path("therapistId") therapistId: Short
     ): List<TherapySessionDto>
 
-    @GET("therapySessions/{sessionTherapyId}")
+    @GET("therapySession/{sessionTherapyId}")
     suspend fun getTherapySessionInfo(@Path("sessionTherapyId") sessionTherapyId: Short): TherapySessionDto
 
-    @PATCH("therapySessions/patient/{patientId}")
+    @PATCH("therapySession/patient/{patientId}")
     suspend fun updateTherapySessionInfo(
         @Path("patientId") patientId: Short,
         @Query("therapistId") therapistId: Short,

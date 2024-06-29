@@ -53,7 +53,7 @@ class TherapySessionProviderImpl @Inject constructor(
 
     private fun mapDomainToData(therapySessionInfo: TherapySessionInfo): TherapySessionDto {
         return TherapySessionDto(
-            therapySessionId = therapySessionInfo.id,
+            id = therapySessionInfo.id,
             patientId = therapySessionInfo.patientId,
             therapistId = therapySessionInfo.therapistId,
             effectiveDate = therapySessionInfo.sessionDate,
@@ -66,7 +66,7 @@ class TherapySessionProviderImpl @Inject constructor(
 
     private fun mapDataToDomain(therapySessionDto: TherapySessionDto): TherapySessionInfo {
         return TherapySessionInfo(
-            id = therapySessionDto.therapySessionId,
+            id = therapySessionDto.id,
             patientId = therapySessionDto.patientId,
             therapistId = therapySessionDto.therapistId,
             sessionDate = therapySessionDto.effectiveDate,
@@ -84,7 +84,7 @@ class TherapySessionProviderImpl @Inject constructor(
                 if (session != null) {
                     list.add(
                         TherapySessionInfo(
-                            id = session.therapySessionId,
+                            id = session.id,
                             patientId = session.patientId,
                             therapistId = session.therapistId,
                             sessionDate = session.effectiveDate,

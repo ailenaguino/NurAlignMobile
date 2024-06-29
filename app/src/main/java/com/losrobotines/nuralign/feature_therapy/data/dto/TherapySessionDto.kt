@@ -3,7 +3,7 @@ package com.losrobotines.nuralign.feature_therapy.data.dto
 import com.google.gson.annotations.SerializedName
 
 data class TherapySessionDto(
-    @SerializedName("id") val therapySessionId: Short? = null,
+    @SerializedName("id") val id: Short? = null,
     @SerializedName("patientId") val patientId: Short,
     @SerializedName("therapistId") val therapistId: Short,
     @SerializedName("effectiveDate") val effectiveDate: String,
