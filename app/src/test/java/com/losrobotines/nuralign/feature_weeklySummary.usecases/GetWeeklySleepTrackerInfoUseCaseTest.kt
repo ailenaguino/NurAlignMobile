@@ -1,6 +1,7 @@
-package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
+package com.losrobotines.nuralign.feature_weeklySummary.usecases
 
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklySleepTrackerInfoUseCase
 import org.junit.jupiter.api.Assertions.*
 
 import io.mockk.clearAllMocks
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+private const val PATIENT_ID: Short = 123
 class GetWeeklySleepTrackerInfoUseCaseTest {
 
     private lateinit var weeklySummaryProvider: WeeklySummaryProvider
@@ -34,17 +35,16 @@ class GetWeeklySleepTrackerInfoUseCaseTest {
     @Test
     fun `execute returns list of SleepInfo`() = runBlocking {
         // Given
-        val patientId: Short = 123
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         coEvery { weeklySummaryProvider.getSleepTracker(any(), any()) } returns mockk()
 
         // When
-        val result = getWeeklySleepTrackerInfoUseCase(patientId)
+        val result = getWeeklySleepTrackerInfoUseCase(PATIENT_ID)
 
         // Then
         assertEquals(7, result.size)
-        coVerify(exactly = 7) { weeklySummaryProvider.getSleepTracker(patientId, any()) }
+        coVerify(exactly = 7) { weeklySummaryProvider.getSleepTracker(PATIENT_ID, any()) }
     }
 }

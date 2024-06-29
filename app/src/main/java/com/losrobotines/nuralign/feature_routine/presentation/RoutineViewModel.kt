@@ -53,9 +53,6 @@ class RoutineViewModel @Inject constructor(
         val initialRoutine = loadRoutineUseCase.invoke()
         _bedTimeRoutine.value = initialRoutine.sleepTime
         _activities.value = initialRoutine.activities
-        if (_bedTimeRoutine.value != null) {
-            setIsSavedRoutine(true)
-        }
     }
 
     fun setSleepTimeRoutine(time: String) {
@@ -133,10 +130,6 @@ class RoutineViewModel @Inject constructor(
                 _activities.value = currentActivities
             }
         }
-    }
-
-    fun setIsSavedRoutine(value: Boolean) {
-        _isSaved.value = value
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

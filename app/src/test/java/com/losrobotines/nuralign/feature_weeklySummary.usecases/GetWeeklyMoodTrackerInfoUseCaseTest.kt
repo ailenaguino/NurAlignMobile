@@ -1,6 +1,7 @@
-package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
+package com.losrobotines.nuralign.feature_weeklySummary.usecases
 
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMoodTrackerInfoUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -14,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+private const val PATIENT_ID: Short = 123
 class GetWeeklyMoodTrackerInfoUseCaseTest {
 
     private lateinit var weeklySummaryProvider: WeeklySummaryProvider
@@ -33,19 +35,18 @@ class GetWeeklyMoodTrackerInfoUseCaseTest {
     @Test
     fun `execute returns list of MoodTrackerInfo`() = runBlocking {
         // Given
-        val patientId: Short = 123
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         coEvery { weeklySummaryProvider.getMoodTracker(any(), any()) } returns mockk()
 
         // When
-        val result = getWeeklyMoodTrackerInfoUseCase(patientId)
+        val result = getWeeklyMoodTrackerInfoUseCase(PATIENT_ID)
 
         // Then
         assertEquals(7, result.size)
         coVerify(exactly = 7) {
-            weeklySummaryProvider.getMoodTracker(patientId, any())
+            weeklySummaryProvider.getMoodTracker(PATIENT_ID, any())
         }
     }
 }
