@@ -1,5 +1,6 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapy_session
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.losrobotines.nuralign.feature_achievements.domain.usecases.TrackerIsSavedUseCase
+import com.losrobotines.nuralign.feature_achievements.presentation.screens.AchievementsViewModel
 import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapySessionInfo
@@ -23,7 +26,8 @@ import javax.inject.Inject
 class TherapySessionViewModel @Inject constructor(
     private val userService: UserService,
     private val saveTherapySessionUseCase: SaveTherapySessionUseCase,
-    private val editTherapySessionUseCase: EditTherapySessionUseCase
+    private val editTherapySessionUseCase: EditTherapySessionUseCase,
+    private val trackerIsSavedUseCase: TrackerIsSavedUseCase
 ) : ViewModel() {
     private val _patientId = mutableStateOf<Short>(0)
     val patientId: State<Short> = _patientId
@@ -149,7 +153,7 @@ class TherapySessionViewModel @Inject constructor(
         }
     }
 
-    fun saveTherapySession() {
+    fun saveTherapySession(context: Context) {
         viewModelScope.launch {
             saveSession()
             val therapySessionInfo = _therapySessionInfo.value!!
@@ -159,6 +163,7 @@ class TherapySessionViewModel @Inject constructor(
                 if (result.isSuccess) {
                     _errorMessage.value = "Sesión guardada correctamente"
                     clearSessionState()
+                    trackerIsSavedUseCase(context, AchievementsViewModel.TrackerConstants.THERAPY_TRACKER)
                 } else {
                     Log.e("TherapySessionViewModel", "Error saving therapy session")
                     _errorMessage.value = "Error al guardar la sesión"
