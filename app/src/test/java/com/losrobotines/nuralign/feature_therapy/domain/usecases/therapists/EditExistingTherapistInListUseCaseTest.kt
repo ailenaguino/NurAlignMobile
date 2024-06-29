@@ -8,7 +8,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,7 +54,7 @@ class EditExistingTherapistInListUseCaseTest {
         )
 
         coVerify { therapistProvider.updateTherapistInfo(NEW_THERAPIST) }
-        assertFalse(result.isSuccess)
+        assertTrue(result.isSuccess)
         
         coEvery { therapistProvider.getTherapistList(any()) } returns listOf(NEW_THERAPIST)
         val updatedList = therapistProvider.getTherapistList(PATIENT_ID)
