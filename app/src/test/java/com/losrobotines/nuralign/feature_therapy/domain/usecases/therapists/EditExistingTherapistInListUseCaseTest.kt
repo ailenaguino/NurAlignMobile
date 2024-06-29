@@ -1,8 +1,7 @@
-package com.losrobotines.nuralign.feature_therapy.domain.usecases
+package com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists
 
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
-import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.EditExistingTherapistInListUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -15,13 +14,14 @@ import org.junit.jupiter.api.Test
 
 private const val PATIENT_ID = 1.toShort()
 private const val THERAPIST_ID = 2.toShort()
-private val OLD_THERAPIST = TherapistInfo(THERAPIST_ID, "Will", "Sco", "email", 111234432, "N")
+private val OLD_THERAPIST =
+    TherapistInfo(THERAPIST_ID, PATIENT_ID, "Will", "Sco", "email", 111234432, "N")
 private const val NEW_NAME = "William"
 private const val NEW_LAST_NAME = "Scottman"
 private const val NEW_EMAIL = "wscottman@gmail.com"
 private const val NEW_PHONE = 1112344321
 private val NEW_THERAPIST =
-    TherapistInfo(THERAPIST_ID, NEW_NAME, NEW_LAST_NAME, NEW_EMAIL, NEW_PHONE, "N")
+    TherapistInfo(THERAPIST_ID, PATIENT_ID, NEW_NAME, NEW_LAST_NAME, NEW_EMAIL, NEW_PHONE, "N")
 
 class EditExistingTherapistInListUseCaseTest {
     private lateinit var therapistProvider: TherapistProvider

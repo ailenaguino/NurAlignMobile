@@ -1,6 +1,5 @@
 package com.losrobotines.nuralign.feature_therapy.domain.usecases.therapy_session
 
-import com.losrobotines.nuralign.feature_login.domain.services.UserService
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapySessionInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapySessionProvider
 import javax.inject.Inject

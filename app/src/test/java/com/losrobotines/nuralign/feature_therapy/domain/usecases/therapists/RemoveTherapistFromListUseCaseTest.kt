@@ -1,8 +1,7 @@
-package com.losrobotines.nuralign.feature_therapy.domain.usecases
+package com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists
 
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
-import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.RemoveTherapistFromListUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -14,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 private const val THERAPIST_ID = 2.toShort()
-private val THERAPIST = TherapistInfo(THERAPIST_ID, "Will", "Sco", "email", 111234432, "N")
+private val THERAPIST = TherapistInfo(THERAPIST_ID, 1, "Will", "Sco", "email", 111234432, "N")
 
 class RemoveTherapistFromListUseCaseTest {
     private lateinit var therapistProvider: TherapistProvider
@@ -35,16 +34,17 @@ class RemoveTherapistFromListUseCaseTest {
     }
 
     @Test
-    fun `when a therapist is removed from the list, it is removed from the provider`() = runBlocking {
-        coEvery { therapistProvider.getTherapistList(any()) } returns therapistList
+    fun `when a therapist is removed from the list, it is removed from the provider`() =
+        runBlocking {
+            coEvery { therapistProvider.getTherapistList(any()) } returns therapistList
 
-        val result = useCase.invoke(1, THERAPIST)
+            val result = useCase.invoke(1, THERAPIST)
 
-        coVerify { therapistProvider.deleteTherapistInfo(1, THERAPIST.id!!) }
-        assertTrue(result.isSuccess)
+            coVerify { therapistProvider.deleteTherapistInfo(1, THERAPIST.therapistId!!) }
+            assertTrue(result.isSuccess)
 
-        coEvery { therapistProvider.getTherapistList(any()) } returns emptyList()
-        val updatedList = therapistProvider.getTherapistList(1)
-        assertTrue(updatedList.isEmpty())
-    }
+            coEvery { therapistProvider.getTherapistList(any()) } returns emptyList()
+            val updatedList = therapistProvider.getTherapistList(1)
+            assertTrue(updatedList.isEmpty())
+        }
 }

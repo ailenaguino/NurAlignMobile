@@ -1,19 +1,16 @@
 package com.losrobotines.nuralign.feature_therapy.presentation.screens.therapists
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -21,22 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.ui.theme.secondaryColor
-import kotlinx.coroutines.launch
 
 @Composable
 fun EditTherapistAlertDialog(
@@ -45,7 +35,7 @@ fun EditTherapistAlertDialog(
     therapistInfo: TherapistInfo,
     therapistViewModel: TherapistViewModel
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(horizontal = 15.dp),
@@ -66,10 +56,16 @@ fun EditTherapistAlertDialog(
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             Button(onClick = {
-                coroutineScope.launch {
+                if (therapistViewModel.therapistFirstName.value.isBlank() || therapistViewModel.therapistLastName.value.isBlank()) {
+                    Toast.makeText(
+                        context,
+                        "Por favor, complete los campos de Nombre y Apellido del terapeuta",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
                     therapistViewModel.editExistingTherapist(therapistInfo)
+                    confirmButton()
                 }
-                confirmButton()
             }) {
                 Text("Guardar cambios")
             }

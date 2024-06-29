@@ -1,8 +1,7 @@
-package com.losrobotines.nuralign.feature_therapy.domain.usecases
+package com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists
 
 import com.losrobotines.nuralign.feature_therapy.domain.models.TherapistInfo
 import com.losrobotines.nuralign.feature_therapy.domain.providers.TherapistProvider
-import com.losrobotines.nuralign.feature_therapy.domain.usecases.therapists.SaveTherapistInfoUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -14,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 private val THERAPIST =
-    TherapistInfo(2, "William", "Scottman", "wscottman@gmail.com", 1112344321, "N")
+    TherapistInfo(2, 1, "William", "Scottman", "wscottman@gmail.com", 1112344321, "N")
 
 class SaveTherapistInfoUseCaseTest {
     private lateinit var therapistProvider: TherapistProvider
