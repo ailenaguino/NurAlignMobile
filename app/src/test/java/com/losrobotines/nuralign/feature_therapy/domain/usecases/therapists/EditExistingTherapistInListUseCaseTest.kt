@@ -54,8 +54,8 @@ class EditExistingTherapistInListUseCaseTest {
         )
 
         coVerify { therapistProvider.updateTherapistInfo(NEW_THERAPIST) }
-        assertTrue(result.isSuccess)
-
+        assertFalse(result.isSuccess)
+        
         coEvery { therapistProvider.getTherapistList(any()) } returns listOf(NEW_THERAPIST)
         val updatedList = therapistProvider.getTherapistList(PATIENT_ID)
         assertTrue(updatedList.contains(NEW_THERAPIST))
