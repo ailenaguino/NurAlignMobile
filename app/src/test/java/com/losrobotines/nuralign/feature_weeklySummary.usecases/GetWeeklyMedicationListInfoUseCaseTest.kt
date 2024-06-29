@@ -1,21 +1,19 @@
-package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
+package com.losrobotines.nuralign.feature_weeklySummary.usecases
 
 import com.losrobotines.nuralign.feature_medication.domain.models.MedicationInfo
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMedicationListInfoUseCase
 import org.junit.jupiter.api.Assertions.*
 
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.text.SimpleDateFormat
-import java.util.*
-
+private const val PATIENT_ID: Short = 123
 class GetWeeklyMedicationListInfoUseCaseTest {
 
     private lateinit var weeklySummaryProvider: WeeklySummaryProvider
@@ -35,16 +33,16 @@ class GetWeeklyMedicationListInfoUseCaseTest {
     @Test
     fun `execute returns list of MedicationInfo`() = runBlocking {
         // Given
-        val patientId: Short = 123
+
         val mockMedicationList = listOf<MedicationInfo?>(mockk(relaxed = true))
 
-        coEvery { weeklySummaryProvider.getMedicationListInfo(patientId) } returns mockMedicationList
+        coEvery { weeklySummaryProvider.getMedicationListInfo(PATIENT_ID) } returns mockMedicationList
 
         // When
-        val result = getWeeklyMedicationListInfoUseCase(patientId)
+        val result = getWeeklyMedicationListInfoUseCase(PATIENT_ID)
 
         // Then
         assertTrue(result.isNotEmpty())
-        coVerify(exactly = 1) { weeklySummaryProvider.getMedicationListInfo(patientId) }
+        coVerify(exactly = 1) { weeklySummaryProvider.getMedicationListInfo(PATIENT_ID) }
     }
 }

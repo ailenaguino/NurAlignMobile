@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.losrobotines.nuralign.R
 import com.losrobotines.nuralign.navigation.MainActivity
+import com.losrobotines.nuralign.ui.preferences.PreferencesManager
 
 object NotificationHelper {
 
@@ -34,29 +35,32 @@ object NotificationHelper {
         destination: String,
         notificationId: Int
     ) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            putExtra("destination", destination)
+        if(PreferencesManager(context).getBoolean("Notifications", true)) {
+            val intent = Intent(context, MainActivity::class.java).apply {
+                putExtra("destination", destination)
+            }
+
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                notificationId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val notification = NotificationCompat.Builder(context, "Robotin")
+                .setSmallIcon(R.drawable.robotin)
+                .setContentTitle(title)
+                .setContentText(contentText)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build()
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(notificationId, notification)
+
         }
-
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            notificationId,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat.Builder(context, "Robotin")
-            .setSmallIcon(R.drawable.robotin)
-            .setContentTitle(title)
-            .setContentText(contentText)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
-
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(notificationId, notification)
-
     }
 }

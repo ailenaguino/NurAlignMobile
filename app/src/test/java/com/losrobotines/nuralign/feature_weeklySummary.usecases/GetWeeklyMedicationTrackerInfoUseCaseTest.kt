@@ -1,7 +1,7 @@
-package com.losrobotines.nuralign.feature_weekly_summary.domain.usecases
+package com.losrobotines.nuralign.feature_weeklySummary.usecases
 
 import com.losrobotines.nuralign.feature_weekly_summary.domain.WeeklySummaryProvider
-import org.junit.jupiter.api.Assertions.*
+import com.losrobotines.nuralign.feature_weekly_summary.domain.usecases.GetWeeklyMedicationTrackerInfoUseCase
 
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -14,7 +14,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import java.text.SimpleDateFormat
 import java.util.*
-
+private const val PATIENT_ID: Short = 123
 class GetWeeklyMedicationTrackerInfoUseCaseTest {
 
     private lateinit var weeklySummaryProvider: WeeklySummaryProvider
@@ -34,17 +34,16 @@ class GetWeeklyMedicationTrackerInfoUseCaseTest {
     @Test
     fun `execute returns list of MedicationTrackerInfo`() = runBlocking {
         // Given
-        val patientId: Short = 123
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         coEvery { weeklySummaryProvider.getMedicationTracker(any(), any()) } returns mockk()
 
         // When
-        val result = getWeeklyMedicationTrackerInfoUseCase(patientId)
+        val result = getWeeklyMedicationTrackerInfoUseCase(PATIENT_ID)
 
         // Then
         assertEquals(7, result.size)
-        coVerify(exactly = 7) { weeklySummaryProvider.getMedicationTracker(patientId, any()) }
+        coVerify(exactly = 7) { weeklySummaryProvider.getMedicationTracker(PATIENT_ID, any()) }
     }
 }

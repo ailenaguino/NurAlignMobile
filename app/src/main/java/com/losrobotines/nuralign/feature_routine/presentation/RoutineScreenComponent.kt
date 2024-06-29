@@ -272,7 +272,6 @@ private fun generateNotification(
         }
 
         routineViewModel.saveRoutine()
-        routineViewModel.setIsSavedRoutine(true)
     }
 }
 
@@ -300,7 +299,7 @@ private fun questionGoToSleep(
             modifier = Modifier
                 .padding(start = 40.dp, end = 2.dp)
                 .size(100.dp)
-                .clickable(enabled = !isSaved) { isOpen.value = true }
+                .clickable(enabled = true) { isOpen.value = true }
         ) {
             OutlinedTextField(
                 value = time,
@@ -322,13 +321,6 @@ private fun questionGoToSleep(
                     disabledTextColor = secondaryColor
                 )
             )
-        }
-        if (isSaved) {
-            IconButton(onClick = {
-                routineViewModel.setIsSavedRoutine(false)
-            }) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit")
-            }
         }
     }
 
