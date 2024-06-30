@@ -6,10 +6,9 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
-import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface TherapistApiService {
 
@@ -26,7 +25,7 @@ interface TherapistApiService {
         @Path("therapistId") therapistId: Short
     ): Response<Unit>
 
-    @PATCH("therapists/{therapistId}")
+    @PUT("therapists/{therapistId}")
     suspend fun updateTherapistInfo(
         @Path("therapistId") therapistId: Short,
         @Body body: TherapistDto
