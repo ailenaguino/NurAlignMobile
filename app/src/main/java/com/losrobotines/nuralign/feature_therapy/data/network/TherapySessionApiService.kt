@@ -25,11 +25,9 @@ interface TherapySessionApiService {
     @GET("therapySession/{sessionTherapyId}")
     suspend fun getTherapySessionInfo(@Path("sessionTherapyId") sessionTherapyId: Short): TherapySessionDto
 
-    @PATCH("therapySession/patient/{patientId}")
+    @PATCH("therapySession/{id}")
     suspend fun updateTherapySessionInfo(
-        @Path("patientId") patientId: Short,
-        @Query("therapistId") therapistId: Short,
-        @Query("effectiveDate") effectiveDate: String,
+        @Path("id") id: Short,
         @Body body: TherapySessionDto
     ): Response<TherapySessionDto>
 }

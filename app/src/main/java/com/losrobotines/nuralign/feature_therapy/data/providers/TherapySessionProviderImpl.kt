@@ -40,9 +40,7 @@ class TherapySessionProviderImpl @Inject constructor(
         try {
             val dto = mapDomainToData(therapySessionInfo!!)
             apiService.updateTherapySessionInfo(
-                dto.patientId,
-                dto.therapistId,
-                dto.effectiveDate,
+                dto.id!!,
                 dto
             )
             return true

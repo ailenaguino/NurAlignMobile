@@ -69,8 +69,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
-import com.losrobotines.nuralign.feature_medication.presentation.screens.medication.MedicationViewModel
-import com.losrobotines.nuralign.feature_medication.presentation.screens.tracker.MedicationTrackerViewModel
 import com.losrobotines.nuralign.ui.shared.SharedComponents
 import com.losrobotines.nuralign.ui.theme.mainColor
 import com.losrobotines.nuralign.ui.theme.secondaryColor
@@ -87,13 +85,13 @@ fun TherapySessionScreenComponent(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val isEditingSession by therapySessionViewModel.isEditingSession.observeAsState(false)
-    val context = LocalContext.current
 
     BackHandler {
         if (isEditingSession) {
             therapySessionViewModel.clearSessionState()
             therapySessionViewModel.updateIsEditingSession(false)
         }
+        navController.navigateUp()
         navController.navigateUp()
     }
 
@@ -611,7 +609,7 @@ fun SessionFeel(therapySessionViewModel: TherapySessionViewModel) {
 @Composable
 fun SaveButton(
     therapySessionViewModel: TherapySessionViewModel,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     Button(
