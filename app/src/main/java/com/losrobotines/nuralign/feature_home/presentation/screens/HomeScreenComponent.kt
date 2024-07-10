@@ -63,8 +63,8 @@ fun HomeScreenComponent(navController: NavController, homeViewModel: HomeViewMod
         homeViewModel.resetDatabase()
         context.startActivity(Intent(context, FirstTimeActivity::class.java))
     } else {
-        val name = preferencesManager.getString(USER_NAME, "Usuario")
-        val sex = preferencesManager.getString(USER_SEX, MASCULINO)
+        val name = preferencesManager.getString(USER_NAME, "Ailen")
+        val sex = preferencesManager.getString(USER_SEX, FEMENINO)
         val saludo = when (sex) {
             FEMENINO -> "Bienvenida"
             MASCULINO -> "Bienvenido"

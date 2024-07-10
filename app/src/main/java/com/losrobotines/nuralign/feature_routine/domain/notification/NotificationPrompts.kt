@@ -16,7 +16,7 @@ class NotificationPrompts {
         }
 
         fun getActivityMessage(activity: String, name: String): String {
-            return "Genera un mensaje de aliento para la actividad que el usuario está por hacer. La actividad es $activity y el nombre del usuario es $name. Máximo 40 palabras."
+            return "Genera un mensaje de aliento para la actividad que el usuario está por hacer. La actividad es $activity y el nombre del usuario es Ailen. Máximo 40 palabras."
         }
     }
 }
